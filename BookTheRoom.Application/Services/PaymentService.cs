@@ -1,14 +1,16 @@
-﻿using BookTheRoom.Application.Interfaces;
+﻿using BookTheRoom.Application.Helpers;
+using BookTheRoom.Application.Interfaces;
 using Braintree;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace BookTheRoom.Application.Services
 {
-    public class BraintreeService : IBraintreeService
+    public class PaymentService : IBraintreeService
     {
-        private readonly IConfiguration _config;
+        private readonly IOptions<BraintreeSettings> _config;
 
-        public BraintreeService(IConfiguration config)
+        public PaymentService(IOptions<BraintreeSettings> config)
         {
             _config = config;
         }
@@ -19,9 +21,9 @@ namespace BookTheRoom.Application.Services
             var newGateway = new BraintreeGateway()
             {
                 Environment = Braintree.Environment.SANDBOX,
-                //MerchantId = _config.GetValue<string>("BraintreeGateway:MerchantId"),
-                //PublicKey = _config.GetValue<string>("BraintreeGateway:PublicKey"),
-                //PrivateKey = _config.GetValue<string>("BraintreeGateway:PrivateKey")
+                MerchantId = _config.Value.MerchantId,
+                PublicKey = _config.Value.PublicKey,
+                PrivateKey = _config.Value.PrivateKey
             };
 
             return newGateway;

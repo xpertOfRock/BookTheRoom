@@ -2,12 +2,9 @@
 
 namespace BookTheRoom.Application.Interfaces
 {
-    public interface IRoomRepository
+    public interface IRoomRepository : IBaseRepository<Room>
     {
-        Task<Room> GetRoomByNumberAsync(int number);
-        Task<List<Room>> GetAllRoomsByHotel(Hotel hotel);
-        Task Add(Room room);
-        Task Delete(Room room);
-        Task Update(Room room);
+        Task<Room> GetRoomByIdAsync(int id);
+        Task<IEnumerable<Room>> GetAllRoomsByHotel(Hotel hotel);      
     }
 }

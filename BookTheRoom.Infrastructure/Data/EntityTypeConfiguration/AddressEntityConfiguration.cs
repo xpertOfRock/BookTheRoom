@@ -13,6 +13,7 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
             builder.Property(a => a.Country).IsRequired();
             builder.Property(a => a.City).IsRequired();
             builder.Property(a => a.Street).IsRequired();
+            builder.Property(a => a.Building).IsRequired();
         }
     }
 }

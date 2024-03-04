@@ -13,6 +13,7 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
             builder.Property(r => r.Number).IsRequired();
             builder.Property(r => r.PriceForRoom).IsRequired();
             builder.Property(r => r.IsFree).IsRequired();
+            builder.Property(r => r.Image).IsRequired();
             builder.HasOne(r => r.Hotel)
                    .WithMany(h => h.Rooms)
                    .HasForeignKey(r => r.HotelId)

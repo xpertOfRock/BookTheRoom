@@ -8,6 +8,7 @@ namespace BookTheRoom.Domain.Entities
         public int Number { get; set; }
         public decimal PriceForRoom { get; set; }          
         public bool IsFree { get; set; }
+        public string Image { get; set; }
         public int HotelId { get; set; }
 
         public Hotel Hotel { get; set; }
