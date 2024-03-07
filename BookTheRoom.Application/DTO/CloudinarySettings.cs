@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BookTheRoom.Application.Helpers
+﻿namespace BookTheRoom.Application.DTO
 {
     public class CloudinarySettings
     {

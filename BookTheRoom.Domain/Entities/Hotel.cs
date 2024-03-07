@@ -8,12 +8,14 @@ namespace BookTheRoom.Domain.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Image { get; set; }
         public int Rating { get; set; }
         public bool HasPool { get; set; }
         public int AddressId { get; set; }
+        public int PreviewImageId { get; set; }
 
+        public HotelImage PreviewImage { get; set; }
         public Address Address { get; set; }
         public ICollection<Room> Rooms { get; set; }
+        public ICollection<HotelImage> HotelImages { get; set; }
     }
 }

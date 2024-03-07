@@ -10,15 +10,30 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
         {
             builder.HasKey(h => h.Id);
             builder.Property(h => h.Id).ValueGeneratedOnAdd();
-            builder.Property(h => h.Name).IsRequired();
-            builder.Property(h => h.Description).IsRequired();
+            builder.Property(h => h.Name).IsRequired().HasMaxLength(100);
+            builder.Property(h => h.Description).HasMaxLength(500);
             builder.Property(h => h.Rating).IsRequired();
             builder.Property(h => h.HasPool).IsRequired();
-            builder.Property(h => h.Image).IsRequired();
+            builder.HasOne(h => h.PreviewImage)
+                   .WithOne()
+                   .HasForeignKey<Hotel>(h => h.PreviewImageId)
+                   .IsRequired();
+
             builder.HasOne(h => h.Address)
                    .WithOne()
                    .HasForeignKey<Hotel>(h => h.AddressId)
                    .IsRequired();
+
+            builder.HasMany(h => h.HotelImages)
+                   .WithOne()
+                   .HasForeignKey(h => h.HotelId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(h => h.Rooms)
+                   .WithOne(r => r.Hotel)
+                   .HasForeignKey(r => r.HotelId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

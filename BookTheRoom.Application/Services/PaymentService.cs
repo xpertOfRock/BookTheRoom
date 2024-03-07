@@ -1,7 +1,6 @@
-﻿using BookTheRoom.Application.Helpers;
+﻿using BookTheRoom.Application.DTO;
 using BookTheRoom.Application.Interfaces;
 using Braintree;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace BookTheRoom.Application.Services
@@ -9,12 +8,6 @@ namespace BookTheRoom.Application.Services
     public class PaymentService : IBraintreeService
     {
         private readonly IOptions<BraintreeSettings> _config;
-
-        public PaymentService(IOptions<BraintreeSettings> config)
-        {
-            _config = config;
-        }
-
 
         public IBraintreeGateway CreateGateway()
         {
@@ -32,7 +25,6 @@ namespace BookTheRoom.Application.Services
         public IBraintreeGateway GetGateway()
         {
             return CreateGateway();
-
         }
     }
 }

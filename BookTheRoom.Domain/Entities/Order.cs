@@ -1,6 +1,4 @@
-﻿using BookTheRoom.Domain.Enums;
-
-namespace BookTheRoom.Domain.Entities
+﻿namespace BookTheRoom.Domain.Entities
 {
     public class Order
     {     
@@ -11,8 +9,7 @@ namespace BookTheRoom.Domain.Entities
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
 
-        public OrderStatus Status { get; set; }
         public Room Room { get; set; }
-        public Hotel Hotel { get; set; }                   
+        public Hotel Hotel { get; set; }
     }
 }

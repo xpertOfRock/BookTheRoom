@@ -4,23 +4,29 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
 {
-    internal class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
+    public class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Property(o => o.Id).ValueGeneratedOnAdd();
-            builder.Property(o => o.OverallPrice).IsRequired();
+
+            builder.Property(o => o.Id).HasColumnName("OrderId").IsRequired();
+            builder.Property(o => o.OverallPrice).HasColumnType("decimal(10,5)").IsRequired();
+            builder.Property(o => o.RoomId).IsRequired();
+            builder.Property(o => o.HotelId).IsRequired();
             builder.Property(o => o.CheckIn).IsRequired();
             builder.Property(o => o.CheckOut).IsRequired();
-            builder.HasOne(o => o.Hotel)
-                   .WithOne()
-                   .HasForeignKey<Order>(o => o.HotelId)
-                   .IsRequired();
+
             builder.HasOne(o => o.Room)
                    .WithMany()
                    .HasForeignKey(o => o.RoomId)
-                   .IsRequired();
+                   .OnDelete(DeleteBehavior.Restrict); 
+
+            builder.HasOne(o => o.Hotel)
+                   .WithMany()
+                   .HasForeignKey(o => o.HotelId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

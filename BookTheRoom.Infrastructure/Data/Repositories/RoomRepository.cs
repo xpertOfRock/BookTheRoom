@@ -6,14 +6,11 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
 {
     public class RoomRepository : BaseRepository<Room>, IRoomRepository
     {
-        public RoomRepository(ApplicationDbContext context) : base(context)
-        {
-        }
+        public RoomRepository(ApplicationDbContext context) : base(context){}
         public async Task<IEnumerable<Room>> GetAllRoomsByHotel(Hotel hotel)
         {
             return await ApplicationDbContext.Rooms.Where(r => r.Hotel == hotel).ToListAsync();
         }
-
         public async Task<Room> GetRoomByIdAsync(int id)
         {
             return await ApplicationDbContext.Rooms.Where(r => r.Id == id).FirstOrDefaultAsync();
