@@ -62,7 +62,7 @@ namespace BookTheRoom.Infrastructure.Data
                                 {
                                     URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
                                 },
-                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomCategory = RoomCategory.OneBedApartments,
                                 RoomImages = new List<RoomImage>(5)
                                 {
                                     new RoomImage
@@ -87,7 +87,6 @@ namespace BookTheRoom.Infrastructure.Data
                                     }
                                 }
                             },
-
                             new Room
                             {
                                 Number = 112,
@@ -97,7 +96,7 @@ namespace BookTheRoom.Infrastructure.Data
                                 {
                                     URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
                                 },
-                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomCategory = RoomCategory.OneBedApartments,
                                 RoomImages = new List<RoomImage>(5)
                                 {
                                     new RoomImage
@@ -131,7 +130,7 @@ namespace BookTheRoom.Infrastructure.Data
                                 {
                                     URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
                                 },
-                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomCategory = RoomCategory.TwoBedApartments,
                                 RoomImages = new List<RoomImage>(5)
                                 {
                                     new RoomImage
@@ -165,7 +164,7 @@ namespace BookTheRoom.Infrastructure.Data
                                 {
                                     URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
                                 },
-                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomCategory = RoomCategory.TwoBedApartments,
                                 RoomImages = new List<RoomImage>(5)
                                 {
                                     new RoomImage
@@ -173,7 +172,7 @@ namespace BookTheRoom.Infrastructure.Data
                                         URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051855.jpg?k=8b673ef4a1ec79ff3280a10c1eb554bc2ddda67fc31de491bb0f66eff0b6271b&o=&hp=1"
                                     },
                                     new RoomImage
-                                    {
+                                    {  
                                         URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051836.jpg?k=3d72748dcb6083f8e789e013035a38ed345002dc6c266d4e004a6adeac12d6f1&o=&hp=1"
                                     },
                                     new RoomImage
@@ -199,7 +198,7 @@ namespace BookTheRoom.Infrastructure.Data
                                 {
                                     URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
                                 },
-                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomCategory = RoomCategory.TwoBedApartments,
                                 RoomImages = new List<RoomImage>(5)
                                 {
                                     new RoomImage
@@ -396,174 +395,463 @@ namespace BookTheRoom.Infrastructure.Data
                             }
                 }
                     },
-                    //new Hotel {},
-                };
+                    new Hotel {
+                        Name = "The Plaza NY",
+                        Description = "The Plaza, nestled on the corner of Fifth Avenue and Central Park South in New York City, is a renowned luxury hotel exuding timeless elegance. Since its establishment in 1907, it has been a haven for both travelers and celebrities, offering opulent accommodations, exceptional dining, and exquisite service. With its iconic Beaux-Arts architecture and prime location, The Plaza embodies the essence of New York City's sophistication and charm, promising an unforgettable experience for all who enter its doors.",
+                        Rating = 5,
+                        HasPool = true,
+                        PreviewImage = new HotelImage
+                        {
+                            URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718768.jpg?k=f097e8f56230cd4aa38cdbaa52af08254b915e2014f4bcc98b04d308f54efbdb&o=&hp=1"
+                        },
+                        HotelImages = new List<HotelImage>(5)
+                        {
+                            new HotelImage
+                            {
+                                URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718760.jpg?k=608ceb5268219094ffb5f99c00dd1b869daf59485ca2ce071c49a9bd2feeba4f&o=&hp=1"
+                            },
+                            new HotelImage
+                            {
+                                URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718780.jpg?k=5bd33fc0a2eba7526b562202545c8f5620a531d582adfcb9606a62d5b5fbc853&o=&hp=1"
+                            },
+                            new HotelImage
+                            {
+                                URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718798.jpg?k=49069f23102966baa7e686393e997fb54113d486ee4e51a5327a668115d0892e&o=&hp=1"
+                            },
+                            new HotelImage
+                            {
+                                URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718788.jpg?k=e9551c2ed6fc2c1b29b7ae11cb4dda2dee789e21dd30aa24f59ad7c62d66b899&o=&hp=1"
+                            },
+                            new HotelImage
+                            {
+                                URL = "https://www.fairmont.com/assets/0/104/3225/3230/4116/4124/7bf52556-ee0f-4a55-83ce-9dc6417b622d.jpg"
+                            }
+                        },
+                        Address = new Address()
+                        {
+                            Country = "U.S.A.",
+                            City = "New York City",
+                            Street = "5th Ave",
+                            Building = 768
+                        },
+                        Rooms = new List<Room>
+                        {
+                            new Room
+                            {
+                                Number = 401,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.OneBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718805.jpg?k=8014b74c2200b536138999d929b267528d34f3323cfa9fbe3f3d2f4ae9bd82d3&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718813.jpg?k=57c356977fb907698c2fc89c3f5d72cf73c93f2855bfcd7a79fa05f8807a8750&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718821.jpg?k=a1c2bceabab5466f7111bf5971cb26e06b81fdee3a0c4528fd19827204ac98a1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718828.jpg?k=8843809a06b9b068652577efa337b1ef4f3b1c294d0790a3ce2e8604d94d3218&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718837.jpg?k=44f8279b85e085abfe3698de3ec30fd9a3f6d4d6c430f00d7cdb7a560bb284c4&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 402,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.OneBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718805.jpg?k=8014b74c2200b536138999d929b267528d34f3323cfa9fbe3f3d2f4ae9bd82d3&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718813.jpg?k=57c356977fb907698c2fc89c3f5d72cf73c93f2855bfcd7a79fa05f8807a8750&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718821.jpg?k=a1c2bceabab5466f7111bf5971cb26e06b81fdee3a0c4528fd19827204ac98a1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718828.jpg?k=8843809a06b9b068652577efa337b1ef4f3b1c294d0790a3ce2e8604d94d3218&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718837.jpg?k=44f8279b85e085abfe3698de3ec30fd9a3f6d4d6c430f00d7cdb7a560bb284c4&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 403,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.OneBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718805.jpg?k=8014b74c2200b536138999d929b267528d34f3323cfa9fbe3f3d2f4ae9bd82d3&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718813.jpg?k=57c356977fb907698c2fc89c3f5d72cf73c93f2855bfcd7a79fa05f8807a8750&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718821.jpg?k=a1c2bceabab5466f7111bf5971cb26e06b81fdee3a0c4528fd19827204ac98a1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718828.jpg?k=8843809a06b9b068652577efa337b1ef4f3b1c294d0790a3ce2e8604d94d3218&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718837.jpg?k=44f8279b85e085abfe3698de3ec30fd9a3f6d4d6c430f00d7cdb7a560bb284c4&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 404,
+                                PriceForRoom = 300,
+                                IsFree = false,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.OneBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718805.jpg?k=8014b74c2200b536138999d929b267528d34f3323cfa9fbe3f3d2f4ae9bd82d3&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718813.jpg?k=57c356977fb907698c2fc89c3f5d72cf73c93f2855bfcd7a79fa05f8807a8750&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718821.jpg?k=a1c2bceabab5466f7111bf5971cb26e06b81fdee3a0c4528fd19827204ac98a1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718828.jpg?k=8843809a06b9b068652577efa337b1ef4f3b1c294d0790a3ce2e8604d94d3218&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718837.jpg?k=44f8279b85e085abfe3698de3ec30fd9a3f6d4d6c430f00d7cdb7a560bb284c4&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 405,
+                                PriceForRoom = 300,
+                                IsFree = false,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.OneBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718805.jpg?k=8014b74c2200b536138999d929b267528d34f3323cfa9fbe3f3d2f4ae9bd82d3&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718813.jpg?k=57c356977fb907698c2fc89c3f5d72cf73c93f2855bfcd7a79fa05f8807a8750&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718821.jpg?k=a1c2bceabab5466f7111bf5971cb26e06b81fdee3a0c4528fd19827204ac98a1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718828.jpg?k=8843809a06b9b068652577efa337b1ef4f3b1c294d0790a3ce2e8604d94d3218&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718837.jpg?k=44f8279b85e085abfe3698de3ec30fd9a3f6d4d6c430f00d7cdb7a560bb284c4&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 406,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.OneBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718805.jpg?k=8014b74c2200b536138999d929b267528d34f3323cfa9fbe3f3d2f4ae9bd82d3&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718813.jpg?k=57c356977fb907698c2fc89c3f5d72cf73c93f2855bfcd7a79fa05f8807a8750&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718821.jpg?k=a1c2bceabab5466f7111bf5971cb26e06b81fdee3a0c4528fd19827204ac98a1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718828.jpg?k=8843809a06b9b068652577efa337b1ef4f3b1c294d0790a3ce2e8604d94d3218&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718837.jpg?k=44f8279b85e085abfe3698de3ec30fd9a3f6d4d6c430f00d7cdb7a560bb284c4&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 718,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718877.jpg?k=4b35288685c689ba9d35420fd2411e70fe555991a9c4f6fc914125b79e58cb2a&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718906.jpg?k=8d236195ba86de4e1d4af08e646342cb467e5e3ac9ef6afe1e683f6c15513ec0&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718912.jpg?k=d86c36963196d6be7f12c39a2ea3756daf4f752f676f8727b24fc0297e2d7a1e&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718903.jpg?k=811a4eff5756fe02615aabaf70e436b5d64c0032a0ea98c15f9e674b404e18c1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718919.jpg?k=a8d822a2e983a07bbc23cb63ec45c65846f939fec12fc0bd8cb2c500149ddf20&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 719,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718877.jpg?k=4b35288685c689ba9d35420fd2411e70fe555991a9c4f6fc914125b79e58cb2a&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718906.jpg?k=8d236195ba86de4e1d4af08e646342cb467e5e3ac9ef6afe1e683f6c15513ec0&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718912.jpg?k=d86c36963196d6be7f12c39a2ea3756daf4f752f676f8727b24fc0297e2d7a1e&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718903.jpg?k=811a4eff5756fe02615aabaf70e436b5d64c0032a0ea98c15f9e674b404e18c1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718919.jpg?k=a8d822a2e983a07bbc23cb63ec45c65846f939fec12fc0bd8cb2c500149ddf20&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 720,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718877.jpg?k=4b35288685c689ba9d35420fd2411e70fe555991a9c4f6fc914125b79e58cb2a&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718906.jpg?k=8d236195ba86de4e1d4af08e646342cb467e5e3ac9ef6afe1e683f6c15513ec0&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718912.jpg?k=d86c36963196d6be7f12c39a2ea3756daf4f752f676f8727b24fc0297e2d7a1e&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718903.jpg?k=811a4eff5756fe02615aabaf70e436b5d64c0032a0ea98c15f9e674b404e18c1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718919.jpg?k=a8d822a2e983a07bbc23cb63ec45c65846f939fec12fc0bd8cb2c500149ddf20&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 721,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718877.jpg?k=4b35288685c689ba9d35420fd2411e70fe555991a9c4f6fc914125b79e58cb2a&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718906.jpg?k=8d236195ba86de4e1d4af08e646342cb467e5e3ac9ef6afe1e683f6c15513ec0&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718912.jpg?k=d86c36963196d6be7f12c39a2ea3756daf4f752f676f8727b24fc0297e2d7a1e&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718903.jpg?k=811a4eff5756fe02615aabaf70e436b5d64c0032a0ea98c15f9e674b404e18c1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718919.jpg?k=a8d822a2e983a07bbc23cb63ec45c65846f939fec12fc0bd8cb2c500149ddf20&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                Number = 722,
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718877.jpg?k=4b35288685c689ba9d35420fd2411e70fe555991a9c4f6fc914125b79e58cb2a&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718906.jpg?k=8d236195ba86de4e1d4af08e646342cb467e5e3ac9ef6afe1e683f6c15513ec0&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718912.jpg?k=d86c36963196d6be7f12c39a2ea3756daf4f752f676f8727b24fc0297e2d7a1e&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718903.jpg?k=811a4eff5756fe02615aabaf70e436b5d64c0032a0ea98c15f9e674b404e18c1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {             
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718919.jpg?k=a8d822a2e983a07bbc23cb63ec45c65846f939fec12fc0bd8cb2c500149ddf20&o=&hp=1"
+                                    }
+                                }
+                            },
+                            new Room
+                            {
+                                PriceForRoom = 300,
+                                IsFree = true,
+                                PreviewImage = new RoomImage()
+                                {
+                                    URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/273051787.jpg?k=d47a41694c30dd5e179b77687e5a156abf863b1567dc051cadfa78f14e945064&o=&hp=1"
+                                },
+                                RoomCategory = RoomCategory.ThreeBedApartments,
+                                RoomImages = new List<RoomImage>(5)
+                                {
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718877.jpg?k=4b35288685c689ba9d35420fd2411e70fe555991a9c4f6fc914125b79e58cb2a&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718906.jpg?k=8d236195ba86de4e1d4af08e646342cb467e5e3ac9ef6afe1e683f6c15513ec0&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718912.jpg?k=d86c36963196d6be7f12c39a2ea3756daf4f752f676f8727b24fc0297e2d7a1e&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718903.jpg?k=811a4eff5756fe02615aabaf70e436b5d64c0032a0ea98c15f9e674b404e18c1&o=&hp=1"
+                                    },
+                                    new RoomImage
+                                    {
+                                        URL = "https://cf.bstatic.com/xdata/images/hotel/max1024x768/496718919.jpg?k=a8d822a2e983a07bbc23cb63ec45c65846f939fec12fc0bd8cb2c500149ddf20&o=&hp=1"
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                };             
+
 
                 context.Hotels.AddRange(hotels);
                 context.SaveChanges();
             }
-        }
-        //public static void SeedData(IApplicationBuilder applicationBuilder)
-        //{
-        //    using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
-        //    {
-        //        var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-
-        //        context.Database.EnsureCreated();
-
-        //        if (!context.Clubs.Any())
-        //        {
-        //            context.Clubs.AddRange(new List<Club>()
-        //            {
-        //                new Club()
-        //                {
-        //                    Title = "Running Club 1",
-        //                    Image = "https://www.eatthis.com/wp-content/uploads/sites/4/2020/05/running.jpg?quality=82&strip=1&resize=640%2C360",
-        //                    Description = "This is the description of the first cinema",
-        //                    ClubCategory = ClubCategory.City,
-        //                    Address = new Address()
-        //                    {
-        //                        Street = "123 Main St",
-        //                        City = "Charlotte",
-        //                        State = "NC"
-        //                    }
-        //                 },
-        //                new Club()
-        //                {
-        //                    Title = "Running Club 2",
-        //                    Image = "https://www.eatthis.com/wp-content/uploads/sites/4/2020/05/running.jpg?quality=82&strip=1&resize=640%2C360",
-        //                    Description = "This is the description of the first cinema",
-        //                    ClubCategory = ClubCategory.Endurance,
-        //                    Address = new Address()
-        //                    {
-        //                        Street = "123 Main St",
-        //                        City = "Charlotte",
-        //                        State = "NC"
-        //                    }
-        //                },
-        //                new Club()
-        //                {
-        //                    Title = "Running Club 3",
-        //                    Image = "https://www.eatthis.com/wp-content/uploads/sites/4/2020/05/running.jpg?quality=82&strip=1&resize=640%2C360",
-        //                    Description = "This is the description of the first club",
-        //                    ClubCategory = ClubCategory.Trail,
-        //                    Address = new Address()
-        //                    {
-        //                        Street = "123 Main St",
-        //                        City = "Charlotte",
-        //                        State = "NC"
-        //                    }
-        //                },
-        //                new Club()
-        //                {
-        //                    Title = "Running Club 3",
-        //                    Image = "https://www.eatthis.com/wp-content/uploads/sites/4/2020/05/running.jpg?quality=82&strip=1&resize=640%2C360",
-        //                    Description = "This is the description of the first club",
-        //                    ClubCategory = ClubCategory.City,
-        //                    Address = new Address()
-        //                    {
-        //                        Street = "123 Main St",
-        //                        City = "Michigan",
-        //                        State = "NC"
-        //                    }
-        //                }
-        //            });
-        //            context.SaveChanges();
-        //        }
-        //        //Races
-        //        if (!context.Races.Any())
-        //        {
-        //            context.Races.AddRange(new List<Race>()
-        //            {
-        //                new Race()
-        //                {
-        //                    Title = "Running Race 1",
-        //                    Image = "https://www.eatthis.com/wp-content/uploads/sites/4/2020/05/running.jpg?quality=82&strip=1&resize=640%2C360",
-        //                    Description = "This is the description of the first race",
-        //                    RaceCategory = RaceCategory.Marathon,
-        //                    Address = new Address()
-        //                    {
-        //                        Street = "123 Main St",
-        //                        City = "Charlotte",
-        //                        State = "NC"
-        //                    }
-        //                },
-        //                new Race()
-        //                {
-        //                    Title = "Running Race 2",
-        //                    Image = "https://www.eatthis.com/wp-content/uploads/sites/4/2020/05/running.jpg?quality=82&strip=1&resize=640%2C360",
-        //                    Description = "This is the description of the first race",
-        //                    RaceCategory = RaceCategory.Ultra,
-        //                    AddressId = 5,
-        //                    Address = new Address()
-        //                    {
-        //                        Street = "123 Main St",
-        //                        City = "Charlotte",
-        //                        State = "NC"
-        //                    }
-        //                }
-        //            });
-        //            context.SaveChanges();
-        //        }
-        //    }
-        //}
-
-        //public static async Task SeedUsersAndRolesAsync(IApplicationBuilder applicationBuilder)
-        //{
-        //    using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
-        //    {
-        //        //Roles
-        //        var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-        //        if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
-        //            await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-        //        if (!await roleManager.RoleExistsAsync(UserRoles.User))
-        //            await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-
-        //        //Users
-        //        var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-        //        string adminUserEmail = "teddysmithdeveloper@gmail.com";
-
-        //        var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
-        //        if (adminUser == null)
-        //        {
-        //            var newAdminUser = new AppUser()
-        //            {
-        //                UserName = "teddysmithdev",
-        //                Email = adminUserEmail,
-        //                EmailConfirmed = true,
-        //                Address = new Address()
-        //                {
-        //                    Street = "123 Main St",
-        //                    City = "Charlotte",
-        //                    State = "NC"
-        //                }
-        //            };
-        //            await userManager.CreateAsync(newAdminUser, "Coding@1234?");
-        //            await userManager.AddToRoleAsync(newAdminUser, UserRoles.Admin);
-        //        }
-
-        //        string appUserEmail = "user@etickets.com";
-
-        //        var appUser = await userManager.FindByEmailAsync(appUserEmail);
-        //        if (appUser == null)
-        //        {
-        //            var newAppUser = new AppUser()
-        //            {
-        //                UserName = "app-user",
-        //                Email = appUserEmail,
-        //                EmailConfirmed = true,
-        //                Address = new Address()
-        //                {
-        //                    Street = "123 Main St",
-        //                    City = "Charlotte",
-        //                    State = "NC"
-        //                }
-        //            };
-        //            await userManager.CreateAsync(newAppUser, "Coding@1234?");
-        //            await userManager.AddToRoleAsync(newAppUser, UserRoles.User);
-        //        }
-        //    }
-        //}
+        }      
     }
 }

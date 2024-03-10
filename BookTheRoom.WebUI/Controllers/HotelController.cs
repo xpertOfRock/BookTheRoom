@@ -1,5 +1,9 @@
 ﻿using BookTheRoom.Application.Interfaces;
+using BookTheRoom.Domain.Entities;
+using BookTheRoom.WebUI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 namespace BookTheRoom.WebUI.Controllers
 {
@@ -7,39 +11,61 @@ namespace BookTheRoom.WebUI.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IPhotoService _photoService;
-        public HotelController(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IPhotoService photoService)
+        //private readonly IPhotoService _photoService;    , IPhotoService photoService
+        public HotelController(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
-            _photoService = photoService;
+            //_photoService = photoService;
 
         }
         // GET: HotelController
+        [HttpGet]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> Index()
         {
-            var hotels =  await _unitOfWork.Hotels.GetAll();
+            IEnumerable<Hotel> hotels =  await _unitOfWork.Hotels.GetAllInclude();
             return View(hotels);
         }
 
         // GET: HotelController/Details/5
-        public async Task<IActionResult> Details(int id)
+        [HttpGet]
+        [EnableRateLimiting("fixed")]
+        public async Task<IActionResult> Detail(int id)
         {
-            var hotel = await _unitOfWork.Hotels.GetById(id);
+            Hotel hotel = await _unitOfWork.Hotels.GetByIdGetByIdInclude(id);
+            if (hotel == null)
+            {
+                return Redirect("/Home/Index");
+
+            }
             return View(hotel);
         }
 
         // GET: HotelController/Create
-        public IActionResult Create()
+        public IActionResult CreateHotel()
         {
-
             return View();
         }
 
         // POST: HotelController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(IFormCollection collection)
+        public IActionResult CreateHotel(CreateHotelViewModel collection)
+        {
+            if (!ModelState.IsValid)
+            {
+
+            }
+            return View(collection);
+        }
+        public IActionResult AddRoom()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddRoom(IFormCollection collection)
         {
             try
             {
@@ -50,7 +76,6 @@ namespace BookTheRoom.WebUI.Controllers
                 return View();
             }
         }
-
         // GET: HotelController/Edit/5
         public ActionResult Edit(int id)
         {

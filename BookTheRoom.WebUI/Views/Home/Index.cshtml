@@ -1,8 +1,11 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+﻿<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light">Book The Room</h1>
+            <p class="lead text-body-secondary">Press 'Upload & Process' to upload and save your json file. Press 'Hierarchy Tree' to see it's hierarchy tree.</p>
+            <p>
+                <a asp-area="" asp-controller="Hotel" asp-action="Index" class="btn btn-primary my-2">View Hotels</a>              
+            </p>
+        </div>
+    </div>
+</section>

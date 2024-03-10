@@ -10,13 +10,7 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
         {
             builder.HasKey(hi => hi.Id);
             builder.Property(hi => hi.Id).ValueGeneratedOnAdd();
-            builder.Property(hi => hi.URL).IsRequired().HasMaxLength(255);
-            builder.Property(hi => hi.HotelId).IsRequired();
-
-            builder.HasOne(hi => hi.Hotel)
-                   .WithMany(h => h.HotelImages)
-                   .HasForeignKey(hi => hi.HotelId)
-                   .IsRequired();
+            builder.Property(ri => ri.URL).HasMaxLength(1000).IsRequired();
         }
     }    
 }

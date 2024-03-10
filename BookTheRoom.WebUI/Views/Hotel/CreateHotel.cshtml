@@ -1,0 +1,44 @@
+﻿@using BookTheRoom.WebUI.ViewModels
+@using BookTheRoom.Domain.Enums
+@model CreateHotelViewModel
+
+<h2>Create Hotel</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control"/>
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Rating">Rating</label>
+        <select asp-for="Rating" class="form-control">
+            <option value="">Select</option>
+            @for (int i = 1; i <= 5; i++)
+            {
+                <option value="@i">@i stars</option>
+            }
+        </select>
+        <span asp-validation-for="Rating" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="HasPool">Has Pool</label>
+        <input asp-for="HasPool" type="checkbox" class="form-check-input"/>
+    </div>
+
+    <div class="form-group">
+        <label>Number of Rooms</label>
+        <input type="number" class="form-control" asp-for="NumberOfRooms"/>
+        <span asp-validation-for="NumberOfRooms" class="text-danger"></span>
+
+    </div>   
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

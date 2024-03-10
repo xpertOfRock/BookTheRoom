@@ -1,5 +1,6 @@
 using BookTheRoom.WebUI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Diagnostics;
 
 namespace BookTheRoom.WebUI.Controllers
@@ -12,7 +13,7 @@ namespace BookTheRoom.WebUI.Controllers
         {
             _logger = logger;
         }
-
+        [EnableRateLimiting("fixed")]
         public IActionResult Index()
         {
             return View();

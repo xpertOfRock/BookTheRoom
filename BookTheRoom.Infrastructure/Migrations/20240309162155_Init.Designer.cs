@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookTheRoom.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240307083248_Init")]
+    [Migration("20240309162155_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -66,8 +66,8 @@ namespace BookTheRoom.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<bool>("HasPool")
                         .HasColumnType("bit");
@@ -76,6 +76,9 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("NumberOfRooms")
+                        .HasColumnType("int");
 
                     b.Property<int>("PreviewImageId")
                         .HasColumnType("int");
@@ -102,13 +105,13 @@ namespace BookTheRoom.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("HotelId")
+                    b.Property<int?>("HotelId")
                         .HasColumnType("int");
 
                     b.Property<string>("URL")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 
@@ -142,6 +145,9 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .HasColumnType("decimal(10,5)");
 
                     b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -199,13 +205,13 @@ namespace BookTheRoom.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("RoomId")
+                    b.Property<int?>("RoomId")
                         .HasColumnType("int");
 
                     b.Property<string>("URL")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("Id");
 
@@ -341,13 +347,9 @@ namespace BookTheRoom.Infrastructure.Migrations
 
             modelBuilder.Entity("BookTheRoom.Domain.Entities.HotelImage", b =>
                 {
-                    b.HasOne("BookTheRoom.Domain.Entities.Hotel", "Hotel")
+                    b.HasOne("BookTheRoom.Domain.Entities.Hotel", null)
                         .WithMany("HotelImages")
-                        .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Hotel");
+                        .HasForeignKey("HotelId");
                 });
 
             modelBuilder.Entity("BookTheRoom.Domain.Entities.Order", b =>
@@ -359,13 +361,13 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.HasOne("BookTheRoom.Domain.Entities.Hotel", "Hotel")
                         .WithMany()
                         .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BookTheRoom.Domain.Entities.Room", "Room")
                         .WithMany()
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Hotel");
@@ -378,7 +380,7 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.HasOne("BookTheRoom.Domain.Entities.Hotel", "Hotel")
                         .WithMany("Rooms")
                         .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BookTheRoom.Domain.Entities.RoomImage", "PreviewImage")
@@ -394,13 +396,9 @@ namespace BookTheRoom.Infrastructure.Migrations
 
             modelBuilder.Entity("BookTheRoom.Domain.Entities.RoomImage", b =>
                 {
-                    b.HasOne("BookTheRoom.Domain.Entities.Room", "Room")
+                    b.HasOne("BookTheRoom.Domain.Entities.Room", null)
                         .WithMany("RoomImages")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Room");
+                        .HasForeignKey("RoomId");
                 });
 
             modelBuilder.Entity("BookTheRoom.Infrastructure.Identity.ApplicationUser", b =>

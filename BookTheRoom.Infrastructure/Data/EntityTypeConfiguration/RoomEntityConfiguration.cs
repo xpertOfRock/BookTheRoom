@@ -24,12 +24,6 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
                    .WithMany(h => h.Rooms)
                    .HasForeignKey(r => r.HotelId)
                    .IsRequired();
-
-
-            builder.HasMany(r => r.RoomImages)
-                   .WithOne(ri => ri.Room)
-                   .HasForeignKey(ri => ri.RoomId)
-                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

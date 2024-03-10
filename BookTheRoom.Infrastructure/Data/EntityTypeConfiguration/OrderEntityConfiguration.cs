@@ -16,16 +16,17 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
             builder.Property(o => o.HotelId).IsRequired();
             builder.Property(o => o.CheckIn).IsRequired();
             builder.Property(o => o.CheckOut).IsRequired();
+            builder.Property(o => o.Status).IsRequired();
 
             builder.HasOne(o => o.Room)
                    .WithMany()
                    .HasForeignKey(o => o.RoomId)
-                   .OnDelete(DeleteBehavior.Restrict); 
+                   .OnDelete(DeleteBehavior.NoAction); 
 
             builder.HasOne(o => o.Hotel)
                    .WithMany()
                    .HasForeignKey(o => o.HotelId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                   .OnDelete(DeleteBehavior.NoAction);
 
         }
     }

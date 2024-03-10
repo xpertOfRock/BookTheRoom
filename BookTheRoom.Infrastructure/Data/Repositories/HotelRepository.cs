@@ -11,7 +11,6 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
         {
             
         }
-
         public async Task<Hotel> GetHotelByAddress(string country, string city, string street, int building)
         {
             return await ApplicationDbContext.Hotels.
@@ -33,6 +32,20 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<Hotel> GetByIdGetByIdInclude(int id)
+        {
+            return await ApplicationDbContext.Hotels.Include(h => h.Address)
+                                                    .Include(h => h.PreviewImage)
+                                                    .Include(h => h.HotelImages)
+                                                    .Include(h => h.Rooms).FirstOrDefaultAsync(h => h.Id == id);
+        }
+
+        async Task<IEnumerable<Hotel>> IHotelRepository.GetAllInclude()
+        {
+            return await ApplicationDbContext.Hotels.Include(h => h.Address).Include(h => h.HotelImages).ToListAsync();
+        }
+
         public ApplicationDbContext ApplicationDbContext
         {
             get
