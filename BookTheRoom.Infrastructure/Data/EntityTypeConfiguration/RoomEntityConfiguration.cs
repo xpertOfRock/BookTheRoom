@@ -11,14 +11,11 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
             builder.HasKey(r => r.Id);
             builder.Property(o => o.Id).ValueGeneratedOnAdd();
             builder.Property(r => r.Number).IsRequired();
+            builder.Property(h => h.Description).HasMaxLength(1000).IsRequired();
             builder.Property(r => r.PriceForRoom).HasColumnType("decimal(10,5)").IsRequired();
             builder.Property(r => r.IsFree).IsRequired();
             builder.Property(r => r.HotelId).IsRequired();
-
-            builder.HasOne(r => r.PreviewImage)
-                   .WithOne()
-                   .HasForeignKey<Room>(r => r.PreviewImageId)
-                   .IsRequired();
+            builder.Property(r => r.PreviewURL).HasMaxLength(500).IsRequired();
 
             builder.HasOne(r => r.Hotel)
                    .WithMany(h => h.Rooms)

@@ -23,10 +23,8 @@ namespace BookTheRoom.Infrastructure.Data
         {
             modelBuilder.ApplyConfiguration(new AddressEntityConfiguration());
             modelBuilder.ApplyConfiguration(new HotelEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new HotelImageEntityConfiguration());
             modelBuilder.ApplyConfiguration(new OrderEntityConfiguration());
             modelBuilder.ApplyConfiguration(new RoomEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new RoomImageEntityConfiguration());
 
             modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
             modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();

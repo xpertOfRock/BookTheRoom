@@ -3,7 +3,6 @@ using BookTheRoom.Domain.Entities;
 using BookTheRoom.WebUI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using System.Security.Claims;
 
 namespace BookTheRoom.WebUI.Controllers
 {
@@ -11,53 +10,112 @@ namespace BookTheRoom.WebUI.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        //private readonly IPhotoService _photoService;    , IPhotoService photoService
-        public HotelController(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+        private readonly IPhotoService _photoService;
+        public HotelController(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IPhotoService photoService)
         {
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
-            //_photoService = photoService;
+            _photoService = photoService;
 
         }
-        // GET: HotelController
+
         [HttpGet]
         [EnableRateLimiting("fixed")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Hotels()
         {
-            IEnumerable<Hotel> hotels =  await _unitOfWork.Hotels.GetAllInclude();
+            IEnumerable<Hotel> hotels = await _unitOfWork.Hotels.GetAllInclude();
             return View(hotels);
         }
 
-        // GET: HotelController/Details/5
         [HttpGet]
         [EnableRateLimiting("fixed")]
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Hotel(int id)
         {
             Hotel hotel = await _unitOfWork.Hotels.GetByIdGetByIdInclude(id);
             if (hotel == null)
             {
-                return Redirect("/Home/Index");
+                return Redirect("/Hotel/Index");
 
             }
             return View(hotel);
         }
 
-        // GET: HotelController/Create
-        public IActionResult CreateHotel()
+        [HttpGet]
+        [Route("Hotels/Hotel/{hotelId:int}/Rooms", Name = "Rooms")]
+        public async Task<IActionResult> Rooms(int hotelId)
+        {
+            IEnumerable<Room> rooms = await _unitOfWork.Rooms.GetAllRoomsByHotel(hotelId);
+            return View(rooms);
+        }
+
+        [HttpGet]
+        [Route("Hotels/Hotel/{hotelId:int}/Rooms/Room/{roomId:int}", Name = "Room")]
+        public async Task<IActionResult> Room(int hotelId, int roomId)
+        {
+            Room room = await _unitOfWork.Rooms.GetRoomByIdAsync(hotelId, roomId);
+            if (room == null)
+            {
+                return Redirect("/Hotel/Index");
+
+            }
+            return View(room);
+        }
+
+        public IActionResult AddHotel()
         {
             return View();
         }
 
-        // POST: HotelController/Create
         [HttpPost]
-        public IActionResult CreateHotel(CreateHotelViewModel collection)
+        [Route("Hotels/Add", Name = "AddHotel")]
+        public async Task<IActionResult> AddHotel(AddHotelViewModel addHotelViewModel)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
+                
+                var result = await _photoService.AddPhotoAsync(addHotelViewModel.PreviewImage.Name,
 
+                                                               addHotelViewModel.PreviewImage.OpenReadStream());
+
+                List<string> hotelImages = new List<string>();
+
+                foreach (var item in addHotelViewModel.HotelImages)
+                {
+                    var resultForList = await _photoService.AddPhotoAsync(item.Name, item.OpenReadStream());
+                    hotelImages.Add(resultForList.Url.ToString());
+                }
+                
+
+                var hotel = new Hotel
+                {
+                    Name = addHotelViewModel.Name,
+                    Description = addHotelViewModel.Description,
+                    NumberOfRooms = addHotelViewModel.NumberOfRooms,
+                    HasPool = addHotelViewModel.HasPool,
+                    Rating = addHotelViewModel.Rating,
+                    PreviewURL = result.Url.ToString(),
+                    ImagesURL = hotelImages,
+                    Address = new Address
+                    {
+                        Country = addHotelViewModel.Address.Country,
+                        City = addHotelViewModel.Address.City,
+                        StreetOrDistrict = addHotelViewModel.Address.StreetOrDistrict,
+                        Index = addHotelViewModel.Address.Index
+                    },
+                   
+                };
+
+                await _unitOfWork.Hotels.Add(hotel);
+
+                _unitOfWork.Complete();
+
+                return RedirectToAction("Hotels");
             }
-            return View(collection);
+            return View(addHotelViewModel);
         }
+        
+
+
         public IActionResult AddRoom()
         {
 
@@ -76,7 +134,6 @@ namespace BookTheRoom.WebUI.Controllers
                 return View();
             }
         }
-        // GET: HotelController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();

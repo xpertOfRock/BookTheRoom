@@ -1,1 +1,49 @@
-﻿
+﻿@using BookTheRoom.WebUI.ViewModels
+@using BookTheRoom.Domain.Enums
+@model AddRoomViewModel
+
+<h2>Add Room</h2>
+
+<form method="post" asp-action="CreateHotel" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Number">Number</label>
+        <input asp-for="Number" class="form-control" placeholder="Number" />
+        <span asp-validation-for="Number" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description" class="form-control" placeholder="Description"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PriceForRoom">Price For Room</label>
+        <input asp-for="PriceForRoom" class="form-control" placeholder="Price per night in $" />
+        <span asp-validation-for="PriceForRoom" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+            <label asp-for="RoomCategory">RoomCategory</label>
+            <select asp-for="RoomCategory" class="form-control" placeholder="Room Category">
+                <option value="@Model.RoomCategory">Select</option>
+                
+            </select>
+            <span asp-validation-for="RoomCategory" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PreviewURL"></label>
+        <input asp-for="PreviewURL" type="file" class="form-control-file" placeholder="Preview" />
+        <span asp-validation-for="PreviewURL" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ImagesURL"></label>
+        <input asp-for="ImagesURL" type="file" class="form-control-file" placeholder="Other images" multiple />
+        <span asp-validation-for="ImagesURL" class="text-danger"></span>
+    </div>   
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+    

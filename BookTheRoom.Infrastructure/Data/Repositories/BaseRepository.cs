@@ -23,7 +23,7 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
             return Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<TEntity>> GetAll()
+        public async Task<List<TEntity>> GetAll()
         {
             return await _context.Set<TEntity>().ToListAsync();
         }

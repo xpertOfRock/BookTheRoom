@@ -9,11 +9,10 @@
         public int Rating { get; set; }
         public bool HasPool { get; set; }
         public int AddressId { get; set; }
-        public int PreviewImageId { get; set; }
+        public string PreviewURL { get; set; }
 
-        public HotelImage PreviewImage { get; set; }
         public Address Address { get; set; }
-        public ICollection<Room> Rooms { get; set; }
-        public ICollection<HotelImage> HotelImages { get; set; }
+        public List<Room> Rooms { get; set; }
+        public List<string> ImagesURL { get; set; }
     }
 }

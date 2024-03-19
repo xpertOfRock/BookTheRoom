@@ -5,7 +5,7 @@ namespace BookTheRoom.Application.Interfaces
 {
     public interface IPhotoService
     {
-        Task<ImageUploadResult> AddPhotoAsync(UploadedFile file);
+        Task<ImageUploadResult> AddPhotoAsync(string fileName, Stream stream);
         Task<DeletionResult> DeletePhotoAsync(string publicId);
     }
 }

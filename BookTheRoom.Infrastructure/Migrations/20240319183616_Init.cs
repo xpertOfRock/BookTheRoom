@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -18,8 +19,8 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Building = table.Column<int>(type: "int", nullable: false)
+                    StreetOrDistrict = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Index = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,20 +97,6 @@ namespace BookTheRoom.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "HotelImage",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    URL = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    HotelId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HotelImage", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Hotels",
                 columns: table => new
                 {
@@ -121,7 +108,8 @@ namespace BookTheRoom.Infrastructure.Migrations
                     Rating = table.Column<int>(type: "int", nullable: false),
                     HasPool = table.Column<bool>(type: "bit", nullable: false),
                     AddressId = table.Column<int>(type: "int", nullable: false),
-                    PreviewImageId = table.Column<int>(type: "int", nullable: false)
+                    PreviewURL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ImagesURL = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,12 +120,31 @@ namespace BookTheRoom.Infrastructure.Migrations
                         principalTable: "Addresses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rooms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    PriceForRoom = table.Column<decimal>(type: "decimal(10,5)", nullable: false),
+                    IsFree = table.Column<bool>(type: "bit", nullable: false),
+                    HotelId = table.Column<int>(type: "int", nullable: false),
+                    PreviewURL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    RoomCategory = table.Column<int>(type: "int", nullable: false),
+                    ImagesURL = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Hotels_HotelImage_PreviewImageId",
-                        column: x => x.PreviewImageId,
-                        principalTable: "HotelImage",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Rooms_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -167,49 +174,11 @@ namespace BookTheRoom.Infrastructure.Migrations
                         column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RoomImage",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    URL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    RoomId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RoomImage", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Rooms",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Number = table.Column<int>(type: "int", nullable: false),
-                    PriceForRoom = table.Column<decimal>(type: "decimal(10,5)", nullable: false),
-                    IsFree = table.Column<bool>(type: "bit", nullable: false),
-                    HotelId = table.Column<int>(type: "int", nullable: false),
-                    PreviewImageId = table.Column<int>(type: "int", nullable: false),
-                    RoomCategory = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Rooms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rooms_Hotels_HotelId",
-                        column: x => x.HotelId,
-                        principalTable: "Hotels",
+                        name: "FK_Orders_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Rooms_RoomImage_PreviewImageId",
-                        column: x => x.PreviewImageId,
-                        principalTable: "RoomImage",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -218,20 +187,9 @@ namespace BookTheRoom.Infrastructure.Migrations
                 column: "AddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HotelImage_HotelId",
-                table: "HotelImage",
-                column: "HotelId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Hotels_AddressId",
                 table: "Hotels",
                 column: "AddressId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Hotels_PreviewImageId",
-                table: "Hotels",
-                column: "PreviewImageId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -250,62 +208,14 @@ namespace BookTheRoom.Infrastructure.Migrations
                 column: "RoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomImage_RoomId",
-                table: "RoomImage",
-                column: "RoomId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Rooms_HotelId",
                 table: "Rooms",
                 column: "HotelId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rooms_PreviewImageId",
-                table: "Rooms",
-                column: "PreviewImageId",
-                unique: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_HotelImage_Hotels_HotelId",
-                table: "HotelImage",
-                column: "HotelId",
-                principalTable: "Hotels",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Orders_Rooms_RoomId",
-                table: "Orders",
-                column: "RoomId",
-                principalTable: "Rooms",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_RoomImage_Rooms_RoomId",
-                table: "RoomImage",
-                column: "RoomId",
-                principalTable: "Rooms",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Hotels_Addresses_AddressId",
-                table: "Hotels");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_HotelImage_Hotels_HotelId",
-                table: "HotelImage");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Rooms_Hotels_HotelId",
-                table: "Rooms");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_RoomImage_Rooms_RoomId",
-                table: "RoomImage");
-
             migrationBuilder.DropTable(
                 name: "IdentityUserLogin<string>");
 
@@ -322,19 +232,13 @@ namespace BookTheRoom.Infrastructure.Migrations
                 name: "ApplicationUsers");
 
             migrationBuilder.DropTable(
-                name: "Addresses");
+                name: "Rooms");
 
             migrationBuilder.DropTable(
                 name: "Hotels");
 
             migrationBuilder.DropTable(
-                name: "HotelImage");
-
-            migrationBuilder.DropTable(
-                name: "Rooms");
-
-            migrationBuilder.DropTable(
-                name: "RoomImage");
+                name: "Addresses");
         }
     }
 }

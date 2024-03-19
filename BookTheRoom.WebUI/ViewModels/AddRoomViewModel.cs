@@ -1,15 +1,15 @@
-﻿using BookTheRoom.Domain.Enums;
+﻿using BookTheRoom.Domain.Entities;
+using BookTheRoom.Domain.Enums;
 
-namespace BookTheRoom.Domain.Entities
+namespace BookTheRoom.WebUI.ViewModels
 {
-    public class Room
+    public class AddRoomViewModel
     {
         public int Id { get; set; }
         public int Number { get; set; }
         public string Description { get; set; }
-        public decimal PriceForRoom { get; set; }          
-        public bool IsFree { get; set; }       
-        public int HotelId { get; set; }
+        public decimal PriceForRoom { get; set; }
+        public bool IsFree { get; set; }
         public string PreviewURL { get; set; }
 
         public Hotel Hotel { get; set; }

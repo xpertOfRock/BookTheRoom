@@ -1,18 +1,15 @@
 using AspNetCoreRateLimit;
 using BookTheRoom.Application.DTO;
 using BookTheRoom.Application.Interfaces;
+using BookTheRoom.Application.Services;
 using BookTheRoom.Infrastructure.Data;
 using BookTheRoom.Infrastructure.Data.Repositories;
 using BookTheRoom.Infrastructure.Identity;
-using Braintree;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System.IO;
 using System.IO.Compression;
 
 internal class Program
@@ -28,7 +25,8 @@ internal class Program
         builder.Services.AddScoped<IHotelRepository, HotelRepository>();
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-          
+        builder.Services.AddScoped<IPhotoService, PhotoService>();
+        builder.Services.AddScoped<IBraintreeService, PaymentService>();
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -57,12 +55,12 @@ internal class Program
 
         builder.Services.Configure<GzipCompressionProviderOptions>(options =>
         {
-            options.Level = CompressionLevel.SmallestSize;
+            options.Level = CompressionLevel.Fastest;
         });
 
         builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
         {
-            options.Level = CompressionLevel.SmallestSize;
+            options.Level = CompressionLevel.Fastest;
         });
 
 
@@ -115,15 +113,27 @@ internal class Program
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
-        //app.MapControllerRoute(
-        //    name: "HotelRoom",
-        //    pattern: "Hotels/{hotelId:int}/Rooms/{roomId:int}",
-        //    defaults: new { controller = "HotelRooms", action = "RoomDetails" });
-        app.MapControllerRoute(
-            name: "HotelDetail",
-            pattern: "Hotels/Detail/{hotelId}",
-            defaults: new { controller = "Hotels", action = "Detail" }
-);
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllerRoute(
+                name: "Rooms",
+                pattern: "Hotels/Hotel/{hotelId:int}/Rooms",
+                defaults: new { controller = "Hotel", action = "Rooms" }
+                );
+
+            endpoints.MapControllerRoute(
+                name: "Room",
+                pattern: "Hotels/Hotel/{hotelId:int}/Rooms/Room/{roomId:int}",
+                defaults: new { controller = "Hotel", action = "Room" }
+                );
+
+            endpoints.MapControllerRoute(
+                name: "AddHotel",
+                pattern: "Hotels/Add",
+                defaults: new { controller = "Hotel", action = "AddHotel" }
+                );
+        });
+
         app.Run();
     }
 }

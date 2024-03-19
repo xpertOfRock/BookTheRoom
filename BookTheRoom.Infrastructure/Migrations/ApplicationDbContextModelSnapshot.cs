@@ -30,9 +30,6 @@ namespace BookTheRoom.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Building")
-                        .HasColumnType("int");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -41,7 +38,10 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Street")
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StreetOrDistrict")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -69,6 +69,10 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.Property<bool>("HasPool")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ImagesURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -77,8 +81,10 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.Property<int>("NumberOfRooms")
                         .HasColumnType("int");
 
-                    b.Property<int>("PreviewImageId")
-                        .HasColumnType("int");
+                    b.Property<string>("PreviewURL")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -88,33 +94,7 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.HasIndex("AddressId")
                         .IsUnique();
 
-                    b.HasIndex("PreviewImageId")
-                        .IsUnique();
-
                     b.ToTable("Hotels");
-                });
-
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.HotelImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("HotelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("URL")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HotelId");
-
-                    b.ToTable("HotelImage");
                 });
 
             modelBuilder.Entity("BookTheRoom.Domain.Entities.Order", b =>
@@ -166,8 +146,16 @@ namespace BookTheRoom.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<int>("HotelId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImagesURL")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsFree")
                         .HasColumnType("bit");
@@ -175,8 +163,10 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
-                    b.Property<int>("PreviewImageId")
-                        .HasColumnType("int");
+                    b.Property<string>("PreviewURL")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("PriceForRoom")
                         .HasColumnType("decimal(10,5)");
@@ -188,33 +178,7 @@ namespace BookTheRoom.Infrastructure.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.HasIndex("PreviewImageId")
-                        .IsUnique();
-
                     b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.RoomImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("RoomId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("URL")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomId");
-
-                    b.ToTable("RoomImage");
                 });
 
             modelBuilder.Entity("BookTheRoom.Infrastructure.Identity.ApplicationUser", b =>
@@ -331,22 +295,7 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookTheRoom.Domain.Entities.HotelImage", "PreviewImage")
-                        .WithOne()
-                        .HasForeignKey("BookTheRoom.Domain.Entities.Hotel", "PreviewImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Address");
-
-                    b.Navigation("PreviewImage");
-                });
-
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.HotelImage", b =>
-                {
-                    b.HasOne("BookTheRoom.Domain.Entities.Hotel", null)
-                        .WithMany("HotelImages")
-                        .HasForeignKey("HotelId");
                 });
 
             modelBuilder.Entity("BookTheRoom.Domain.Entities.Order", b =>
@@ -380,22 +329,7 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("BookTheRoom.Domain.Entities.RoomImage", "PreviewImage")
-                        .WithOne()
-                        .HasForeignKey("BookTheRoom.Domain.Entities.Room", "PreviewImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Hotel");
-
-                    b.Navigation("PreviewImage");
-                });
-
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.RoomImage", b =>
-                {
-                    b.HasOne("BookTheRoom.Domain.Entities.Room", null)
-                        .WithMany("RoomImages")
-                        .HasForeignKey("RoomId");
                 });
 
             modelBuilder.Entity("BookTheRoom.Infrastructure.Identity.ApplicationUser", b =>
@@ -411,14 +345,7 @@ namespace BookTheRoom.Infrastructure.Migrations
 
             modelBuilder.Entity("BookTheRoom.Domain.Entities.Hotel", b =>
                 {
-                    b.Navigation("HotelImages");
-
                     b.Navigation("Rooms");
-                });
-
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Room", b =>
-                {
-                    b.Navigation("RoomImages");
                 });
 
             modelBuilder.Entity("BookTheRoom.Infrastructure.Identity.ApplicationUser", b =>

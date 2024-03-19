@@ -16,19 +16,19 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
             return await ApplicationDbContext.Hotels.
                          Where(h => h.Address.Country == country &&
                                     h.Address.City == city &&
-                                    h.Address.Street == street &&
-                                    h.Address.Building == building).FirstOrDefaultAsync();
+                                    h.Address.StreetOrDistrict == street &&
+                                    h.Address.Index == building).FirstOrDefaultAsync();
         }
-        public async Task<IEnumerable<Hotel>> GetAllHotelsByAddress(string country, string? city, string? street, int? building)
+        public async Task<List<Hotel>> GetAllHotelsByAddress(string country, string? city, string? street, int? building)
         {
             var query = ApplicationDbContext.Hotels.Where(h => h.Address.Country == country);
 
             if (city != null)
                 query = query.Where(h => h.Address.City == city);
             if (street != null)
-                query = query.Where(h => h.Address.Street == street);
+                query = query.Where(h => h.Address.StreetOrDistrict == street);
             if (building != null)
-                query = query.Where(h => h.Address.Building == building);
+                query = query.Where(h => h.Address.Index == building);
 
             return await query.ToListAsync();
         }
@@ -36,14 +36,12 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
         public async Task<Hotel> GetByIdGetByIdInclude(int id)
         {
             return await ApplicationDbContext.Hotels.Include(h => h.Address)
-                                                    .Include(h => h.PreviewImage)
-                                                    .Include(h => h.HotelImages)
                                                     .Include(h => h.Rooms).FirstOrDefaultAsync(h => h.Id == id);
         }
 
-        async Task<IEnumerable<Hotel>> IHotelRepository.GetAllInclude()
+        async Task<List<Hotel>> IHotelRepository.GetAllInclude()
         {
-            return await ApplicationDbContext.Hotels.Include(h => h.Address).Include(h => h.HotelImages).ToListAsync();
+            return await ApplicationDbContext.Hotels.Include(h => h.Address).ToListAsync();
         }
 
         public ApplicationDbContext ApplicationDbContext

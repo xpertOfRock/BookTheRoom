@@ -21,4 +21,12 @@
     <ProjectReference Include="..\BookTheRoom.Infrastructure\BookTheRoom.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Views\Hotel\Room.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Order\" />
+  </ItemGroup>
+
 </Project>

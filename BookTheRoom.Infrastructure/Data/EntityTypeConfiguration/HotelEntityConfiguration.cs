@@ -1,4 +1,5 @@
 ﻿using BookTheRoom.Domain.Entities;
+using CloudinaryDotNet.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,14 +12,11 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
             builder.HasKey(h => h.Id);
             builder.Property(h => h.Id).ValueGeneratedOnAdd();
             builder.Property(h => h.Name).IsRequired().HasMaxLength(100);
-            builder.Property(h => h.Description).HasMaxLength(1000);
+            builder.Property(h => h.Description).HasMaxLength(1000).IsRequired();
             builder.Property(h => h.Rating).IsRequired();
             builder.Property(h => h.HasPool).IsRequired();
             builder.Property(h => h.NumberOfRooms).IsRequired();
-            builder.HasOne(h => h.PreviewImage)
-                   .WithOne()
-                   .HasForeignKey<Hotel>(h => h.PreviewImageId)
-                   .IsRequired();
+            builder.Property(h => h.PreviewURL).HasMaxLength(500).IsRequired();
 
             builder.HasOne(h => h.Address)
                    .WithOne()
