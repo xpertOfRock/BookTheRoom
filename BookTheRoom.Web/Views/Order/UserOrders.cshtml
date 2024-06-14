@@ -1,0 +1,33 @@
+﻿@using BookTheRoom.WebUI.ViewModels
+@model List<OrderViewModel>
+
+    <body>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Hotel</th>
+                <th scope="col">Room</th>
+                <th scope="col">Overall Price</th>
+                <th scope="col">Check In Date</th>
+                <th scope="col">Check Out Date</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>            
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td scope="row">@item.Id</td>
+                    <td>@item.Hotel.Name</td>
+                    <td>@item.Room.Number</td>
+                    <td>@item.OverallPrice USD</td>
+                    <td>@item.CheckIn.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@item.CheckOut.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@item.Status.ToString()</td>
+                </tr>
+            }                                      
+        </tbody>
+    </table>
+           
+    </body>

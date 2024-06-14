@@ -1,0 +1,43 @@
+﻿@using BookTheRoom.Domain.Entities
+@model Room
+
+<div class="container">
+
+    <h1 class="my-4">
+        Room @Model.Number
+    </h1>
+    <br>
+    <a type="button" class="btn btn-primary" asp-controller="Room" asp-action="Rooms" asp-route-hotelId="@Model.HotelId" asp-route-number="@Model.Number">
+        <i class="fa-solid fa-arrow-right fa-rotate-180"></i>
+        Back       
+    </a>
+    <br>
+    <div class="row">
+        <div class="col-md-8">
+            <img class="img-fluid" src="@Model.PreviewURL" width="1000" height="900" style="object-fit: cover;" alt="">
+        </div>     
+        
+        <div class="col-md-4">
+        <h3 class="my-3">Description</h3>
+        <p>@Model.Description</p>
+            <h2 class="my-3">Price per day @Math.Round(Model.PriceForRoom, 2) USD</h2>
+              
+                <a type="button" class="btn btn-primary" asp-controller="Order" asp-action="Checkout" asp-route-hotelId="@Model.HotelId" asp-route-roomId="@Model.Id">
+                    Book This Room!
+                </a>
+        </div>
+    </div>
+
+    <h3 class="my-4">More Images</h3>
+
+    <div class="row">
+        @foreach (var item in Model.ImagesURL)
+        {
+            <div class="col-md-3 col-sm-6 mb-4">
+                <a href="#">
+                    <img class="img-fluid" src="@item" width="500" height="300" style="object-fit: cover;" alt="">
+                </a>
+            </div>
+        }
+    </div>
+</div>

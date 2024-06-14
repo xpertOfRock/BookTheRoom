@@ -1,0 +1,67 @@
+﻿@using BookTheRoom.WebUI.ViewModels
+@using BookTheRoom.Domain.Enums
+@model EditRoomViewModel
+
+<body>
+
+    <h1>Edit Room @Model.Number</h1> 
+    <br>
+    <a type="button" class="btn btn-primary" asp-controller="Room" asp-action="Rooms" asp-route-hotelId="@Model.HotelId" asp-route-number="@Model.Number">
+        <i class="fa-solid fa-arrow-right fa-rotate-180"></i>
+        Back
+    </a>
+    <br>
+    <form method="post" asp-action="EditRoom" enctype="multipart/form-data">
+        <div class="form-group">
+            <label asp-for="Number">Number</label>
+            <input asp-for="Number" class="form-control" placeholder="Number" />
+            <span asp-validation-for="Number" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="Description">Description</label>
+            <textarea asp-for="Description" class="form-control" placeholder="Description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="PriceForRoom">Price For Room</label>
+            <input asp-for="PriceForRoom" class="form-control" placeholder="Price per night in USD" />
+            <span asp-validation-for="PriceForRoom" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+                <label asp-for="RoomCategory">RoomCategory</label>
+                <select asp-for="RoomCategory" asp-items="@Html.GetEnumSelectList<RoomCategory>()" class="form-control">
+                    <option>Select</option>
+                </select>
+                <span asp-validation-for="RoomCategory" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="PreviewImage"></label>
+            <input asp-for="PreviewImage" type="file" class="form-control-file" placeholder="Preview" />
+            <span asp-validation-for="PreviewImage" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="RoomImages"></label>
+            <input asp-for="RoomImages" type="file" class="form-control-file" placeholder="Other images" multiple />
+            <span asp-validation-for="RoomImages" class="text-danger"></span>
+        </div>   
+        <br>
+        <button type="submit" class="btn btn-primary">Edit</button>
+    </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[type="number"]').forEach(function (input) {
+                input.addEventListener('input', function () {
+                    if (parseFloat(this.value) < 0) {
+                        this.value = '';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+

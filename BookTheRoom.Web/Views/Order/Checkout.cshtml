@@ -1,0 +1,106 @@
+﻿@using BookTheRoom.WebUI.ViewModels
+@model OrderViewModel
+
+<body>
+    <div class="wrapper">
+        <div class="checkout container">
+            <form id="payment-form" method="post" asp-controller="Order" asp-action="Checkout">
+                <input type="hidden" asp-for="RoomId" value="@Model.RoomId" id="RoomId">
+                <input type="hidden" asp-for="HotelId" value="@Model.HotelId" id="HotelId">
+                <input type="hidden" asp-for="UserId" value="@Model.UserId" id="UserId">
+                <input type="hidden" id="nonce" name="payment_method_nonce">
+
+                <div class="row">
+
+                    <div class="col-md">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title" name="Hotel.Name" asp-for="Hotel.Name">Hotel: @Model.Hotel.Name</h4>
+                                <h5 class="card-subtitle">Description</h5>
+                                <p class="card-text">@Model.Hotel.Description</p>
+                                <h4 class="card-title">Room No. @Model.Room.Number</h4>
+                                <p class="card-text"><small class="text-muted">@Model.Room.Description</small></p>
+                                <p class="card-text"><small class="text-muted">Price: @Math.Round(Model.Room.PriceForRoom, 2) USD</small></p>
+                            </div>
+                            <img style="width: 90%" class="card-img-bottom" src="@Model.Room.PreviewURL" alt="Card image cap">
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="CheckIn">Check In</label>
+                            <input id="CheckIn" asp-for="CheckIn" class="form-control" type="datetime-local" min="@Model.CheckIn.ToString("yyyy-MM-ddTHH")">
+                            <span asp-validation-for="CheckIn" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="CheckOut">Check Out</label>
+                            <input id="CheckOut" asp-for="CheckOut" class="form-control" type="datetime-local" min="@Model.CheckOut.ToString("yyyy-MM-ddTHH")">
+                            <span asp-validation-for="CheckOut" class="text-danger"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md">
+                        <div class="col-md-8">
+                            <img class="img-fluid" src="@Model.Hotel.PreviewURL" width="500" height="500" style="object-fit: cover;" alt="">
+                        </div>
+                        <br />
+                        <div class="col-md-8">
+                            <img class="img-fluid" src="@Model.Room.PreviewURL" width="500" height="500" style="object-fit: cover;" alt="">
+                        </div>
+
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <div class="form-group">
+                                <label asp-for="AnonymousEmail" class="control-label"></label>
+                                <input asp-for="AnonymousEmail" class="form-control" />
+                                <span asp-validation-for="AnonymousEmail" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="AnonymousNumber" class="control-label"></label>
+                                <input asp-for="AnonymousNumber" class="form-control" />
+                                <span asp-validation-for="AnonymousNumber" class="text-danger"></span>
+                            </div>
+                        }
+                    </div>
+
+                    <section>
+                        <div class="bt-drop-in-wrapper">
+                            <div id="bt-dropin"></div>
+                        </div>
+                    </section>
+
+                    <hr />
+                    <p id="pricePerNight" style="display: none;">@Model.Room.PriceForRoom</p>
+                    <hr />
+
+                    <button class="btn btn-success" type="submit"><span>Purchase</span></button>
+                </div>                
+            </form>
+        </div>
+    </div>
+
+    <script src="~/js/priceUpdate.js"></script>
+    <script src="~/js/dateUpdate.js"></script>
+    <script src="https://js.braintreegateway.com/web/dropin/1.42.0/js/dropin.min.js"></script>
+    <script type="text/javascript">
+        var client_token = "@ViewBag.ClientToken";
+        var form = document.querySelector('#payment-form');
+        braintree.dropin.create({
+            authorization: client_token,
+            container: '#bt-dropin'
+        }, function (createErr, instance) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                instance.requestPaymentMethod(function (err, payload) {
+                    if (err) {
+                        console.log('Error', err);
+                        return;
+                    }
+                    document.querySelector('#nonce').value = payload.nonce;
+                    form.submit();
+                });
+            });
+        });        
+    </script>      
+</body>

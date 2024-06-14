@@ -1,0 +1,81 @@
+﻿@using BookTheRoom.Infrastructure.Identity
+@using Microsoft.AspNetCore.Identity
+@model ApplicationUser
+@inject UserManager<ApplicationUser> SignInManager
+
+<body>
+    <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+        <div class="card p-4">
+            <div class=" image d-flex flex-column justify-content-center align-items-center">
+                <button class="btn btn-secondary">
+                    <img src="@Model.ImageURL" height="100" width="100" />
+                </button>
+
+                <span class="name mt-3">Username: @Model.UserName</span>
+                <span class="idd">Email: @Model.Email</span>
+
+                <div class="d-flex flex-row justify-content-center align-items-center gap-2">
+                    <span class="idd1">
+                        Phone: @Model.PhoneNumber
+                    </span>
+                </div>
+
+
+
+                <div class=" d-flex mt-2">
+                    <a class=" btn btn-outline-primary btn-sm" asp-controller="Account" asp-action="EditProfile" asp-route-userName="@Model.UserName">Edit Profile</a>
+                    
+                    <a class=" btn btn-outline-secondary btn-sm" asp-controller="Order" asp-action="UserOrders" asp-route-userName="@Model.UserName">My Orders</a>
+                </div>
+
+                <div class="text mt-3">
+                    <span>
+                        Eleanor Pena is a creator of minimalistic x bold graphics and digital artwork.
+                        <br />
+                        <br />
+                        Artist/ Creative Director by Day #NFT minting with FND night.
+                    </span>
+                </div>
+
+                <div class="gap-3 mt-3 icons d-flex flex-row justify-content-center align-items-center">
+                    @if(Model.XLink != null){
+                        <span>
+                            <a href="@Model.XLink" target="_blank">
+                                <i class="fa-brands fa-square-x-twitter"></i>
+                            </a>
+                        </span>
+                    }
+                    @if (Model.FacebookLink != null)
+                    {
+                        <span>
+                            <a href="@Model.FacebookLink" target="_blank">
+                                <i class="fa-brands fa-square-facebook"></i>
+                            </a>
+                        </span>
+                    }
+                    @if (Model.InstagramLink != null)
+                    {
+                        <span>
+                            <a href="@Model.InstagramLink" target="_blank">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                        </span>
+                    }
+                    @if (Model.Telegram != null)
+                    {
+                        <span>
+                            <a href="@Model.Telegram" target="_blank">
+                                <i class="fa-brands fa-telegram"></i>
+                                </a>
+                            </span>
+                    }
+                                                                             
+                </div>
+
+                <div class=" px-2 rounded mt-4 date ">
+                    <span class="join">Joined @Model.RegistrationDate.ToString("dd.MM.yyyy")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

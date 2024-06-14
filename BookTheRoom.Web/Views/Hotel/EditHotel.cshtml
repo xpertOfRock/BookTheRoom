@@ -1,0 +1,101 @@
+﻿@using BookTheRoom.WebUI.ViewModels
+@using BookTheRoom.Domain.Enums
+@model EditHotelViewModel
+
+<body>
+    <h1>Edit Hotel</h1>
+    <br>
+    <a type="button" class="btn btn-primary" asp-controller="Hotel" asp-action="Hotels">
+        <i class="fa-solid fa-arrow-right fa-rotate-180"></i>
+        Back
+    </a>
+    <br>
+    <form method="post" asp-action="EditHotel" enctype="multipart/form-data">
+        <input type="hidden" value="Id" id="Id">
+        <input type="hidden" value="AddressId" id="AddressId">
+        <div class="form-group">
+            <label asp-for="Name">Name</label>
+            <input asp-for="Name" class="form-control" placeholder="Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="Description">Description</label>
+            <textarea asp-for="Description" class="form-control" placeholder="Description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="Rating">Rating</label>
+            <select asp-for="Rating" class="form-control" placeholder="Rating">
+                <option value="">Select</option>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <option value="@i">@i stars</option>
+                }
+            </select>
+            <span asp-validation-for="Rating" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="HasPool">Has Pool</label>
+            <input asp-for="HasPool" type="checkbox" class="form-check-input" placeholder="Pool" />
+        </div>
+        <br>
+        <div class="form-group">
+            <label>Number of Rooms</label>
+            <input type="number" class="form-control" asp-for="NumberOfRooms" placeholder="Number of rooms" />
+            <span asp-validation-for="NumberOfRooms" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="PreviewImage">PreviewImage</label>
+            <input type="file" asp-for="PreviewImage" class="form-control-file" placeholder="Preview Image" />
+            <span asp-validation-for="PreviewImage" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="HotelImages">Other Images</label>
+            <input type="file" asp-for="HotelImages" class="form-control-file" placeholder="Other images" multiple />
+            <span asp-validation-for="HotelImages" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="Address.Country">Country</label>
+            <input asp-for="Address.Country" class="form-control" placeholder="Country">
+            <span asp-validation-for="Address.Country" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="Address.City">City</label>
+            <input asp-for="Address.City" class="form-control" placeholder="City">
+            <span asp-validation-for="Address.City" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="Address.StreetOrDistrict">Street Or District</label>
+            <input asp-for="Address.StreetOrDistrict" class="form-control" placeholder="Street Or District">
+            <span asp-validation-for="Address.StreetOrDistrict" class="text-danger"></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <label asp-for="Address.Index">Index</label>
+            <input asp-for="Address.Index" class="form-control" placeholder="Index">
+            <span asp-validation-for="Address.Index" class="text-danger"></span>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Edit</button>
+    </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[type="number"]').forEach(function (input) {
+                input.addEventListener('input', function () {
+                    if (parseFloat(this.value) < 0) {
+                        this.value = '';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
