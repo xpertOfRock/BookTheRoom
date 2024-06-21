@@ -1,14 +1,42 @@
-﻿using BookTheRoom.Application.Interfaces;
-using BookTheRoom.Domain.Entities;
-
+﻿using BookTheRoom.Core.Interfaces;
+using BookTheRoom.Core.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookTheRoom.Infrastructure.Data.Repositories
 {
-    public class AddressRepository : BaseRepository<Address>, IAddressRepository
+    public class AddressRepository : IAddressRepository
     {
-        public AddressRepository(ApplicationDbContext context) : base(context)
+        private readonly ApplicationDbContext _context;
+        public AddressRepository(ApplicationDbContext context)
         {
+            _context = context;
+        }
+        public async Task Add(Address address)
+        {
+            await _context.Addresses.AddAsync(address);
+        }
 
-        }        
+        public void Delete(Address address)
+        {
+            _context.Addresses.Remove(address);
+        }
+
+        public async Task<Address> GetAddress(string country, string city, string streetOrDistrict, int index)
+        {
+            return await _context.Addresses.AsNoTracking().Where(a =>  a.Country == country &&
+                                                                       a.City == city &&
+                                                                       a.StreetOrDistrict == streetOrDistrict &&
+                                                                       a.Index == index).FirstAsync();         
+        }
+
+        public async Task<List<Address>> GetAllAsync()
+        {
+            return await _context.Addresses.AsNoTracking().ToListAsync();
+        }
+
+        public void Update(Address address)
+        {
+            _context.Addresses.Update(address);
+        }
     }
 }

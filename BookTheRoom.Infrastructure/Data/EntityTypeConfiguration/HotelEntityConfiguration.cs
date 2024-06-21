@@ -1,5 +1,4 @@
-﻿using BookTheRoom.Domain.Entities;
-using CloudinaryDotNet.Core;
+﻿using BookTheRoom.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,16 +17,18 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
             builder.Property(h => h.NumberOfRooms).IsRequired();
             builder.Property(h => h.PreviewURL).HasMaxLength(500).IsRequired();
 
-            builder.HasOne(h => h.Address)
-                   .WithOne()
-                   .HasForeignKey<Hotel>(h => h.AddressId)
-                   .IsRequired();
-
             builder.HasMany(h => h.Rooms)
                    .WithOne(r => r.Hotel)
                    .HasForeignKey(r => r.HotelId)
                    .OnDelete(DeleteBehavior.Cascade);
 
+            builder.OwnsOne(h => h.Address, address =>
+            {
+                address.Property(a => a.Country).IsRequired().HasMaxLength(100);
+                address.Property(a => a.City).IsRequired().HasMaxLength(100);
+                address.Property(a => a.StreetOrDistrict).IsRequired().HasMaxLength(200);
+                address.Property(a => a.Index).IsRequired();
+            });
         }
     }
 }

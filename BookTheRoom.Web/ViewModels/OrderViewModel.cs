@@ -1,7 +1,6 @@
-﻿using BookTheRoom.Domain.Entities;
-using BookTheRoom.Domain.Enums;
+﻿using BookTheRoom.Core.Entities;
 
-namespace BookTheRoom.WebUI.ViewModels
+namespace BookTheRoom.Web.ViewModels
 {
     public class OrderViewModel : Order
     {

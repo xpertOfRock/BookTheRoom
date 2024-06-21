@@ -1,26 +1,27 @@
 ﻿using BookTheRoom.Application.Interfaces;
-using BookTheRoom.Application.Services;
-using BookTheRoom.Domain.Entities;
+using BookTheRoom.Core.Interfaces;
+using BookTheRoom.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BookTheRoom.Infrastructure.Data.Repositories
 {
     public class RoomRepository : BaseRepository<Room>, IRoomRepository
     {
+        private readonly ApplicationDbContext _context;
         private readonly IPhotoService _photoService;
         private readonly IMemoryCache _memoryCache;
         public RoomRepository(ApplicationDbContext context, IMemoryCache memoryCache, IPhotoService photoService) : base(context)
         {
+            _context = context;
             _memoryCache = memoryCache;
             _photoService = photoService;
         }
         public async Task<List<Room>> GetAllRoomsByHotel(int id)
         {
-            return await ApplicationDbContext.Rooms.Where(r => r.HotelId == id).AsNoTracking().ToListAsync();
+            return await _context.Rooms.Where(r => r.HotelId == id).AsNoTracking().ToListAsync();
         }
-        public async Task<Room> GetRoomByNumber(int hotelId, int number)
+        public async Task<Room> GetByNumber(int hotelId, int number)
         {
             string key = $"room-h-{hotelId}-r-{number}";
 
@@ -29,7 +30,7 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
                 entry =>
                 {
                     entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-                    return ApplicationDbContext.Rooms.AsNoTracking().FirstOrDefaultAsync(r => r.Number == number && r.HotelId == hotelId);
+                    return _context.Rooms.AsNoTracking().FirstOrDefaultAsync(r => r.Number == number && r.HotelId == hotelId);
                 });
         }
         public override async Task<Room> GetById(int id)
@@ -41,23 +42,23 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
                 entry =>
                 {
                     entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-                    return ApplicationDbContext.Rooms.Include(r => r.Hotel).AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
+                    return _context.Rooms.Include(r => r.Hotel).AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
                 });
         }
 
-        public override async Task Update(Room room)
+        public override async void Update(Room room)
         {
 
             string key = $"room-h-{room.HotelId}-r-{room.Number}";
 
             _memoryCache.Remove(key);
 
-            ApplicationDbContext.Rooms.Update(room);
+            _context.Rooms.Update(room);
 
             _memoryCache.Set(key, room, TimeSpan.FromMinutes(2));
         }
 
-        public override async Task Delete(Room room)
+        public override async void Delete(Room room)
         {
             await _photoService.DeletePhotoAsync(room.PreviewURL);
 
@@ -68,15 +69,8 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
                 await _photoService.DeletePhotoAsync(item);
             }
 
-            ApplicationDbContext.Rooms.Remove(room);
+            _context.Rooms.Remove(room);
         }
 
-        public ApplicationDbContext ApplicationDbContext
-        {
-            get
-            {
-                return _context as ApplicationDbContext;
-            }
-        }
     }
 }

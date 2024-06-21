@@ -1,6 +1,6 @@
-﻿using BookTheRoom.Domain.Enums;
+﻿using BookTheRoom.Core.Enums;
 
-namespace BookTheRoom.Domain.Entities
+namespace BookTheRoom.Core.Entities
 {
     public class Room
     {
@@ -10,7 +10,7 @@ namespace BookTheRoom.Domain.Entities
         public decimal PriceForRoom { get; set; }
         public bool IsFree { get; set; } = true; 
         public int HotelId { get; set; }
-        public string PreviewURL { get; set; } = string.Empty;
+        public string? PreviewURL { get; set; } 
 
         public Hotel Hotel { get; set; }
         public RoomCategory RoomCategory { get; set; }

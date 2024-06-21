@@ -1,6 +1,6 @@
 ﻿using BookTheRoom.Application.Interfaces;
-using BookTheRoom.Domain.Entities;
-using BookTheRoom.Domain.Enums;
+using BookTheRoom.Core.Entities;
+using BookTheRoom.Core.Enums;
 using BookTheRoom.Infrastructure.Data.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

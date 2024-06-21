@@ -1,4 +1,4 @@
-﻿using BookTheRoom.Domain.Entities;
+﻿using BookTheRoom.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,8 +15,7 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
             builder.Property(o => o.HotelId).IsRequired();
             builder.Property(o => o.CheckIn).IsRequired();
             builder.Property(o => o.CheckOut).IsRequired();
-            builder.Property(o => o.Status).IsRequired();           
-
+            builder.Property(o => o.Status).IsRequired();
         }
     }
 }

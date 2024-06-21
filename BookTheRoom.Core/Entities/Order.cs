@@ -1,6 +1,6 @@
-﻿using BookTheRoom.Domain.Enums;
+﻿using BookTheRoom.Core.Enums;
 
-namespace BookTheRoom.Domain.Entities
+namespace BookTheRoom.Core.Entities
 {
     public class Order
     {     
@@ -13,6 +13,7 @@ namespace BookTheRoom.Domain.Entities
         public string? UserId { get; set; } = null;
         public int RoomId { get; set; }
         public int HotelId { get; set; }
+
         public OrderStatus Status { get; set; }
 
     }

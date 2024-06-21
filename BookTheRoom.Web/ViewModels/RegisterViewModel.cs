@@ -1,7 +1,7 @@
-﻿using BookTheRoom.Domain.Entities;
+﻿using BookTheRoom.Core.ValueObjects;
 using System.ComponentModel.DataAnnotations;
 
-namespace BookTheRoom.WebUI.ViewModels
+namespace BookTheRoom.Web.ViewModels
 {
     public class RegisterViewModel
     {
@@ -26,8 +26,5 @@ namespace BookTheRoom.WebUI.ViewModels
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password do not match")]
         public string ConfirmPassword { get; set; }
-        [Display(Name = "Address")]
-        [Required(ErrorMessage = "Address is required")]
-        public Address Address { get; set; }
     }
 }

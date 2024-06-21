@@ -1,4 +1,4 @@
-﻿using BookTheRoom.Domain.Entities;
+﻿using BookTheRoom.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,6 +21,7 @@ namespace BookTheRoom.Infrastructure.Data.EntityTypeConfiguration
                    .WithMany(h => h.Rooms)
                    .HasForeignKey(r => r.HotelId)
                    .IsRequired();
+
         }
     }
 }

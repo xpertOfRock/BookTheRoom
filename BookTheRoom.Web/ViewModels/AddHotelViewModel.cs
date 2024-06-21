@@ -1,6 +1,6 @@
-﻿using BookTheRoom.Domain.Entities;
+﻿using BookTheRoom.Core.Entities;
 
-namespace BookTheRoom.WebUI.ViewModels
+namespace BookTheRoom.Web.ViewModels
 {
     public class AddHotelViewModel : Hotel
     {        

@@ -1,9 +1,8 @@
 ﻿using BookTheRoom.Application.Interfaces;
-using BookTheRoom.Domain.Entities;
-using BookTheRoom.Domain.Enums;
+using BookTheRoom.Core.Enums;
 using BookTheRoom.Infrastructure.Identity;
 using BookTheRoom.Infrastructure.Data.Interfaces;
-using BookTheRoom.WebUI.ViewModels;
+using BookTheRoom.Web.ViewModels;
 using Braintree;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -35,7 +34,7 @@ namespace BookTheRoom.WebUI.Controllers
         {
             
             var thisUser = await _userManager.FindByNameAsync(userName);
-            var userId = await _userManager.GetUserIdAsync(thisUser);
+            var userId = await _userManager.GetUserIdAsync(thisUser!);
             var userOrders = await _unitOfWork.Orders.GetUserOrders(userId);            
             var thisOrders = new List<OrderViewModel>();
 
@@ -164,7 +163,7 @@ namespace BookTheRoom.WebUI.Controllers
             order.Status = OrderStatus.Active;
             order.OverallPrice = thisRoom.PriceForRoom * days;
                      
-            string nonceFromClient = Request.Form["payment_method_nonce"];
+            string nonceFromClient = Request.Form["payment_method_nonce"]!;
 
             var request = new TransactionRequest
             {
@@ -185,7 +184,7 @@ namespace BookTheRoom.WebUI.Controllers
                                       $"Amount: {result.Target.Amount}";
             }
           
-            var thisUser = await _userManager.FindByIdAsync(order.UserId);
+            var thisUser = await _userManager.FindByIdAsync(order.UserId!);
          
             await _unitOfWork.Orders.Add(order);
             await _unitOfWork.SaveChangesAsync();

@@ -1,8 +1,8 @@
 ﻿using BookTheRoom.Infrastructure.Data.Interfaces; 
-using BookTheRoom.Domain.Entities;
+using BookTheRoom.Core.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BookTheRoom.Domain.Enums;
+using BookTheRoom.Core.Enums;
 
 namespace BookTheRoom.Infrastructure.Data.BackgruondServices
 {
@@ -47,7 +47,7 @@ namespace BookTheRoom.Infrastructure.Data.BackgruondServices
                             room.IsFree = true;
                         }
                     }
-                    await unitOfWork.Rooms.Update(room);
+                    unitOfWork.Rooms.Update(room);
                 }
                 await unitOfWork.SaveChangesAsync();
             }

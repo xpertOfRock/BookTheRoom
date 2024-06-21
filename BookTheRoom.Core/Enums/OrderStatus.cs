@@ -1,4 +1,4 @@
-﻿namespace BookTheRoom.Domain.Enums
+﻿namespace BookTheRoom.Core.Enums
 {
     public enum OrderStatus
     {

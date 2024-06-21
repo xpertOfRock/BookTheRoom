@@ -1,4 +1,5 @@
-﻿using BookTheRoom.Domain.Entities;
+﻿using BookTheRoom.Core.ValueObjects;
+using BookTheRoom.Core.Entities;
 using BookTheRoom.Infrastructure.Data.EntityTypeConfiguration;
 using BookTheRoom.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -22,7 +23,6 @@ namespace BookTheRoom.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new AddressEntityConfiguration());
             modelBuilder.ApplyConfiguration(new HotelEntityConfiguration());
             modelBuilder.ApplyConfiguration(new OrderEntityConfiguration());
             modelBuilder.ApplyConfiguration(new RoomEntityConfiguration());

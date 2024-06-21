@@ -1,4 +1,4 @@
-﻿@using BookTheRoom.WebUI.ViewModels
+﻿@using BookTheRoom.Web.ViewModels
 @model RegisterViewModel
 
 @{
@@ -52,31 +52,7 @@
                         <label asp-for="ConfirmPassword" class="control-label"></label>
                         <input asp-for="ConfirmPassword" class="form-control" />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Address.Country">Country</label>
-                        <input asp-for="Address.Country" class="form-control" placeholder="Country">
-                        <span asp-validation-for="Address.Country" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Address.City">City</label>
-                        <input asp-for="Address.City" class="form-control" placeholder="City">
-                        <span asp-validation-for="Address.City" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Address.StreetOrDistrict">Street Or District</label>
-                        <input asp-for="Address.StreetOrDistrict" class="form-control" placeholder="Street Or District">
-                        <span asp-validation-for="Address.StreetOrDistrict" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Address.Index">Index</label>
-                        <input asp-for="Address.Index" class="form-control" placeholder="Index">
-                        <span asp-validation-for="Address.Index" class="text-danger"></span>
-                    </div>
+                    </div>                    
 
                     <div class="form-group">
                         <input class="btn btn-outline-success float right" type="submit" value="Sign up" />

@@ -22,44 +22,13 @@ namespace BookTheRoom.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Address", b =>
+            modelBuilder.Entity("BookTheRoom.Core.Entities.Hotel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Index")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StreetOrDistrict")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Addresses");
-                });
-
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Hotel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -70,6 +39,7 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ImagesURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -90,13 +60,10 @@ namespace BookTheRoom.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId")
-                        .IsUnique();
-
                     b.ToTable("Hotels");
                 });
 
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Order", b =>
+            modelBuilder.Entity("BookTheRoom.Core.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -141,7 +108,7 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Room", b =>
+            modelBuilder.Entity("BookTheRoom.Core.Entities.Room", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,6 +125,7 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ImagesURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsFree")
@@ -238,12 +206,6 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RefreshTokenExpiryTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
 
@@ -264,8 +226,6 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -411,44 +371,59 @@ namespace BookTheRoom.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Hotel", b =>
+            modelBuilder.Entity("BookTheRoom.Core.Entities.Hotel", b =>
                 {
-                    b.HasOne("BookTheRoom.Domain.Entities.Address", "Address")
-                        .WithOne()
-                        .HasForeignKey("BookTheRoom.Domain.Entities.Hotel", "AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.OwnsOne("BookTheRoom.Core.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<int>("HotelId")
+                                .HasColumnType("int");
 
-                    b.Navigation("Address");
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)");
+
+                            b1.Property<int>("Index")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("StreetOrDistrict")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)");
+
+                            b1.HasKey("HotelId");
+
+                            b1.ToTable("Addresses");
+
+                            b1.WithOwner()
+                                .HasForeignKey("HotelId");
+                        });
+
+                    b.Navigation("Address")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Order", b =>
+            modelBuilder.Entity("BookTheRoom.Core.Entities.Order", b =>
                 {
                     b.HasOne("BookTheRoom.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany("Orders")
                         .HasForeignKey("ApplicationUserId");
                 });
 
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Room", b =>
+            modelBuilder.Entity("BookTheRoom.Core.Entities.Room", b =>
                 {
-                    b.HasOne("BookTheRoom.Domain.Entities.Hotel", "Hotel")
+                    b.HasOne("BookTheRoom.Core.Entities.Hotel", "Hotel")
                         .WithMany("Rooms")
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Hotel");
-                });
-
-            modelBuilder.Entity("BookTheRoom.Infrastructure.Identity.ApplicationUser", b =>
-                {
-                    b.HasOne("BookTheRoom.Domain.Entities.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -502,7 +477,7 @@ namespace BookTheRoom.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookTheRoom.Domain.Entities.Hotel", b =>
+            modelBuilder.Entity("BookTheRoom.Core.Entities.Hotel", b =>
                 {
                     b.Navigation("Rooms");
                 });

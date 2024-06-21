@@ -1,5 +1,6 @@
-﻿using BookTheRoom.Domain.Entities;
-using BookTheRoom.Domain.Enums;
+﻿using BookTheRoom.Core.Entities;
+using BookTheRoom.Core.Enums;
+using BookTheRoom.Core.ValueObjects;
 
 namespace BookTheRoom.Infrastructure.Data
 {

@@ -10,6 +10,8 @@
     <PackageReference Include="Braintree" Version="5.23.0" />
     <PackageReference Include="CloudinaryDotNet" Version="1.26.0" />
     <PackageReference Include="MailKit" Version="4.4.0" />
+    <PackageReference Include="MediatR" Version="12.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageReference Include="MimeKit" Version="4.4.0" />
@@ -17,6 +19,17 @@
 	
   <ItemGroup>
     <ProjectReference Include="..\BookTheRoom.Core\BookTheRoom.Core.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Folder Include="UseCases\Commands\Order\" />
+    <Folder Include="UseCases\Commands\Room\" />
+    <Folder Include="UseCases\Handlers\CommandHandlers\Room\" />
+    <Folder Include="UseCases\Handlers\CommandHandlers\Order\" />
+    <Folder Include="UseCases\Handlers\QueryHandlers\Room\" />
+    <Folder Include="UseCases\Handlers\QueryHandlers\Order\" />
+    <Folder Include="UseCases\Queries\Room\" />
+    <Folder Include="UseCases\Queries\Order\" />
   </ItemGroup>
 
 </Project>

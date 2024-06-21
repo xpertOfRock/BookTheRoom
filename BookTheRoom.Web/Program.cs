@@ -2,6 +2,7 @@ using AspNetCoreRateLimit;
 using BookTheRoom.Application.Settings;
 using BookTheRoom.Application.Interfaces;
 using BookTheRoom.Application.Services;
+using BookTheRoom.Core.Interfaces;
 using BookTheRoom.Infrastructure.Data;
 using BookTheRoom.Infrastructure.Data.Interfaces;
 using BookTheRoom.Infrastructure.Data.Repositories;
@@ -14,10 +15,10 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using System.IO.Compression;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using BookTheRoom.Web.Interfaces;
-using BookTheRoom.Web.Services;
+using BookTheRoom.Application.UseCases.Queries.Hotel;
+using BookTheRoom.Application.UseCases.Commands.Hotel;
+using BookTheRoom.Application.UseCases.Queries.Address;
+using BookTheRoom.Application.UseCases.Commands.Address;
 
 
 internal class Program
@@ -30,50 +31,43 @@ internal class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddHostedService<OrderStatusUpdaterBackgroundService>();
         builder.Services.AddHostedService<RoomStatusUpdaterBackgroundService>();
+
+        
+
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAddressRepository, AddressRepository>();
         builder.Services.AddScoped<IHotelRepository, HotelRepository>();
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-        builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IPhotoService, PhotoService>();
         builder.Services.AddScoped<IPaymentService, PaymentService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
 
+        builder.Services.AddMediatR(options =>
+        {
+            options.RegisterServicesFromAssemblies(typeof(GetAllHotelsQuery).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(GetHotelByIdQuery).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(CreateHotelCommand).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(UpdateHotelCommand).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(DeleteHotelCommand).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(GetAllAddressesQuery).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(GetAddressByPropertiesQuery).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(CreateAddressCommand).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(UpdateAddressCommand).Assembly);
+            options.RegisterServicesFromAssemblies(typeof(DeleteAddressCommand).Assembly);
+        });
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
-
-        
-
+      
         builder.Services.AddMemoryCache();
 
         builder.Services.AddSession();
 
-        //builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        //    .AddCookie();
-        builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false,
-                    ValidateIssuer = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                };
-            });
-        builder.Services.AddAuthorization(options => options.DefaultPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder(
-            JwtBearerDefaults.AuthenticationScheme)
-        .RequireAuthenticatedUser()
-        .Build());
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+               .AddCookie();
 
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
         {

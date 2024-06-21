@@ -1,9 +1,7 @@
 ﻿using BookTheRoom.Application.Interfaces;
-using BookTheRoom.Domain.Entities;
-using BookTheRoom.Infrastructure.Data.Interfaces;
+using BookTheRoom.Core.ValueObjects;
 using BookTheRoom.Infrastructure.Identity;
-using BookTheRoom.Web.Interfaces;
-using BookTheRoom.WebUI.ViewModels;
+using BookTheRoom.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,17 +10,14 @@ namespace BookTheRoom.WebUI.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                  SignInManager<ApplicationUser> signInManager,
-                                 IEmailService emailService,
-                                 ITokenService tokenService)
+                                 IEmailService emailService)
         {
-            _tokenService = tokenService;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
@@ -47,8 +42,7 @@ namespace BookTheRoom.WebUI.Controllers
 
             var userByEmail = await _userManager.FindByEmailAsync(login.EmailOrUsername);
             var userByName = await _userManager.FindByNameAsync(login.EmailOrUsername);
-
-
+            
             if (userByEmail != null && login.EmailOrUsername == userByEmail.Email)
             {
                 thisUser = userByEmail;
@@ -65,8 +59,8 @@ namespace BookTheRoom.WebUI.Controllers
                 var result = await _signInManager.PasswordSignInAsync(thisUser, login.Password, false, false);
 
                 if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Home");
+                {                   
+                    return Redirect("/");
                 }
             }
             else
@@ -112,26 +106,30 @@ namespace BookTheRoom.WebUI.Controllers
             {
                 Email = registerViewModel.EmailAddress,
                 UserName = registerViewModel.UserName,
-                PhoneNumber = registerViewModel.PhoneNumber,
-                Address = new Address()
-                {
-                    Country = registerViewModel.Address.Country,
-                    City = registerViewModel.Address.City,
-                    StreetOrDistrict = registerViewModel.Address.StreetOrDistrict,
-                    Index = registerViewModel.Address.Index
-                }
+                PhoneNumber = registerViewModel.PhoneNumber,               
             };
             var newUserResponse = await _userManager.CreateAsync(newUser, registerViewModel.Password);
+            
             if (newUserResponse.Succeeded)
             {
-                await _userManager.AddToRoleAsync(newUser, UserRole.User);
+                await _userManager.AddToRoleAsync(newUser, UserRole.Admin);
+                await _signInManager.PasswordSignInAsync(newUser, registerViewModel.Password, false, false);
             }
-
+            
             const string subject = "Registration";
             const string body = "Thanks for choosing Book The Room! Hope you will be satisfied with our service!";
 
             _emailService.SendEmail(newUser.Email, subject, body);
             return RedirectToAction("Index", "Home");
+        }
+
+
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            HttpContext.Response.Cookies.Delete("access_token");
+            return Redirect("/");
         }
 
 
@@ -144,18 +142,12 @@ namespace BookTheRoom.WebUI.Controllers
         }
 
 
-        [Authorize]
+        
         [Route("/Profile/{userName}/Edit", Name = "EditProfile")]
         public async Task<IActionResult> EditProfile([FromRoute] string userName)
         {
             return View();
         }
-
-
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return Redirect("/");
-        }
+               
     }
 }

@@ -1,4 +1,4 @@
-﻿using BookTheRoom.Application.Interfaces;
+﻿using BookTheRoom.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookTheRoom.Infrastructure.Data.Repositories
@@ -16,10 +16,9 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
             return Task.CompletedTask;
         }
 
-        public virtual Task Delete(TEntity entity)
+        public virtual void Delete(TEntity entity)
         {
             _context.Set<TEntity>().Remove(entity);
-            return Task.CompletedTask;
         }
 
         public virtual async Task<List<TEntity>> GetAll()
@@ -33,10 +32,9 @@ namespace BookTheRoom.Infrastructure.Data.Repositories
         }
 
 
-        public virtual Task Update(TEntity entity)
+        public virtual void Update(TEntity entity)
         {
-            _context.Update(entity);
-            return Task.CompletedTask;
+            _context.Update(entity);           
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BookTheRoom.WebUI.ViewModels
+namespace BookTheRoom.Web.ViewModels
 {
     public class LoginViewModel
     {
