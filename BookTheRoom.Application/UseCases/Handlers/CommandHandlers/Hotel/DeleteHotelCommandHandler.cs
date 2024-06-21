@@ -16,6 +16,7 @@ namespace BookTheRoom.Application.UseCases.Handlers.CommandHandlers.Hotel
         public async Task<Unit> Handle(DeleteHotelCommand request, CancellationToken cancellationToken)
         {
             _unitOfWork.Hotels.Delete(request.Hotel);
+
             _unitOfWork.Addresses.Delete(request.Hotel.Address);
 
             await _unitOfWork.SaveChangesAsync();

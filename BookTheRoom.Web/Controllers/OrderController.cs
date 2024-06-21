@@ -1,13 +1,18 @@
 ﻿using BookTheRoom.Application.Interfaces;
 using BookTheRoom.Core.Enums;
+using BookTheRoom.Application.UseCases.Queries.Hotel;
+using BookTheRoom.Application.UseCases.Queries.Room;
+using BookTheRoom.Application.UseCases.Queries.Order;
+using BookTheRoom.Application.UseCases.Commands.Order;
 using BookTheRoom.Infrastructure.Identity;
-using BookTheRoom.Infrastructure.Data.Interfaces;
 using BookTheRoom.Web.ViewModels;
 using Braintree;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using BookTheRoom.Web.Extencions;
+using MediatR;
+
 
 namespace BookTheRoom.WebUI.Controllers
 {
@@ -17,8 +22,8 @@ namespace BookTheRoom.WebUI.Controllers
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IPaymentService _braintreeService;
         private readonly IEmailService _emailService;
-        private readonly IUnitOfWork _unitOfWork;
-        public OrderController(IHttpContextAccessor contextAccessor, IUnitOfWork unitOfWork,
+        private readonly IMediator _mediator;
+        public OrderController(IHttpContextAccessor contextAccessor, IMediator mediator,
                                IEmailService emailService, IPaymentService braintreeService,
                                UserManager<ApplicationUser> userManager)
         {
@@ -26,7 +31,7 @@ namespace BookTheRoom.WebUI.Controllers
             _emailService = emailService;
             _contextAccessor = contextAccessor;
             _braintreeService = braintreeService;
-            _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
 
         [Route("/Profile/{userName}/Orders", Name = "UserOrders")]
@@ -35,13 +40,15 @@ namespace BookTheRoom.WebUI.Controllers
             
             var thisUser = await _userManager.FindByNameAsync(userName);
             var userId = await _userManager.GetUserIdAsync(thisUser!);
-            var userOrders = await _unitOfWork.Orders.GetUserOrders(userId);            
+            var userOrders = await _mediator.Send(new GetUserOrdersQuery(userId));    
+            
             var thisOrders = new List<OrderViewModel>();
 
             foreach (var order in userOrders)
             {
-                var thisHotel = await _unitOfWork.Hotels.GetById(order.HotelId);
-                var thisRoom = await _unitOfWork.Rooms.GetById(order.RoomId);
+                var thisHotel = await _mediator.Send(new GetHotelByIdQuery(order.HotelId));
+                var thisRoom = await _mediator.Send(new GetRoomByIdQuery(order.RoomId));
+
                 thisOrders.Add(new OrderViewModel
                 {
                     Id = order.Id,
@@ -65,13 +72,13 @@ namespace BookTheRoom.WebUI.Controllers
         [Route("Orders", Name = "Orders")]
         public async Task<IActionResult> Orders() {
                    
-            var orders = await _unitOfWork.Orders.GetAll();
+            var orders = await _mediator.Send(new GetAllOrdersQuery());
             var thisOrders = new List<OrderViewModel>();
 
             foreach (var order in orders)
             {
-                var thisHotel = await _unitOfWork.Hotels.GetById(order.HotelId);
-                var thisRoom = await _unitOfWork.Rooms.GetById(order.RoomId);
+                var thisHotel = await _mediator.Send(new GetHotelByIdQuery(order.HotelId));
+                var thisRoom = await _mediator.Send(new GetRoomByIdQuery(order.RoomId));
                 thisOrders.Add(new OrderViewModel
                 {
                     Id = order.Id,
@@ -96,10 +103,10 @@ namespace BookTheRoom.WebUI.Controllers
         [Authorize(Roles = UserRole.Admin)]
         [Route("Profile/Orders/{id}", Name = "Order")]
         public async Task<IActionResult> Order(int id)
-        {           
-            var order = await _unitOfWork.Orders.GetById(id);
-            var thisHotel = await _unitOfWork.Hotels.GetById(order.HotelId);
-            var thisRoom = await _unitOfWork.Rooms.GetById(order.RoomId);
+        {
+            var order = await _mediator.Send(new GetOrderByIdQuery(id));
+            var thisHotel = await _mediator.Send(new GetHotelByIdQuery(order.HotelId));
+            var thisRoom = await _mediator.Send(new GetRoomByIdQuery(order.RoomId));
 
             var showOrder = new OrderViewModel
             {
@@ -130,9 +137,9 @@ namespace BookTheRoom.WebUI.Controllers
             }
             var gateway = _braintreeService.CreateGateway();
             var clientToken = gateway.ClientToken.Generate();
-            
-            var thisHotel = await _unitOfWork.Hotels.GetById(hotelId);
-            var thisRoom = await _unitOfWork.Rooms.GetById(roomId);
+
+            var thisHotel = await _mediator.Send(new GetHotelByIdQuery(hotelId));
+            var thisRoom = await _mediator.Send(new GetRoomByIdQuery(roomId));
 
             ViewBag.ClientToken = clientToken;
 
@@ -152,8 +159,8 @@ namespace BookTheRoom.WebUI.Controllers
         [Route("/Checkout", Name = "Checkout")]
         public async Task<IActionResult> Checkout(OrderViewModel order)
         {
-            var thisHotel = await _unitOfWork.Hotels.GetById(order.HotelId);
-            var thisRoom = await _unitOfWork.Rooms.GetById(order.RoomId);
+            var thisHotel = await _mediator.Send(new GetHotelByIdQuery(order.HotelId));
+            var thisRoom = await _mediator.Send(new GetRoomByIdQuery(order.RoomId));
 
             var gateway = _braintreeService.CreateGateway();
 
@@ -185,9 +192,8 @@ namespace BookTheRoom.WebUI.Controllers
             }
           
             var thisUser = await _userManager.FindByIdAsync(order.UserId!);
-         
-            await _unitOfWork.Orders.Add(order);
-            await _unitOfWork.SaveChangesAsync();
+
+            await _mediator.Send(new CreateOrderCommand(order));
 
             string email;
             string subject = $"Order No. {order.Id}";

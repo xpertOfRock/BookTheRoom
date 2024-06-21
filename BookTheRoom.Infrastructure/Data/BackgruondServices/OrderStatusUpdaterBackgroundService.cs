@@ -1,7 +1,8 @@
-﻿using BookTheRoom.Application.Interfaces;
-using BookTheRoom.Core.Entities;
+﻿using BookTheRoom.Application.UseCases.Commands.Order;
+using BookTheRoom.Application.UseCases.Queries.Order;
 using BookTheRoom.Core.Enums;
 using BookTheRoom.Infrastructure.Data.Interfaces;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -19,19 +20,18 @@ namespace BookTheRoom.Infrastructure.Data.BackgruondServices
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-                var expiredOrders = await unitOfWork.Orders.GetExpiredOrders();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+                var expiredOrders = await mediator.Send(new GetExpiredOrdersQuery());
 
                 foreach (var order in expiredOrders)
                 {
                     if (order.Status == OrderStatus.Active)
                     {
                         order.Status = OrderStatus.Completed;
-                        unitOfWork.Orders.Update(order);
-
+                        await mediator.Send(new UpdateOrderCommand(order));
                     }
                 }
-                await unitOfWork.SaveChangesAsync();
             }
         }
         public async Task StartAsync(CancellationToken cancellationToken)

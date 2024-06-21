@@ -3,6 +3,10 @@ using BookTheRoom.Core.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BookTheRoom.Core.Enums;
+using BookTheRoom.Application.UseCases.Queries.Order;
+using MediatR;
+using BookTheRoom.Application.UseCases.Queries.Room;
+using BookTheRoom.Application.UseCases.Commands.Room;
 
 namespace BookTheRoom.Infrastructure.Data.BackgruondServices
 {
@@ -18,9 +22,12 @@ namespace BookTheRoom.Infrastructure.Data.BackgruondServices
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-                var activeOrders = await unitOfWork.Orders.GetActiveOrders();
-                var rooms = await unitOfWork.Rooms.GetAll();
+
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+                var activeOrders = await mediator.Send(new GetActiveOrdersQuery());
+
+                var rooms = await mediator.Send(new GetAllRoomsQuery());
 
                 foreach (var room in rooms)
                 {
@@ -47,9 +54,8 @@ namespace BookTheRoom.Infrastructure.Data.BackgruondServices
                             room.IsFree = true;
                         }
                     }
-                    unitOfWork.Rooms.Update(room);
+                    await mediator.Send(new UpdateRoomCommand(room));
                 }
-                await unitOfWork.SaveChangesAsync();
             }
         }
         public async Task StartAsync(CancellationToken cancellationToken)

@@ -9,7 +9,6 @@ namespace BookTheRoom.Application.UseCases.Handlers.CommandHandlers.Address
         private readonly IUnitOfWork _unitOfWork;
         public CreateAddressCommandHandler(IUnitOfWork unitOfWork)
         {
-
             _unitOfWork = unitOfWork;
         }
         public async Task<Unit> Handle(CreateAddressCommand request, CancellationToken cancellationToken)

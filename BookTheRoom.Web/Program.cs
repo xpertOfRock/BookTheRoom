@@ -15,10 +15,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using System.IO.Compression;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using BookTheRoom.Application.UseCases.Queries.Hotel;
-using BookTheRoom.Application.UseCases.Commands.Hotel;
-using BookTheRoom.Application.UseCases.Queries.Address;
-using BookTheRoom.Application.UseCases.Commands.Address;
+using BookTheRoom.Application.DependencyInjection;
 
 
 internal class Program
@@ -43,19 +40,7 @@ internal class Program
         builder.Services.AddScoped<IPaymentService, PaymentService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
 
-        builder.Services.AddMediatR(options =>
-        {
-            options.RegisterServicesFromAssemblies(typeof(GetAllHotelsQuery).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(GetHotelByIdQuery).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(CreateHotelCommand).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(UpdateHotelCommand).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(DeleteHotelCommand).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(GetAllAddressesQuery).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(GetAddressByPropertiesQuery).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(CreateAddressCommand).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(UpdateAddressCommand).Assembly);
-            options.RegisterServicesFromAssemblies(typeof(DeleteAddressCommand).Assembly);
-        });
+        builder.Services.AddApplicationServices();
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {

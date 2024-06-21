@@ -1,5 +1,4 @@
 ﻿using BookTheRoom.Application.UseCases.Queries.Address;
-using BookTheRoom.Core.ValueObjects;
 using BookTheRoom.Infrastructure.Data.Interfaces;
 using MediatR;
 

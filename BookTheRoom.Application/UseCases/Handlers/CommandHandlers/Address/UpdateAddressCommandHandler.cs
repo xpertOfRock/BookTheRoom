@@ -14,7 +14,9 @@ namespace BookTheRoom.Application.UseCases.Handlers.CommandHandlers.Address
         public async Task<Unit> Handle(UpdateAddressCommand request, CancellationToken cancellationToken)
         {
             _unitOfWork.Addresses.Update(request.Address);
+
             await _unitOfWork.SaveChangesAsync();
+
             return Unit.Value;
         }
     }

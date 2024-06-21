@@ -4,7 +4,6 @@ using BookTheRoom.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.IdentityModel.Tokens;
 using MediatR;
 using BookTheRoom.Application.UseCases.Queries.Hotel;
 using BookTheRoom.Application.UseCases.Commands.Hotel;
@@ -138,12 +137,10 @@ namespace BookTheRoom.WebUI.Controllers
 
                 }
 
-                if (!hotel.HotelImages.IsNullOrEmpty())
+                if (hotel.HotelImages is not null)
                 {
-
                     foreach (var image in thisHotel.ImagesURL)
                     {
-
                         await _photoService.DeletePhotoAsync(image);
                     }
 

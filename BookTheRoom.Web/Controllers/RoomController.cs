@@ -1,14 +1,15 @@
 ﻿using BookTheRoom.Application.Interfaces;
-using BookTheRoom.Core.Entities;
 using BookTheRoom.Infrastructure.Identity;
-using BookTheRoom.Infrastructure.Data.Interfaces;
+using BookTheRoom.Application.UseCases.Commands.Hotel;
+using BookTheRoom.Application.UseCases.Queries.Room;
+using BookTheRoom.Application.UseCases.Queries.Hotel;
+using BookTheRoom.Application.UseCases.Commands.Room;
 using BookTheRoom.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using MediatR;
-using BookTheRoom.Application.UseCases.Commands.Hotel;
 
 namespace BookTheRoom.WebUI.Controllers
 {
@@ -16,12 +17,10 @@ namespace BookTheRoom.WebUI.Controllers
     public class RoomController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IPhotoService _photoService;
-        public RoomController(IMediator mediator, IUnitOfWork unitOfWork, IPhotoService photoService)
+        public RoomController(IMediator mediator, IPhotoService photoService)
         {
             _mediator = mediator;
-            _unitOfWork = unitOfWork;
             _photoService = photoService;
         }
         [AllowAnonymous]
@@ -29,7 +28,7 @@ namespace BookTheRoom.WebUI.Controllers
         [Route("Hotels/{hotelId:int}/Rooms", Name = "Rooms")]
         public async Task<IActionResult> Rooms([FromRoute] int hotelId)
         {
-            var rooms = await _unitOfWork.Rooms.GetAllRoomsByHotel(hotelId);
+            var rooms = await _mediator.Send(new GetRoomsByHotelQuery(hotelId));
             ViewBag.HotelId = hotelId;
             return View(rooms);
         }
@@ -39,7 +38,7 @@ namespace BookTheRoom.WebUI.Controllers
         [Route("Hotels/{hotelId:int}/Rooms/{number:int}", Name = "Room")]
         public async Task<IActionResult> Room([FromRoute]int hotelId, [FromRoute]int number)
         {
-            var room = await _unitOfWork.Rooms.GetByNumber(hotelId, number);
+            var room = await _mediator.Send(new GetRoomByNumberQuery(hotelId, number));
             if (room == null)
             {
                 return Redirect($"Hotels/{hotelId}");
@@ -68,7 +67,8 @@ namespace BookTheRoom.WebUI.Controllers
         {                      
             if (ModelState.IsValid)
             {
-                var thisHotel = await _unitOfWork.Hotels.GetById(hotelId);
+                var thisHotel = await _mediator.Send(new GetHotelByIdQuery(hotelId));
+
                 var result = await _photoService.AddPhotoAsync(room.PreviewImage.Name,
                                                                room.PreviewImage.OpenReadStream());
                 room.PreviewImage.OpenReadStream().Dispose();
@@ -87,14 +87,12 @@ namespace BookTheRoom.WebUI.Controllers
                 room.PreviewURL = result.Url.ToString();
                 room.ImagesURL = roomImages;
 
-                
-                await _unitOfWork.Rooms.Add(room);
 
-                thisHotel.Rooms.Add(room);
+                await _mediator.Send(new CreateRoomCommand(room));
+
+                thisHotel.Rooms!.Add(room);
 
                 await _mediator.Send(new UpdateHotelCommand(thisHotel));
-
-                await _unitOfWork.SaveChangesAsync();
 
                 return Redirect($"/Hotels/{hotelId}/Rooms");
             }
@@ -107,8 +105,9 @@ namespace BookTheRoom.WebUI.Controllers
         [Route("Hotels/{hotelId:int}/Rooms/{number:int}/Edit", Name = "EditRoom")]
         public async Task<IActionResult> EditRoom([FromRoute] int hotelId, [FromRoute] int number)
         {
-            var thisHotel = await _unitOfWork.Hotels.GetById(hotelId);
-            var thisRoom = await _unitOfWork.Rooms.GetByNumber(hotelId, number);
+            var thisHotel = await _mediator.Send(new GetHotelByIdQuery(hotelId));
+            var thisRoom = await _mediator.Send(new GetRoomByNumberQuery(hotelId, number));
+
             var editViewModel = new EditRoomViewModel
             {
                 Number = number,
@@ -133,8 +132,8 @@ namespace BookTheRoom.WebUI.Controllers
                 return View("EditRoom", room);
             }
 
-            var thisHotel = await _unitOfWork.Hotels.GetById(hotelId);
-            var thisRoom = await _unitOfWork.Rooms.GetByNumber(hotelId, number);
+            var thisHotel = await _mediator.Send(new GetHotelByIdQuery(hotelId));
+            var thisRoom = await _mediator.Send(new GetRoomByNumberQuery(hotelId, number));
 
             var previewImage = thisRoom.PreviewURL;
             var roomImages = thisRoom.ImagesURL;
@@ -183,8 +182,7 @@ namespace BookTheRoom.WebUI.Controllers
             thisRoom.HotelId = hotelId;
             thisRoom.RoomCategory = room.RoomCategory;
 
-            _unitOfWork.Rooms.Update(thisRoom);
-            await _unitOfWork.SaveChangesAsync();
+            await _mediator.Send(new UpdateRoomCommand(thisRoom));
 
             return Redirect($"/Hotels/{hotelId}/Rooms/{number}");
         }
@@ -195,8 +193,10 @@ namespace BookTheRoom.WebUI.Controllers
         [Route("Hotels/{hotelId:int}/Rooms/{number:int}/Delete", Name = "DeleteRoom")]
         public async Task<IActionResult> DeleteRoom([FromRoute] int hotelId, [FromRoute] int number)
         {
-            var thisHotel = await _unitOfWork.Hotels.GetById(hotelId);
-            var thisRoom = await _unitOfWork.Rooms.GetByNumber(thisHotel.Id, number);
+
+            var thisHotel = await _mediator.Send(new GetHotelByIdQuery(hotelId));
+            var thisRoom = await _mediator.Send(new GetRoomByNumberQuery(hotelId, number));
+
             if (thisHotel == null) { return View("Error"); }
 
             return View(thisRoom);
@@ -209,8 +209,9 @@ namespace BookTheRoom.WebUI.Controllers
         [Route("Hotels/{hotelId:int}/Rooms/{number:int}/Delete", Name = "DeleteRoom")]
         public async Task<IActionResult> Delete([FromRoute] int hotelId, [FromRoute] int number)
         {
-            var thisHotel = await _unitOfWork.Hotels.GetById(hotelId);
-            var thisRoom = await _unitOfWork.Rooms.GetByNumber(thisHotel.Id, number);
+            var thisHotel = await _mediator.Send(new GetHotelByIdQuery(hotelId));
+            var thisRoom = await _mediator.Send(new GetRoomByNumberQuery(hotelId, number));
+
             if (thisHotel == null && thisRoom == null) { return View("Error"); }
 
             if (thisRoom != null)
@@ -234,9 +235,8 @@ namespace BookTheRoom.WebUI.Controllers
             thisHotel.Rooms.Remove(thisRoom);
 
             await _mediator.Send(new UpdateHotelCommand(thisHotel));
-            _unitOfWork.Rooms.Delete(thisRoom);
+            await _mediator.Send(new DeleteRoomCommand(thisRoom));
 
-            await _unitOfWork.SaveChangesAsync();
             return Redirect($"/Hotels/{hotelId}/Rooms");
         }
     }
