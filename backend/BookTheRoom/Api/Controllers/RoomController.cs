@@ -22,7 +22,7 @@ namespace Api.Controllers
             _photoService = photoService;
         }
 
-        [HttpGet]
+        [HttpGet("{hotelId}")]
         public async Task<IActionResult> GetAll(int hotelId, [FromQuery] GetRoomsRequest request)
         {            
             var rooms = await _mediator.Send(new GetHotelRoomsQuery(hotelId, request));

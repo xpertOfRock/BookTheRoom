@@ -32,9 +32,8 @@ namespace Application.DependencyInjection
                 typeof(CreateOrderCommand).Assembly,
                 typeof(UpdateOrderCommand).Assembly,
                 typeof(GetAllOrdersQuery).Assembly,
-                typeof(GetExpiredOrdersQuery).Assembly,
-                //typeof(GetOrderQuery).Assembly,
                 typeof(GetActiveOrdersQuery).Assembly,
+                typeof(GetExpiredOrdersQuery).Assembly,
                 typeof(GetUserOrdersQuery).Assembly
                 )
             );

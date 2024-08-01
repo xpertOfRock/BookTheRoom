@@ -20,50 +20,54 @@ namespace Infrastructure.Data.BackgroundServices
         }
         private async Task UpdateRoomStatus()
         {
+            
             using (var scope = _scopeFactory.CreateScope())
             {
-
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
                 var activeOrders = await mediator.Send(new GetActiveOrdersQuery());
 
-                var rooms = await mediator.Send(new GetRoomsQuery());
-
-                foreach (var room in rooms)
+                if(activeOrders.Any())
                 {
-                    bool hasActiveOrder = activeOrders.Any(order => order.HotelId == room.HotelId 
-                                                                 && order.RoomNumber == room.Number);
-                    bool booked = room.IsFree;
+                    var rooms = await mediator.Send(new GetRoomsQuery());
 
-                    var request = new UpdateRoomRequest(room.Name, room.Description, room.Price, room.Category, room.Images, booked);
-
-                    if (hasActiveOrder)
+                    foreach (var room in rooms)
                     {
-                        var activeOrder = activeOrders.FirstOrDefault(order => order.HotelId == room.HotelId 
-                                                                            && order.RoomNumber == room.Number);
-                        if (activeOrder != null && activeOrder.Status != OrderStatus.Closed && activeOrder.Status != OrderStatus.Completed)
+                        bool hasActiveOrder = activeOrders.Any(order => order.HotelId == room.HotelId
+                                                                     && order.RoomNumber == room.Number);
+                        bool booked = room.IsFree;
+
+                        var request = new UpdateRoomRequest(room.Name, room.Description, room.Price, room.Category, room.Images, booked);
+
+                        if (hasActiveOrder)
                         {
-                            room.IsFree = false;
+                            var activeOrder = activeOrders.FirstOrDefault(order => order.HotelId == room.HotelId
+                                                                                && order.RoomNumber == room.Number);
+
+                            if (activeOrder != null && activeOrder.Status != OrderStatus.Closed && activeOrder.Status != OrderStatus.Completed)
+                            {
+                                room.IsFree = false;
+                            }
                         }
-                    }
-                    else
-                    {
-                        List<Order> ordersForRoom = activeOrders
-                            .Where(order => order.HotelId == room.HotelId
-                                         && order.RoomNumber == room.Number)
-                            .ToList();
-
-                        bool isRoomBooked = ordersForRoom.Any(order =>
-                            DateTime.Now >= order.CheckIn && DateTime.Now <= order.CheckOut &&
-                            (order.Status != OrderStatus.Closed && order.Status != OrderStatus.Completed));
-                        
-                        if (!isRoomBooked)
+                        else
                         {
-                            room.IsFree = true;
-                        }                        
+                            List<Order> ordersForRoom = activeOrders
+                                .Where(order => order.HotelId == room.HotelId
+                                             && order.RoomNumber == room.Number)
+                                .ToList();
+
+                            bool isRoomBooked = ordersForRoom.Any(order =>
+                                DateTime.Now >= order.CheckIn && DateTime.Now <= order.CheckOut &&
+                                (order.Status != OrderStatus.Closed && order.Status != OrderStatus.Completed));
+
+                            if (!isRoomBooked)
+                            {
+                                room.IsFree = true;
+                            }
+                        }
+                        await mediator.Send(new UpdateRoomCommand(room.HotelId, room.Number, request));
                     }
-                    await mediator.Send(new UpdateRoomCommand(room.HotelId, room.Number, request));
-                }
+                }               
             }
         }
         public async Task StartAsync(CancellationToken cancellationToken)

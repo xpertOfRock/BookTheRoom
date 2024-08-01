@@ -87,7 +87,7 @@ namespace Api.Controllers
             [FromForm] List<IFormFile>? files
             )
         {
-            if(files.Count > 0)
+            if(files.Any())
             {
                 foreach (var file in files)
                 {

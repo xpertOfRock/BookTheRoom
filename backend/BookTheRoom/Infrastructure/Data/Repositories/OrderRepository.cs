@@ -26,8 +26,9 @@ namespace Infrastructure.Data.Repositories
         {
             return await _context.Orders
                      .Where(o =>
-                            o.CheckIn < DateTime.Now &&
-                            o.Status == OrderStatus.Active)
+                            o.CheckIn <= DateTime.UtcNow &&
+                            o.CheckOut >= DateTime.UtcNow &&
+                            o.Status == OrderStatus.Active )
                      .AsNoTracking()
                      .ToListAsync();
         }
@@ -39,27 +40,17 @@ namespace Infrastructure.Data.Repositories
                             o.Status.ToString().ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();
 
-            if (!query.Any())
-            {
-                return null;
-            }
-
-            Expression<Func<Order, object>> selectorKey = request.SortItem.ToLower() switch
+            Expression<Func<Order, object>> selectorKey = request.SortItem?.ToLower() switch
             {
                 "price" => order => order.OverallPrice,
                 "status" => order => order.Status.ToString(),
                 "date" => order => order.CreatedAt,
                 _ => order => order.Id,
-            }; ; ;
+            };
 
-            if (request.SortOrder == "desc")
-            {
-                query = query.OrderByDescending(selectorKey);
-            }
-            else
-            {
-                query = query.OrderBy(selectorKey);
-            }
+            query = request.SortOrder == "desc"
+                 ? query = query.OrderByDescending(selectorKey)
+                 : query = query.OrderBy(selectorKey);
 
 
             return await query.ToListAsync();
@@ -74,11 +65,6 @@ namespace Infrastructure.Data.Repositories
                             )
                        )
                 .AsNoTracking();
-
-            if (!query.Any())
-            {
-                return null;
-            }
 
             Expression<Func<Order, object>> selectorKey = request.SortItem.ToLower() switch
             {
@@ -112,7 +98,7 @@ namespace Infrastructure.Data.Repositories
         {
             return await _context.Orders
                 .Where(o =>
-                       o.CheckOut < DateTime.Now &&
+                       o.CheckOut < DateTime.UtcNow &&
                        o.Status != OrderStatus.Completed)
                 .AsNoTracking()
                 .ToListAsync();

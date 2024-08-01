@@ -55,13 +55,12 @@ namespace Infrastructure.Data.Repositories
             {
                 "name" => hotel => hotel.Name,
                 "rating" => hotel => hotel.Rating,
-                _ => hotel => hotel.Id,
+                _ => hotel => hotel.Id
             };
                      
-
             query = request.SortOrder == "desc"
-                ? query = query.OrderByDescending(selectorKey)
-                : query = query.OrderBy(selectorKey);                    
+                 ? query = query.OrderByDescending(selectorKey)
+                 : query = query.OrderBy(selectorKey);                    
 
             return await query.ToListAsync();
         }

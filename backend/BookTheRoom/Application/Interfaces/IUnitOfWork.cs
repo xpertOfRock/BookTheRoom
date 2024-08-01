@@ -7,7 +7,6 @@ namespace Application.Interfaces
         IHotelRepository Hotels { get; }
         IRoomRepository Rooms { get; }
         IOrderRepository Orders { get; }
-        IAddressRepository Addresses { get; }
         Task SaveChangesAsync();
     }
 }

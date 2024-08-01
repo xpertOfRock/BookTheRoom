@@ -24,19 +24,25 @@ namespace Infrastructure.Data.BackgroundServices
 
                 var expiredOrders = await mediator.Send(new GetExpiredOrdersQuery());
 
-                foreach (var order in expiredOrders)
+                if(expiredOrders.Any())
                 {
-                    var request = new UpdateOrderRequest(
-                        order.MinibarIncluded,
-                        order.MealsIncluded, order.Status
-                        );
-                    if (order.Status == OrderStatus.Active)
+                    foreach (var order in expiredOrders)
                     {
-                        order.Status = OrderStatus.Completed;
-                        await mediator.Send(new UpdateOrderCommand(order.Id, request));
+                        var request = new UpdateOrderRequest(
+                            order.MinibarIncluded,
+                            order.MealsIncluded, order.Status
+                            );
+
+                        if (order.Status == OrderStatus.Active)
+                        {
+                            order.Status = OrderStatus.Completed;
+                            await mediator.Send(new UpdateOrderCommand(order.Id, request));
+                        }
                     }
                 }
             }
+
+                
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {

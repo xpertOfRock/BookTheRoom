@@ -1,17 +1,19 @@
-﻿using Application.UseCases.Queries.Room;
+﻿using Application.Interfaces;
+using Application.UseCases.Queries.Room;
 using MediatR;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Room
 {
     public class GetRoomsQueryHandler : IRequestHandler<GetRoomsQuery, List<Core.Entities.Room>>
     {
-        public GetRoomsQueryHandler()
+        private readonly IUnitOfWork _unitOfWork;
+        public GetRoomsQueryHandler(IUnitOfWork unitOfWork)
         {
-            
+            _unitOfWork = unitOfWork;
         }
-        public Task<List<Core.Entities.Room>> Handle(GetRoomsQuery request, CancellationToken cancellationToken)
+        public async Task<List<Core.Entities.Room>> Handle(GetRoomsQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.Rooms.GetAllRooms();
         }
     }
 }

@@ -1,15 +1,12 @@
 ﻿using Api.Extensions;
 using Application.Interfaces;
 using Application.UseCases.Commands.Order;
-using Braintree;
 using Core.Contracts;
-using Core.Entities;
 using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Api.Controllers
 {

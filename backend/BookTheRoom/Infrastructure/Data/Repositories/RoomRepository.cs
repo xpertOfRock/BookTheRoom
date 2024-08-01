@@ -48,32 +48,21 @@ namespace Infrastructure.Data.Repositories
         public async Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request)
         {
             var query = _context.Rooms
-                .Where(r => string.IsNullOrWhiteSpace(request.Search) ||
-                            r.Category.ToString().ToLower().Contains(request.Search.ToLower()) ||
-                            r.HotelId == hotelId)
+                .Where(r => r.HotelId == hotelId && 
+                            (string.IsNullOrWhiteSpace(request.Search) ||
+                            r.Name.ToLower().Contains(request.Search.ToLower()) ) 
+                            )
                 .AsNoTracking();
 
-            if (!query.Any())
+            Expression<Func<Room, object>> selectorKey = request.SortItem?.ToLower() switch
             {
-                return null;
-            }
-
-            Expression<Func<Room, object>> selectorKey = request.SortItem.ToLower() switch
-            {
-                "categoty" => room => room.Category.ToString(),
                 "price" => room => room.Price,
-                _ => room => room.Number,
+                _ => room => room.Name
             };
 
-            if (request.SortOrder == "desc")
-            {
-                query = query.OrderByDescending(selectorKey);
-            }
-            else
-            {
-                query = query.OrderBy(selectorKey);
-            }
-
+            query = request.SortOrder == "desc"
+                 ? query = query.OrderByDescending(selectorKey)
+                 : query = query.OrderBy(selectorKey);
 
             return await query.ToListAsync();
         }

@@ -17,12 +17,10 @@ namespace Infrastructure.Data.Repositories
             _photoService = photoService;
             Hotels = new HotelRepository(_context, _memoryCache, _photoService);
             Rooms = new RoomRepository(_context, _memoryCache, _photoService);
-            //Orders = new OrderRepository(_context, _memoryCache);
-            //Addresses = new AddressRepository(_context);
+            Orders = new OrderRepository(_context, _memoryCache);
         }
 
         public IHotelRepository Hotels { get; private set; }
-        public IAddressRepository Addresses { get; private set; }
         public IRoomRepository Rooms { get; private set; }
         public IOrderRepository Orders { get; private set; }
 
