@@ -33,7 +33,7 @@ namespace Infrastructure.Data.Repositories
                      .ToListAsync();
         }
 
-        public async Task<List<Order>> GetAll(GetOrdersRequest request)
+        public async Task<List<Order>> GetAll(GetDataRequest request)
         {
             var query = _context.Orders
                 .Where(o => string.IsNullOrWhiteSpace(request.Search) ||
@@ -56,7 +56,7 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<List<Order>> GetAllUserOrders(string userId, GetUserOrdersRequest request)
+        public async Task<List<Order>> GetAllUserOrders(string userId, GetDataRequest request)
         {
             var query = _context.Orders
                 .Where(o => o.UserId == userId && (

@@ -34,19 +34,19 @@ namespace Api.Controllers
             _userManager = userManager;
         }
 
-            //[HttpGet]
-            //public async Task<IActionResult> GetAll()
-            //{
-            //    return new string[] { "value1", "value2" };
-            //}
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    return new string[] { "value1", "value2" };
+        //}
 
-            //[HttpGet("{id}")]
-            //public async Task<IActionResult> GetAllUsers(int userId)
-            //{
-            //    return "value";
-            //}
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> GetAllUsers(int userId)
+        //{
+        //    return "value";
+        //}
 
-        [HttpPost]
+        [HttpPost("{hotelId}/{number}")]
         public async Task<IActionResult> Post(int hotelId, int number, [FromBody] CreateOrderRequest request)
         {
             string? userId = null;

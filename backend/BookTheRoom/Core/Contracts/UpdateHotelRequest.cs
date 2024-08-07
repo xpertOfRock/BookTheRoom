@@ -2,12 +2,14 @@
 
 namespace Core.Contracts
 {
-    public record UpdateHotelRequest(
+    public record UpdateHotelRequest
+    (
         string Name,
         string Description,
         int Rating,
         int RoomsAmount,
         bool HasPool,
         List<string> Images,
-        List<Room> Rooms);
+        List<Room> Rooms
+    );
 }

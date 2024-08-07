@@ -43,9 +43,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("HotelId")
                         .HasColumnType("int");
 
-                    b.Property<int>("HotelId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -56,8 +53,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("HotelId");
-
-                    b.HasIndex("HotelId1");
 
                     b.HasIndex("UserId");
 
@@ -412,16 +407,8 @@ namespace Infrastructure.Migrations
                     b.HasOne("Core.Entities.Hotel", null)
                         .WithMany("Comments")
                         .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Core.Entities.Hotel", "Hotel")
-                        .WithMany()
-                        .HasForeignKey("HotelId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("Core.Entities.Hotel", b =>

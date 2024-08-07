@@ -7,8 +7,8 @@ namespace Api.DTOs
         int Id,
         string Name,
         string Description,
+        string Address,
         List<string>? Images,
-        List<Room>? Rooms,
-        Address Address
+        List<Room>? Rooms      
         );
 }

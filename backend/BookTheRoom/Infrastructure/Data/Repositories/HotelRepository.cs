@@ -43,7 +43,7 @@ namespace Infrastructure.Data.Repositories
             _context.Hotels.Remove(hotel);
         }
 
-        public async Task<List<Hotel>> GetAll(GetHotelsRequest request)
+        public async Task<List<Hotel>> GetAll(GetDataRequest request)
         {
             var query = _context.Hotels
                 .Include(h => h.Address)

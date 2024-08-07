@@ -7,6 +7,6 @@ namespace Api.DTOs
         string Name,
         string? Preview,
         int Rating,
-        Address Address
+        string Address
         );
 }

@@ -2,7 +2,8 @@
 
 namespace Core.Contracts
 {
-    public record CreateOrderRequest(
+    public record CreateOrderRequest
+    (
         string NonceFromClient,
         string Email,
         string Number,
@@ -12,5 +13,5 @@ namespace Core.Contracts
         DateTime CheckOut,
         DateTime CreatedAt,
         OrderStatus Status            
-        );
+    );
 }

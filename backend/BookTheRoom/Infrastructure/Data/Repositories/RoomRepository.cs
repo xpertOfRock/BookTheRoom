@@ -45,7 +45,7 @@ namespace Infrastructure.Data.Repositories
         {
             return await _context.Rooms.AsNoTracking().ToListAsync();
         }
-        public async Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request)
+        public async Task<List<Room>> GetAll(int hotelId, GetDataRequest request)
         {
             var query = _context.Rooms
                 .Where(r => r.HotelId == hotelId && 

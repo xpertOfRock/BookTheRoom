@@ -65,7 +65,7 @@ namespace Infrastructure.Data.EntityConfigurations
             builder.HasMany(h => h.Comments)
                 .WithOne()
                 .HasForeignKey(c => c.HotelId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

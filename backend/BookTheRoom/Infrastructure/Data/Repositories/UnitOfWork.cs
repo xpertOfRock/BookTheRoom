@@ -18,11 +18,13 @@ namespace Infrastructure.Data.Repositories
             Hotels = new HotelRepository(_context, _memoryCache, _photoService);
             Rooms = new RoomRepository(_context, _memoryCache, _photoService);
             Orders = new OrderRepository(_context, _memoryCache);
+            Comments = new CommentRepository(_context);
         }
 
         public IHotelRepository Hotels { get; private set; }
         public IRoomRepository Rooms { get; private set; }
         public IOrderRepository Orders { get; private set; }
+        public ICommentRepository Comments { get; private set; }
 
         public async Task SaveChangesAsync()
         {

@@ -17,5 +17,10 @@
             Street = street;           
             PostalCode = postalCode;          
         }
+
+        public override string ToString()
+        {
+            return $"{Country}, {State}, {City}, {Street}, {PostalCode}";
+        }
     }
 }

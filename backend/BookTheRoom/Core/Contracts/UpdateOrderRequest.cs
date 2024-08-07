@@ -2,5 +2,10 @@
 
 namespace Core.Contracts
 {
-    public record UpdateOrderRequest(bool MinibarIncluded, bool MealsIncluded, OrderStatus Status);
+    public record UpdateOrderRequest
+    (
+        bool MinibarIncluded,
+        bool MealsIncluded,
+        OrderStatus Status
+    );
 }

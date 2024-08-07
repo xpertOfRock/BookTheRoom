@@ -23,11 +23,6 @@ namespace Infrastructure.Data.EntityConfigurations
             builder.Property(c => c.UpdatedAt)
                     .IsRequired(false);
 
-            builder.HasOne(c => c.Hotel)
-                    .WithMany(h => h.Comments)
-                    .HasForeignKey(c => c.HotelId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasIndex(c => c.UserId);
         }
     }

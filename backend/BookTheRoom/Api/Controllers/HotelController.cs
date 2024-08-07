@@ -23,7 +23,7 @@ namespace Api.Controllers
             _photoService = photoService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] GetHotelsRequest request)
+        public async Task<IActionResult> GetAll([FromQuery] GetDataRequest request)
         {
             var hotels = await _mediator.Send(new GetHotelsQuery(request));
 
@@ -35,7 +35,7 @@ namespace Api.Controllers
                     ? h.Images.First() 
                     : "No Image",
                 h.Rating,
-                h.Address
+                h.Address.ToString()
                 )
             ).ToList();
 
@@ -56,6 +56,7 @@ namespace Api.Controllers
                 hotel.Id,
                 hotel.Name,
                 hotel.Description,
+                hotel.Address.ToString(),
 
                 hotel.Images != null &&
                     hotel.Images.Any() 
@@ -65,9 +66,8 @@ namespace Api.Controllers
                 hotel.Rooms != null &&
                     hotel.Rooms.Any()
                     ? hotel.Rooms
-                    : new List<Room> { },
-
-                hotel.Address
+                    : new List<Room> { }
+               
                 );
 
             return Ok(hotelDTO);

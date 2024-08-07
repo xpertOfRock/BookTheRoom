@@ -1,8 +1,9 @@
 ﻿namespace Core.Contracts
 {
-    public record GetHotelsRequest(
+    public record GetDataRequest
+    (
         string? Search,
         string? SortItem,
         string? SortOrder
-        );
+    );
 }

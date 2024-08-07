@@ -8,9 +8,7 @@ using Infrastructure;
 using Infrastructure.Data.BackgroundServices;
 using Infrastructure.Data.Repositories;
 using Infrastructure.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,8 +93,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
