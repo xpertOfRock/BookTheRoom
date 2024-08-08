@@ -6,7 +6,7 @@ namespace Infrastructure.Identity
 {
     public class ApplicationUser : IdentityUser
     {
-        public string? Image { get; set; }
+        public string? Image { get; set; } = "https://i.redd.it/aqtop2mfrsr91.jpg";
         public string Role { get; set; }
         public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;  
         public List<Order>? Orders { get; set; }

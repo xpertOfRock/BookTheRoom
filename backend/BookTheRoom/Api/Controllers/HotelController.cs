@@ -3,10 +3,14 @@ using Api.DTOs;
 using Application.Interfaces;
 using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Queries.Hotel;
+using CloudinaryDotNet.Actions;
 using Core.Contracts;
 using Core.Entities;
+using Infrastructure.Identity;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace Api.Controllers
@@ -74,6 +78,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post([FromBody] CreateHotelRequest request)
         {
             await _mediator.Send(new CreateHotelCommand(request));
@@ -81,6 +86,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Put(
             int id,
             [FromBody] UpdateHotelRequest request,
@@ -103,6 +109,7 @@ namespace Api.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _mediator.Send(new DeleteHotelCommand(id));

@@ -4,7 +4,9 @@ using Application.Interfaces;
 using Application.UseCases.Commands.Room;
 using Application.UseCases.Queries.Room;
 using Core.Contracts;
+using Infrastructure.Identity;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -70,6 +72,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("{hotelId}")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post(int hotelId, [FromBody] CreateRoomRequest request)
         {
             await _mediator.Send(new CreateRoomCommand(hotelId, request));
@@ -77,6 +80,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{hotelId}/{number}")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Put(
             int hotelId,
             int number,
@@ -97,6 +101,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{hotelId}/{number}")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Delete(int hotelId, int number)
         {
             await _mediator.Send(new DeleteRoomCommand(hotelId, number));

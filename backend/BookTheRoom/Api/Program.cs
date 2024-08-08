@@ -8,8 +8,10 @@ using Infrastructure;
 using Infrastructure.Data.BackgroundServices;
 using Infrastructure.Data.Repositories;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,9 +44,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddMemoryCache();
 
-//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//       .AddCookie();
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 {
     config.Password.RequiredLength = 5;
@@ -59,9 +58,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
+
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000");
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5275");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
         policy.AllowCredentials();
@@ -80,6 +80,24 @@ builder.Services.Configure<HostOptions>(options =>
     options.ServicesStopConcurrently = false;
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = "http://localhost:5275"; // URL IdentityServer
+    options.Audience = "api"; // Имя вашего API ресурса
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = true,
+        ValidateIssuer = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true
+    };
+});
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
@@ -92,7 +110,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    await SeedData.Initialize(services);
+//}
+
 app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

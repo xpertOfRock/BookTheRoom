@@ -33,7 +33,6 @@ function App() {
             <ul>
               <HotelCard
                 name={h.name}
-                description={h.description}
                 rating={h.rating}
                 address={h.address}
                 preview={h.preview}

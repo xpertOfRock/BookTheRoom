@@ -4,6 +4,7 @@ using Application.UseCases.Commands.Order;
 using Core.Contracts;
 using Infrastructure.Identity;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,38 +16,21 @@ namespace Api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IEmailService _emailService;
-        private readonly IPaymentService _paymentService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
         public OrderController(
             IMediator mediator,
-            IEmailService emailService,
-            IPaymentService paymentService,
             IHttpContextAccessor contextAccessor,
             UserManager<ApplicationUser> userManager
             )
         {
             _mediator = mediator;
-            _emailService = emailService;
-            _paymentService = paymentService;
             _contextAccessor = contextAccessor;
             _userManager = userManager;
-        }
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetAllUsers(int userId)
-        //{
-        //    return "value";
-        //}
+        }      
 
         [HttpPost("{hotelId}/{number}")]
+        [AllowAnonymous]
         public async Task<IActionResult> Post(int hotelId, int number, [FromBody] CreateOrderRequest request)
         {
             string? userId = null;
