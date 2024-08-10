@@ -20,7 +20,8 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
                     Rating = command.Rating,
                     RoomsAmount = command.RoomsAmount,
                     HasPool = command.HasPool,
-                    Address = command.Address
+                    Address = command.Address,
+                    Images = command.Images                  
                 }
             );
 

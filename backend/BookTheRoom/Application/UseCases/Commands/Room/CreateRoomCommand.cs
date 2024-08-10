@@ -13,6 +13,7 @@ namespace Application.UseCases.Commands.Room
         public int HotelId { get; set; }
 
         public RoomCategory Category { get; set; }
+        public List<string>? Images { get; set; }
         public CreateRoomCommand(int hotelId, CreateRoomRequest request)
         {
             Name = request.Name;
@@ -21,6 +22,7 @@ namespace Application.UseCases.Commands.Room
             Price = request.Price;
             HotelId = hotelId;
             Category = request.Category;
+            Images = request.Images;
         }
     }
 }

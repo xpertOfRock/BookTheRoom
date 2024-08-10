@@ -26,7 +26,9 @@ namespace Api.Controllers
             _mediator = mediator;
             _photoService = photoService;
         }
+
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] GetDataRequest request)
         {
             var hotels = await _mediator.Send(new GetHotelsQuery(request));
@@ -47,6 +49,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> Get(int id)
         {
             var hotel = await _mediator.Send(new GetHotelQuery(id));
@@ -78,9 +81,18 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Post([FromBody] CreateHotelRequest request)
+        //[Authorize(Roles = UserRole.Admin)]
+        public async Task<IActionResult> Post([FromBody] CreateHotelRequest request, [FromForm] List<IFormFile>? files)
         {
+            if (files.Any())
+            {
+                foreach (var file in files)
+                {
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
+                    request.Images.Add(resultForList.Url.ToString());
+                    file.OpenReadStream().Dispose();
+                }
+            }
             await _mediator.Send(new CreateHotelCommand(request));
             return Ok();
         }

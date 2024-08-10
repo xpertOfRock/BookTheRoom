@@ -45,10 +45,15 @@ namespace Infrastructure.Data.Repositories
 
         public async Task<List<Hotel>> GetAll(GetDataRequest request)
         {
+            
             var query = _context.Hotels
                 .Include(h => h.Address)
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
-                            h.Name.ToLower().Contains(request.Search.ToLower()))
+                            h.Name.ToLower().Contains(request.Search.ToLower()) ||
+                            h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
+                            h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
+                            h.Address.City.ToLower().Contains(request.Search.ToLower())
+                            )                          
                 .AsNoTracking();
 
             Expression<Func<Hotel, object>> selectorKey = request.SortItem?.ToLower() switch

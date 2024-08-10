@@ -11,9 +11,9 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<Unit> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateCommentCommand command, CancellationToken cancellationToken)
         {
-            await _unitOfWork.Comments.Update(request.HotelId, request.Description);
+            await _unitOfWork.Comments.Update(command.HotelId, command.Description);
             await _unitOfWork.SaveChangesAsync();
             return Unit.Value;
         }

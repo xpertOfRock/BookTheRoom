@@ -9,6 +9,7 @@ namespace Core.Contracts
         int Rating,
         int RoomsAmount,
         bool HasPool,
-        Address Address
+        Address Address,
+        List<string> Images
     );
 }

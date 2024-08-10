@@ -8,6 +8,7 @@ namespace Core.Contracts
         string Description,
         int Number,
         decimal Price,
-        RoomCategory Category
+        RoomCategory Category,
+        List<string> Images
     );
 }

@@ -30,6 +30,10 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
 
             var room = await _unitOfWork.Rooms.GetById(command.HotelId, command.Number);
 
+            var images = new List<string>();
+
+            images = command.Images.Any() ? command.Images : hotel.Images;
+
             hotel.Rooms!.Add(room);
 
             await _unitOfWork.Hotels.Update(
@@ -40,7 +44,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
                     hotel.Rating,
                     hotel.RoomsAmount,
                     hotel.HasPool,
-                    hotel.Images,
+                    images,
                     hotel.Rooms
                     )
                 );

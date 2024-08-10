@@ -80,23 +80,23 @@ builder.Services.Configure<HostOptions>(options =>
     options.ServicesStopConcurrently = false;
 });
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.Authority = "http://localhost:5275"; // URL IdentityServer
-    options.Audience = "api"; // Имя вашего API ресурса
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateAudience = true,
-        ValidateIssuer = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true
-    };
-});
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//.AddJwtBearer(options =>
+//{
+//    options.Authority = "http://localhost:5275"; 
+//    options.Audience = "api"; 
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateAudience = true,
+//        ValidateIssuer = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true
+//    };
+//});
 
 builder.Services.AddEndpointsApiExplorer();
 
