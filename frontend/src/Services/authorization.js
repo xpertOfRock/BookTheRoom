@@ -1,7 +1,7 @@
 import { UserManager, WebStorageStateStore } from 'oidc-client-ts';
 
 const config = {
-    authority: "http://localhost:5275",  
+    authority: "https://localhost:5275",  
     client_id: "react_client_app",    
     redirect_uri: "http://localhost:3000/callback",
     post_logout_redirect_uri: "http://localhost:3000/",

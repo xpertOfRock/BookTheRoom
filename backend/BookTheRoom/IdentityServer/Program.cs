@@ -28,7 +28,7 @@ internal class Program
         builder.Services.AddCors(options =>
             options.AddDefaultPolicy(policy =>
             {
-                policy.WithOrigins("http://localhost:3000", "http://localhost:5286");
+                policy.WithOrigins("https://localhost:3000", "https://localhost:5286");
                 policy.AllowAnyHeader();
                 policy.AllowAnyMethod();
                 policy.AllowCredentials();

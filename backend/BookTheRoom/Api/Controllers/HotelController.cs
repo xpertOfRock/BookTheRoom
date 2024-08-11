@@ -82,11 +82,11 @@ namespace Api.Controllers
 
         [HttpPost]
         //[Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Post([FromBody] CreateHotelRequest request, [FromForm] List<IFormFile>? files)
+        public async Task<IActionResult> Post([FromBody] CreateHotelRequest request, [FromForm] List<IFormFile>? Files)
         {
-            if (files.Any())
+            if (Files.Any())
             {
-                foreach (var file in files)
+                foreach (var file in Files)
                 {
                     var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
                     request.Images.Add(resultForList.Url.ToString());

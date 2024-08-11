@@ -1,4 +1,4 @@
-import { Select, Input, TagLabel } from "@chakra-ui/react";
+import { Select, Input } from "@chakra-ui/react";
 
 function Filter({filter, setFilter}) {
     return (

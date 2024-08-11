@@ -61,7 +61,7 @@ builder.Services.AddCors(options =>
 
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5275");
+        policy.WithOrigins("https://localhost:3000", "https://localhost:5275");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
         policy.AllowCredentials();
@@ -87,7 +87,7 @@ builder.Services.Configure<HostOptions>(options =>
 //})
 //.AddJwtBearer(options =>
 //{
-//    options.Authority = "http://localhost:5275"; 
+//    options.Authority = "https://localhost:5275"; 
 //    options.Audience = "api"; 
 //    options.TokenValidationParameters = new TokenValidationParameters
 //    {
@@ -119,6 +119,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseHttpsRedirection();
 
 app.MapControllers();
 

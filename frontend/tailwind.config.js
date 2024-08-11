@@ -5,7 +5,16 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+      customGamma: {
+        lightGray: "#CCD9E2", 
+        skyBlue: "#285185", 
+        pumpkinOrange: "#D67940",
+        lightCabernet: "$6f4849"
+      },
+    },
   },
   plugins: [],
+}
 }

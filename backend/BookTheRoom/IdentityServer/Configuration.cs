@@ -1,6 +1,5 @@
 ﻿using Duende.IdentityServer.Models;
 using Duende.IdentityServer;
-using CloudinaryDotNet;
 
 namespace IdentityServer
 {
@@ -28,10 +27,10 @@ namespace IdentityServer
                 {
                     ClientId = "react_client_app",
                     AllowedGrantTypes = GrantTypes.Code,
-                    AllowedCorsOrigins = {"http://localhost:3000", "http://localhost:5286"},
+                    AllowedCorsOrigins = { "https://localhost:3000", "https://localhost:5286"},
                     ClientSecrets = new List<Secret> { new Secret("MegaSuperSecureSecret".Sha256()) },
-                    RedirectUris = { "http://localhost:3000/callback" },
-                    PostLogoutRedirectUris = { "http://localhost:3000/" },
+                    RedirectUris = { "https://localhost:3000/callback" },
+                    PostLogoutRedirectUris = { "https://localhost:3000/" },
                     AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Email,

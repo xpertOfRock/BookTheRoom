@@ -1,8 +1,9 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import { fetchHotels } from './Services/hotels';
-import HotelCard from './Components/HotelCard';
-import Filter from './Components/Filter';
+import { fetchHotels, postHotel } from './services/hotels';
+import HotelCard from './components/HotelCard';
+import Filter from './components/Filter';
+import CreateHotelForm from './components/CreateHotelForm';
 
 function App() {
 
@@ -24,11 +25,19 @@ function App() {
     }
 
     fetchData();
-  }, [filter])
+  }, [filter]);
+
+  const onCreate = async (hotel, files) => {
+    await postHotel(hotel, files);
+    var hotels = await fetchHotels(filter);
+    setHotels(hotels);
+  }
 
   return (
     <section className="p-8 flex flex-row justify-start itemx-staart gap-12">
-      <div className="flex flex-col w-1/3 gap-10">
+      <div className="flex flex-col w-1/2 gap-10">
+        <h1>Create hotel</h1>
+        <CreateHotelForm onCreate={onCreate}/>
         <h1>Filters</h1>
         <Filter filter={filter} setFilter={setFilter}/>
       </div>
