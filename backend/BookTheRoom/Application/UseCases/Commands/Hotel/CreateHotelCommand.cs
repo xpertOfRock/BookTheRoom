@@ -7,7 +7,7 @@ namespace Application.UseCases.Commands.Hotel
     public class CreateHotelCommand : IRequest<Unit>
     {
         public string Name { get; set; }
-        public string Description { get; set; }       
+        public string Description { get; set; }
         public int Rating { get; set; }
         public int RoomsAmount { get; set; }
         public bool HasPool { get; set; }
@@ -19,8 +19,8 @@ namespace Application.UseCases.Commands.Hotel
             Name = request.Name;
             Description = request.Description;
             Rating = request.Rating;
-            RoomsAmount = request.RoomsAmount;
-            HasPool = request.HasPool;
+            RoomsAmount = request.Rooms;
+            HasPool = request.Pool;
             Address = request.Address;
             Images = request.Images;
         }

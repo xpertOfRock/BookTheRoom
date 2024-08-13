@@ -1,174 +1,196 @@
-import { 
-    Button, 
-    NumberInput, 
-    NumberInputField,
-    NumberInputStepper,
-    NumberIncrementStepper,
-    NumberDecrementStepper, 
-    Input,  
-    Select, 
-    Text, 
-    Textarea 
-} from "@chakra-ui/react";
-import { useState } from "react";
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+  NumberInput,
+  NumberInputField,
+  Switch,
+  VStack,
+  useToast,
+} from '@chakra-ui/react';
 
+const CreateHotelForm = ({onCreate}) => {
+  const [form, setForm] = useState({
+    name: '',
+    description: '',
+    rating: 0,
+    rooms: 0,
+    pool: false,
+    country: '',
+    state: '',
+    city: '',
+    street: '',
+    postalCode: '',
+    images: [],
+  });
+  var toast = useToast();
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
 
-function CreateHotelForm ({onCreate}) {
-    const [images, setImages] = useState([]);
-    const [hotel, setHotel] = useState({
-        Name: "",
-        Description: "",
-        HasPool: false,
-        RoomsAmount: 40,
-        Rating: 5,
-        Address: {
-            Country: "",
-            State: "",
-            City: "",
-            Street: "",
-            PostalCode: ""
-        }
+  const handleFileChange = (e) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      images: Array.from(e.target.files),
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    Object.keys(form).forEach((key) => {
+      if (key === 'images') {
+        form.images.forEach((file) => {
+          formData.append('Images', file);
+        });
+      } else {
+        formData.append(key.charAt(0).toUpperCase() + key.slice(1), form[key]);
+      }
     });
 
-    const handleImage = async (e) => {
-        const filesArray = Array.from(e.target.files);
-        setImages(filesArray);
-    }
+    onCreate(formData);
+    toast({
+      title: 'Created!',
+      description: 'Hotel was created successfully!',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
+  };
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        setHotel({
-            Name: "",
-            Description: "",
-            HasPool: false,
-            RoomsAmount: 40,
-            Rating: 5,
-            Address: {
-                Country: "",
-                State: "",
-                City: "",
-                Street: "",
-                PostalCode: ""
-            }
-        });
-        onCreate(hotel, images);
-    }
+  return (
+    <Box p={8} maxWidth="600px" mx="auto">
+      <form onSubmit={handleSubmit}>
+        <VStack spacing={4}>
+          <FormControl id="name" isRequired>
+            <FormLabel>Name</FormLabel>
+            <Input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+            />
+          </FormControl>
 
-    return (
-        <form onSubmit={onSubmit} className="w-full flex flex-col gap-3" encType="multipart/form-data">
-            <h3 className="font-bold text-x1">Create new hotel</h3>
-            <div className="w-1/2 flex flex-col gap-3">
-                <Text>Name</Text>
-                <Input 
-                    placeholder="Write name here"
-                    value={hotel.Name}
-                    onChange={(e) => setHotel({...hotel, Name: e.target.value})}      
-                />
-                <Text>Description</Text>
-                <Textarea
-                    placeholder="Write description here"
-                    value={hotel.Description}
-                    onChange={(e) => setHotel({...hotel, Description: e.target.value})}            
-                />
-                <Text>Has pool</Text>
-                <Select value={hotel.HasPool.toString()} onChange={(e) => setHotel({...hotel, HasPool: e.target.value === "true"})}>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                </Select>
-                <Text>Amount of rooms</Text>
-                <NumberInput 
-                    step={1} 
-                    value={hotel.RoomsAmount}
-                    min={10} 
-                    max={8000}
-                    onChange={(value) => setHotel({...hotel, RoomsAmount: parseInt(value, 10)})}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                    </NumberInputStepper>
-                </NumberInput>
-                <Text>Rating in ★</Text>
-                <NumberInput 
-                    step={1} 
-                    value={hotel.Rating}
-                    min={1} 
-                    max={5}
-                    onChange={(value) => setHotel({...hotel, Rating: parseInt(value, 10)})}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                    </NumberInputStepper>
-                </NumberInput>
-            </div>
-            <div className="w-1/2 flex flex-col gap-3">   
-                <Text>Address</Text>            
-                <Input 
-                    placeholder="Country"
-                    value={hotel.Address.Country}
-                    onChange={(e) => setHotel({
-                        ...hotel, 
-                        Address: {
-                            ...hotel.Address,
-                            Country: e.target.value
-                        }
-                    })}            
-                />
-                <Input 
-                    placeholder="State"
-                    value={hotel.Address.State}
-                    onChange={(e) => setHotel({
-                        ...hotel, 
-                        Address: {
-                            ...hotel.Address,
-                            State: e.target.value
-                        }
-                    })}           
-                />
-                <Input 
-                    placeholder="City"
-                    value={hotel.Address.City}
-                    onChange={(e) => setHotel({
-                        ...hotel, 
-                        Address: {
-                            ...hotel.Address,
-                            City: e.target.value
-                        }
-                    })}           
-                />
-                <Input 
-                    placeholder="Street"
-                    value={hotel.Address.Street}
-                    onChange={(e) => setHotel({
-                        ...hotel, 
-                        Address: {
-                            ...hotel.Address,
-                            Street: e.target.value
-                        }
-                    })}           
-                />
-                <Input 
-                    placeholder="Postal Code"
-                    value={hotel.Address.PostalCode}
-                    onChange={(e) => setHotel({
-                        ...hotel, 
-                        Address: {
-                            ...hotel.Address,
-                            PostalCode: e.target.value
-                        }
-                    })}           
-                />
-                <Input
-                    type="file"
-                    multiple
-                    onChange={handleImage}      
-                />
-            </div>
-            
-            <Button type="submit" variant={"filled"}>Create!</Button>
-        </form>
-    );
-}
+          <FormControl id="description" isRequired>
+            <FormLabel>Description</FormLabel>
+            <Textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+          <FormControl id="rating" isRequired>
+            <FormLabel>Rating</FormLabel>
+            <NumberInput
+              name="rating"
+              value={form.rating}
+              min={0}
+              max={5}
+              onChange={(value) => handleChange({ target: { name: 'rating', value } })}
+            >
+              <NumberInputField />
+            </NumberInput>
+          </FormControl>
+
+          <FormControl id="rooms" isRequired>
+            <FormLabel>Rooms</FormLabel>
+            <NumberInput
+              name="rooms"
+              value={form.rooms}
+              min={0}
+              onChange={(value) => handleChange({ target: { name: 'rooms', value } })}
+            >
+              <NumberInputField />
+            </NumberInput>
+          </FormControl>
+
+          <FormControl id="pool">
+            <FormLabel>Has Pool</FormLabel>
+            <Switch
+              name="pool"
+              isChecked={form.pool}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+          <FormControl id="country" isRequired>
+            <FormLabel>Country</FormLabel>
+            <Input
+              type="text"
+              name="country"
+              value={form.country}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+          <FormControl id="state" isRequired>
+            <FormLabel>State</FormLabel>
+            <Input
+              type="text"
+              name="state"
+              value={form.state}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+          <FormControl id="city" isRequired>
+            <FormLabel>City</FormLabel>
+            <Input
+              type="text"
+              name="city"
+              value={form.city}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+          <FormControl id="street" isRequired>
+            <FormLabel>Street</FormLabel>
+            <Input
+              type="text"
+              name="street"
+              value={form.street}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+          <FormControl id="postalCode" isRequired>
+            <FormLabel>Postal Code</FormLabel>
+            <Input
+              type="text"
+              name="postalCode"
+              value={form.postalCode}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+          <FormControl id="images">
+            <FormLabel>Images</FormLabel>
+            <Input
+              type="file"
+              name="images"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </FormControl>
+
+          <Button type="submit" colorScheme="teal" size="lg" width="full">
+            Create Hotel
+          </Button>
+        </VStack>
+      </form>
+    </Box>
+  );
+};
 
 export default CreateHotelForm;

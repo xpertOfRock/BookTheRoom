@@ -3,14 +3,16 @@ using Api.DTOs;
 using Application.Interfaces;
 using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Queries.Hotel;
-using CloudinaryDotNet.Actions;
 using Core.Contracts;
 using Core.Entities;
+using Core.ValueObjects;
 using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 
 
 namespace Api.Controllers
@@ -82,30 +84,48 @@ namespace Api.Controllers
 
         [HttpPost]
         //[Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Post([FromBody] CreateHotelRequest request, [FromForm] List<IFormFile>? Files)
+        public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
-            if (Files.Any())
+            var imagesUrl = new List<string>();
+            if (form.Images is not null && form.Images.Any())
             {
-                foreach (var file in Files)
+                foreach (var file in form.Images)
                 {
-                    var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
-                    request.Images.Add(resultForList.Url.ToString());
-                    file.OpenReadStream().Dispose();
+                    using (var stream = file.OpenReadStream())
+                    {
+                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                        imagesUrl.Add(resultForList.Url.ToString());
+                    }
                 }
             }
-            await _mediator.Send(new CreateHotelCommand(request));
+
+            var request = new CreateHotelRequest
+            (
+                form.Name,
+                form.Description,
+                form.Rating,
+                form.Rooms,
+                form.Pool,
+                new Address
+                (
+                    form.Country,
+                    form.State,
+                    form.City,
+                    form.Street,
+                    form.PostalCode
+                ),
+                imagesUrl
+            );
+
+           await _mediator.Send(new CreateHotelCommand(request));
             return Ok();
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Put(
-            int id,
-            [FromBody] UpdateHotelRequest request,
-            [FromForm] List<IFormFile>? files
-            )
+        //[Authorize(Roles = UserRole.Admin)]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateHotelRequest request, [FromForm] List<IFormFile> files)
         {
-            if(files.Any())
+            if (files.Any())
             {
                 foreach (var file in files)
                 {
@@ -114,14 +134,13 @@ namespace Api.Controllers
                     file.OpenReadStream().Dispose();
                 }
             }
-                        
+
             await _mediator.Send(new UpdateHotelCommand(id, request));
             return Ok();
         }
 
-
         [HttpDelete("{id}")]
-        [Authorize(Roles = UserRole.Admin)]
+        //[Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _mediator.Send(new DeleteHotelCommand(id));

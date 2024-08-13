@@ -26,11 +26,11 @@ function App() {
 
     fetchData();
   }, [filter]);
-
-  const onCreate = async (hotel, files) => {
-    await postHotel(hotel, files);
-    var hotels = await fetchHotels(filter);
-    setHotels(hotels);
+  
+  const onCreate = async (hotelForm) => {
+      await postHotel(hotelForm);
+      let hotels = await fetchHotels(filter);
+      setHotels(hotels);
   }
 
   return (

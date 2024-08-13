@@ -17,42 +17,27 @@ export const fetchHotels = async (filter) => {
 
 export const fetchHotel = async (id) => {  
   try{
-      var result = await axios.get("https://localhost:5286/api/hotel/" + id);
-      return result.data;
+      var response = await axios.get("https://localhost:5286/api/hotel/" + id);
+      return response.data;
   }catch(e){
       console.error(e);
   }
 };
 
-
-
-export const postHotel = async (hotelData, files) => {
+export const postHotel = async (formData) => {
   try {
-    const formData = new FormData();
-    
-    // Добавляем JSON данные в formData
-    formData.append("request", new Blob([JSON.stringify(hotelData)], {
-      type: "application/json"
-    }));
-
-    // Добавляем файлы в formData
-    if (files && files.length > 0) {
-      files.forEach(file => {
-        formData.append("Files", file);
-      });
-    }
-
-    const response = await axios.post("https://localhost:5286/api/hotel", formData, {
+    const response = await axios.post('https://localhost:5286/api/hotel', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
+        'Content-Type': 'multipart/form-data',
+      },
+    });  
+    console.log('Hotel created successfully:', response.data);
     return response.status;
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error('Error creating hotel:', error);
   }
 };
+
 
 export const putHotel = async (id, hotel) => {
   try{
