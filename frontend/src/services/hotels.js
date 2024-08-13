@@ -25,8 +25,11 @@ export const fetchHotel = async (id) => {
 };
 
 export const postHotel = async (formData) => {
-  try {
-    const response = await axios.post('https://localhost:5286/api/hotel', formData, {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    const response = await axios.post("https://localhost:5286/api/hotel", formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
