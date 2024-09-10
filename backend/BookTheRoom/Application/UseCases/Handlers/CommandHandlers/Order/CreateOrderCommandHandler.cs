@@ -94,7 +94,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
                              $"Overall price : {Math.Round(order.OverallPrice, 2)}\n\n" +
                              $"Have a nice day!";
                 
-                _emailService.SendEmail(order.Email, subject, body);
+                await _emailService.SendEmail(order.Email, subject, body);
                 
                 await _unitOfWork.SaveChangesAsync();
             }
