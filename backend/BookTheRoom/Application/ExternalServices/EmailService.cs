@@ -17,7 +17,7 @@ namespace Application.ExternalServices
             _options = options.Value;
         }
 
-        public async Task SendEmail(string to, string subject, string body)
+        public void SendEmail(string to, string subject, string body)
         {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_options.EmailUsername));
@@ -26,10 +26,10 @@ namespace Application.ExternalServices
             email.Body = new TextPart(TextFormat.Plain) { Text = body };
 
             using var smtp = new SmtpClient();
-            var connectionResult = smtp.ConnectAsync(_options.EmailHost, _options.EmailPort, SecureSocketOptions.StartTls);
-            var authResult = smtp.AuthenticateAsync(_options.EmailUsername, _options.EmailPassword);
-            var sendMessageResult = smtp.SendAsync(email);
-            var dissconectionResult = smtp.DisconnectAsync(true);
+            smtp.Connect(_options.EmailHost, _options.EmailPort, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_options.EmailUsername, _options.EmailPassword);
+            smtp.Send(email);
+            smtp.Disconnect(true);
         }
     }
 }

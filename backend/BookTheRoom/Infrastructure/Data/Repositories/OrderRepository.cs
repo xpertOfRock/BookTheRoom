@@ -66,7 +66,7 @@ namespace Infrastructure.Data.Repositories
                        )
                 .AsNoTracking();
 
-            Expression<Func<Order, object>> selectorKey = request.SortItem.ToLower() switch
+            Expression<Func<Order, object>> selectorKey = request.SortItem?.ToLower() switch
             {
                 "price" => order => order.OverallPrice,
                 "status" => order => order.Status.ToString(),
