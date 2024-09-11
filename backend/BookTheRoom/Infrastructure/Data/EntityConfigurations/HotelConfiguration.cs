@@ -20,9 +20,6 @@ namespace Infrastructure.Data.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(1000);
 
-            builder.Property(h => h.RoomsAmount)
-                .IsRequired();
-
             builder.Property(h => h.Rating)
                 .IsRequired();
 

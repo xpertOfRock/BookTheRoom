@@ -86,7 +86,22 @@ namespace Api.Controllers
         //[Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
+
+            foreach(var property in form.GetType().GetProperties())
+            {
+                if(property.Name == "Images")
+                {
+                    continue;
+                }
+
+                if(property is null)
+                {
+                    return BadRequest();
+                }
+            }
+
             var imagesUrl = new List<string>();
+
             if (form.Images is not null && form.Images.Any())
             {
                 foreach (var file in form.Images)
@@ -97,14 +112,13 @@ namespace Api.Controllers
                         imagesUrl.Add(resultForList.Url.ToString());
                     }
                 }
-            }
-
+            }            
+            
             var request = new CreateHotelRequest
             (
                 form.Name,
                 form.Description,
                 form.Rating,
-                form.Rooms,
                 form.Pool,
                 new Address
                 (
@@ -123,17 +137,30 @@ namespace Api.Controllers
 
         [HttpPut("{id}")]
         //[Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Put(int id, [FromBody] UpdateHotelRequest request, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
-            if (files.Any())
-            {
-                foreach (var file in files)
+            var imagesUrl = new List<string>();
+
+            if (form.Images is not null && form.Images.Any())
+            {               
+                foreach (var file in form.Images)
                 {
-                    var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
-                    request.Images.Add(resultForList.Url.ToString());
-                    file.OpenReadStream().Dispose();
+                    using (var stream = file.OpenReadStream())
+                    {
+                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                        imagesUrl.Add(resultForList.Url.ToString());
+                    }
                 }
             }
+
+            var request = new UpdateHotelRequest
+            (
+                form.Name,
+                form.Description,
+                form.Rating,
+                form.Pool,
+                imagesUrl
+            );            
 
             await _mediator.Send(new UpdateHotelCommand(id, request));
             return Ok();

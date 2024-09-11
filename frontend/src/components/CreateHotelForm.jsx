@@ -27,7 +27,9 @@ const CreateHotelForm = ({onCreate}) => {
     postalCode: '',
     images: [],
   });
-  var toast = useToast();
+
+  const toast = useToast();
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prevForm) => ({
@@ -64,6 +66,7 @@ const CreateHotelForm = ({onCreate}) => {
       duration: 5000,
       isClosable: true,
     });
+    
   };
 
   return (
@@ -184,7 +187,14 @@ const CreateHotelForm = ({onCreate}) => {
             />
           </FormControl>
 
-          <Button type="submit" colorScheme="teal" size="lg" width="full">
+          <Button 
+            type="submit"
+            bgColor="skyBlue" 
+            color="white"
+            size="lg"
+            width="full"
+            _hover={{ bgColor: 'lightCabernet' }}
+          >
             Create Hotel
           </Button>
         </VStack>

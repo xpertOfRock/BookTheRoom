@@ -7,15 +7,14 @@ function Filter({filter, setFilter}) {
             <Input placeholder="..." onChange={(e) => setFilter({...filter, search: e.target.value})}/>
             <label>Sort by:</label>
             <Select onChange={(e) => setFilter({...filter, sortItem: e.target.value})}>
-                <option>---</option>
+                <option>Default</option>
                 <option value={"name"}>Name</option>
                 <option value={"rating"}>Rating</option>
             </Select>
             <label>Order by:</label>
             <Select onChange={(e) => setFilter({...filter, sortOrder: e.target.value})}>
-                <option>---</option>
-                <option value={"asc"}>Ascending</option>
                 <option value={"desc"}>Descending</option>
+                <option value={"asc"}>Ascending</option>                
             </Select>
         </div>
     )

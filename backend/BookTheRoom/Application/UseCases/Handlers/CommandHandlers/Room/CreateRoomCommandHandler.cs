@@ -36,16 +36,13 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
 
             hotel.Rooms!.Add(room);
 
-            await _unitOfWork.Hotels.Update(
-                command.HotelId,
+            await _unitOfWork.Hotels.Update(command.HotelId,
                 new UpdateHotelRequest(
                     hotel.Name,
                     hotel.Description,
                     hotel.Rating,
-                    hotel.RoomsAmount,
                     hotel.HasPool,
-                    images,
-                    hotel.Rooms
+                    images
                     )
                 );
 

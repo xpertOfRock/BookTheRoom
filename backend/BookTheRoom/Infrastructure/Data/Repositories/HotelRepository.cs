@@ -90,6 +90,19 @@ namespace Infrastructure.Data.Repositories
         public async Task Update(int id, UpdateHotelRequest request)
         {
             string key = $"hotel-{id}";
+                       
+            var hotel = await _context.Hotels.FindAsync(id);
+
+            if (request.Images is not null)
+            {
+                if (hotel.Images != null && hotel.Images.Any())
+                {
+                    foreach (var image in hotel.Images)
+                    {
+                        await _photoService.DeletePhotoAsync(image);
+                    }
+                }
+            }
 
             await _context.Hotels
                 .Where(h => h.Id == id)
@@ -97,12 +110,9 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Name, request.Name)
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.Rating, request.Rating)
-                .SetProperty(h => h.RoomsAmount, request.RoomsAmount)
                 .SetProperty(h => h.HasPool, request.HasPool)
                 .SetProperty(h => h.Images, request.Images)
                 );
-
-            var hotel = await _context.Hotels.FindAsync(id);
 
             _memoryCache.Set(key, hotel, TimeSpan.FromMinutes(2));
         }

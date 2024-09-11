@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Certificates for frontend
+
+frontend/src/certs/localhost-key.pem
+frontend/src/certs/localhost.pem
+frontend/.env
