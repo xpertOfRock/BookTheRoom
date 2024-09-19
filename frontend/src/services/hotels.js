@@ -2,7 +2,7 @@ import axios from "axios"
 
 export const fetchHotels = async (filter) => {  
     try{
-      const result = await axios.get("https://localhost:5286/api/hotel", {
+      var result = await axios.get("https://localhost:5286/api/hotel", {
             params: {
               search: filter?.search,
               sortItem: filter?.sortItem,
@@ -18,7 +18,7 @@ export const fetchHotels = async (filter) => {
 
 export const fetchHotel = async (id) => {  
   try{
-      const response = await axios.get("https://localhost:5286/api/hotel/" + id);
+      var response = await axios.get("https://localhost:5286/api/hotel/" + id);
       return response.data;
   }catch(e){
       console.error(e);

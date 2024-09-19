@@ -159,7 +159,8 @@ namespace Api.Controllers
                 form.Description,
                 form.Rating,
                 form.Pool,
-                imagesUrl
+                imagesUrl,
+                new List<Comment>()
             );            
 
             await _mediator.Send(new UpdateHotelCommand(id, request));

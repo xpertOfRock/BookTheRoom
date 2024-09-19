@@ -12,7 +12,6 @@ namespace Infrastructure.Identity
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                // Создание ролей
                 var roles = new[] { UserRole.Admin, UserRole.User };
                 foreach (var role in roles)
                 {

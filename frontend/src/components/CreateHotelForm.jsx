@@ -18,7 +18,6 @@ const CreateHotelForm = ({onCreate}) => {
     name: '',
     description: '',
     rating: 0,
-    rooms: 0,
     pool: false,
     country: '',
     state: '',
@@ -105,18 +104,6 @@ const CreateHotelForm = ({onCreate}) => {
             </NumberInput>
           </FormControl>
 
-          <FormControl id="rooms" isRequired>
-            <FormLabel>Rooms</FormLabel>
-            <NumberInput
-              name="rooms"
-              value={form.rooms}
-              min={0}
-              onChange={(value) => handleChange({ target: { name: 'rooms', value } })}
-            >
-              <NumberInputField />
-            </NumberInput>
-          </FormControl>
-
           <FormControl id="pool">
             <FormLabel>Has Pool</FormLabel>
             <Switch
@@ -187,14 +174,7 @@ const CreateHotelForm = ({onCreate}) => {
             />
           </FormControl>
 
-          <Button 
-            type="submit"
-            bgColor="skyBlue" 
-            color="white"
-            size="lg"
-            width="full"
-            _hover={{ bgColor: 'lightCabernet' }}
-          >
+          <Button type="submit" colorScheme="teal" size="lg" width="full">
             Create Hotel
           </Button>
         </VStack>

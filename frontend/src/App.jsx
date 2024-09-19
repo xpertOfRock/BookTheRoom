@@ -29,7 +29,7 @@ function App() {
   
   const onCreate = async (hotelForm) => {
       await postHotel(hotelForm);
-      let hotels = await fetchHotels(filter);
+      var hotels = await fetchHotels(filter);
       setHotels(hotels);
   }
 

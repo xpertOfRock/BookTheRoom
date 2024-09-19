@@ -37,7 +37,7 @@ namespace Infrastructure.Data.BackgroundServices
                                                                      && order.RoomNumber == room.Number);
                         bool booked = room.IsFree;
 
-                        var request = new UpdateRoomRequest(room.Name, room.Description, room.Price, room.Category, room.Images, booked);
+                        var request = new UpdateRoomRequest(room.Name, room.Description, room.Price, booked, room.Category, room.Images);
 
                         if (hasActiveOrder)
                         {
@@ -75,7 +75,7 @@ namespace Infrastructure.Data.BackgroundServices
             var _timer = new Timer(async entry =>
             {
                 await UpdateRoomStatus();
-            }, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            }, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

@@ -14,6 +14,7 @@ namespace Core.Entities
         public int RoomNumber { get; set; }
         public int HotelId { get; set; }
         public int RoomId { get; set; }
+        public bool IsPaid { get; set; } = false;
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
         public DateTime CreatedAt { get; set; }

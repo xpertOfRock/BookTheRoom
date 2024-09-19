@@ -42,7 +42,8 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
                     hotel.Description,
                     hotel.Rating,
                     hotel.HasPool,
-                    images
+                    images,
+                    new List<Core.Entities.Comment>()
                     )
                 );
 

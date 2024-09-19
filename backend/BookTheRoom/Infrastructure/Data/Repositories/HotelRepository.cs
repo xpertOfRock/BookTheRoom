@@ -4,7 +4,6 @@ using Core.Entities;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Org.BouncyCastle.Tls;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Data.Repositories
@@ -28,7 +27,7 @@ namespace Infrastructure.Data.Repositories
 
         public async Task Delete(int id)
         {
-            var hotel = await _context.Hotels.FindAsync(id);
+            var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
 
             _memoryCache.Remove($"hotel-{id}");
 
@@ -42,10 +41,17 @@ namespace Infrastructure.Data.Repositories
             
             _context.Hotels.Remove(hotel);
         }
+        public async Task<List<Comment>> GetAllComments(int hotelId)
+        {
+            return await _context.Comments
+                .Where(c => c.HotelId == hotelId && c.ApartmentId == null)
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
         public async Task<List<Hotel>> GetAll(GetDataRequest request)
         {
-            
+           
             var query = _context.Hotels
                 .Include(h => h.Address)
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
@@ -91,7 +97,9 @@ namespace Infrastructure.Data.Repositories
         {
             string key = $"hotel-{id}";
                        
-            var hotel = await _context.Hotels.FindAsync(id);
+            var hotel = await GetById(id);
+
+            var comments = request.Comments == null ? hotel.Comments : new List<Comment>();
 
             if (request.Images is not null)
             {
@@ -102,6 +110,10 @@ namespace Infrastructure.Data.Repositories
                         await _photoService.DeletePhotoAsync(image);
                     }
                 }
+                await _context.Hotels
+                        .Where(h => h.Id == id)
+                        .ExecuteUpdateAsync(e => e
+                        .SetProperty(h => h.Images, request.Images));
             }
 
             await _context.Hotels
@@ -111,8 +123,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.Rating, request.Rating)
                 .SetProperty(h => h.HasPool, request.HasPool)
-                .SetProperty(h => h.Images, request.Images)
-                );
+                .SetProperty(h => h.Comments, request.Comments));
 
             _memoryCache.Set(key, hotel, TimeSpan.FromMinutes(2));
         }
