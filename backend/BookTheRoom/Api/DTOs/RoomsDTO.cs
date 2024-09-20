@@ -2,11 +2,12 @@
 
 namespace Api.DTOs
 {
-    public record RoomsDTO(
+    public record RoomsDTO
+    (
         int HotelId,
         string Name,
         int Number,
         string Preview,
         RoomCategory Category
-        );
+    );
 }

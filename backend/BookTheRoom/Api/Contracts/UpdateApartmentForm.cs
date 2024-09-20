@@ -1,10 +1,8 @@
-﻿using Core.Enums;
-
-namespace Api.Contracts
+﻿namespace Api.Contracts
 {
-    public record UpdateHotelForm
+    public record UpdateApartmentForm
     (
-        string Name,
+        string Title,
         string Description,
         int Rating,
         bool Pool,

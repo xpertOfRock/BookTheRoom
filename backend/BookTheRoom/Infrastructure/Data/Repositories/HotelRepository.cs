@@ -41,13 +41,6 @@ namespace Infrastructure.Data.Repositories
             
             _context.Hotels.Remove(hotel);
         }
-        public async Task<List<Comment>> GetAllComments(int hotelId)
-        {
-            return await _context.Comments
-                .Where(c => c.HotelId == hotelId && c.ApartmentId == null)
-                .AsNoTracking()
-                .ToListAsync();
-        }
 
         public async Task<List<Hotel>> GetAll(GetDataRequest request)
         {
@@ -76,7 +69,7 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Hotel> GetById(int id)
+        public async Task<Hotel> GetById(int? id)
         {
             string key = $"hotel-{id}";
             return await _memoryCache.GetOrCreateAsync(

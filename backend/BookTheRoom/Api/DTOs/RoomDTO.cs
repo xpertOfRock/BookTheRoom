@@ -2,7 +2,8 @@
 
 namespace Api.DTOs
 {
-    public record RoomDTO(
+    public record RoomDTO
+    (
         int HotelId,
         string Name,
         string Description,
@@ -10,5 +11,5 @@ namespace Api.DTOs
         decimal Price,
         List<string> Images,
         RoomCategory Category
-        );
+    );
 }

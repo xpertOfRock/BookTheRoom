@@ -6,13 +6,9 @@ using Application.UseCases.Queries.Hotel;
 using Core.Contracts;
 using Core.Entities;
 using Core.ValueObjects;
-using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.IdentityModel.Tokens;
-using System.Text.Json;
 
 
 namespace Api.Controllers
@@ -75,8 +71,12 @@ namespace Api.Controllers
                 hotel.Rooms != null &&
                     hotel.Rooms.Any()
                     ? hotel.Rooms
-                    : new List<Room> { }
+                    : new List<Room>{ },
                
+                hotel.Comments != null &&
+                    hotel.Comments.Any()
+                    ? hotel.Comments
+                    : new List<Comment> { }
                 );
 
             return Ok(hotelDTO);
@@ -86,7 +86,6 @@ namespace Api.Controllers
         //[Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
-
             foreach(var property in form.GetType().GetProperties())
             {
                 if(property.Name == "Images")

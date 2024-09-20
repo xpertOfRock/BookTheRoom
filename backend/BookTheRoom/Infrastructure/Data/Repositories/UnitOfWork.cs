@@ -25,6 +25,7 @@ namespace Infrastructure.Data.Repositories
         public IRoomRepository Rooms { get; private set; }
         public IOrderRepository Orders { get; private set; }
         public IApartmentRepository Apartments { get; private set; }
+        public ICommentRepository Comments { get; private set; }
 
         public async Task SaveChangesAsync()
         {

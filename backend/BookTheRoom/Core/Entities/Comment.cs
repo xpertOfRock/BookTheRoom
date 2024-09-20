@@ -11,6 +11,6 @@ namespace Core.Entities
         public int? ApartmentId { get; set; } = null;
         public PropertyCategory PropetyCategory { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; } = null;
     }
 }

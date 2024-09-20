@@ -42,17 +42,10 @@ namespace Infrastructure.Data.Repositories
             _context.Apartments.Remove(apartment);
         }
 
-        public async Task<List<Comment>> GetAllComments(int apartmentId)
-        {
-            return await _context.Comments
-                .Where(c => c.ApartmentId == apartmentId && c.HotelId == null)
-                .AsNoTracking()
-                .ToListAsync();
-        }
         public async Task<List<Apartment>> GetAll(GetDataRequest request)
         {
             var query = _context.Apartments
-                .Include(h => h.Address)
+                .Include(h => h.Address)                
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||                            
                             h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
@@ -72,7 +65,7 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Apartment> GetById(int id)
+        public async Task<Apartment> GetById(int? id)
         {
             string key = $"apartment-{id}";
             return await _memoryCache.GetOrCreateAsync(

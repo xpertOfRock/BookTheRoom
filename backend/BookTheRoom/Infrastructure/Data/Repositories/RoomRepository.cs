@@ -44,7 +44,9 @@ namespace Infrastructure.Data.Repositories
         }
         public async Task<List<Room>> GetAllRooms()
         {
-            return await _context.Rooms.AsNoTracking().ToListAsync();
+            return await _context.Rooms
+                .AsNoTracking()
+                .ToListAsync();
         }
         public async Task<List<Room>> GetAll(int hotelId, GetDataRequest request)
         {

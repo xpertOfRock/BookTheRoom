@@ -1,8 +1,6 @@
-﻿using Core.Enums;
-
-namespace Api.Contracts
+﻿namespace Api.Contracts
 {
-    public record UpdateHotelForm
+    public record UpdateRoomForm
     (
         string Name,
         string Description,
@@ -10,4 +8,5 @@ namespace Api.Contracts
         bool Pool,
         List<IFormFile>? Images
     );
+    
 }
