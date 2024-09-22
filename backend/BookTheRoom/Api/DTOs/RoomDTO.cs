@@ -9,7 +9,7 @@ namespace Api.DTOs
         string Description,
         int Number,
         decimal Price,
-        List<string> Images,
+        List<string>? Images,
         RoomCategory Category
     );
 }

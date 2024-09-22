@@ -4,6 +4,7 @@
     (
         int Id,
         string Title,
+        decimal Price,
         string Address,
         string? Preview
     );

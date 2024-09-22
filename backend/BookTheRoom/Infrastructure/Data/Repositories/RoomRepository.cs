@@ -30,6 +30,10 @@ namespace Infrastructure.Data.Repositories
             var room = await _context.Rooms
                 .FirstOrDefaultAsync(r => r.HotelId == hotelId && r.Number == number);
 
+            if(room == null)
+            {
+                return;
+            }
             _memoryCache.Remove($"hotel-{hotelId}-room-{number}");
 
             if (room.Images != null && room.Images.Count > 0)
@@ -70,10 +74,12 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Room> GetById(int hotelId, int number)
+        public async Task<Room> GetById(int? hotelId, int? number)
         {
-            string key = $"hotel-{hotelId}-room-{number}";
+            if (hotelId == null || number == null) throw new ArgumentNullException("Cannot get entity 'Hotel' when 'id' is null.");
 
+            string key = $"hotel-{hotelId}-room-{number}";
+            
             return await _memoryCache.GetOrCreateAsync(
                 key,
                 entry =>

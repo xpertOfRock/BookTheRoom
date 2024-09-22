@@ -29,6 +29,11 @@ namespace Infrastructure.Data.Repositories
         {
             var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
 
+            if(hotel == null)
+            {
+                return;
+            }
+
             _memoryCache.Remove($"hotel-{id}");
 
             if (hotel.Images != null && hotel.Images.Count > 0)
@@ -71,13 +76,15 @@ namespace Infrastructure.Data.Repositories
 
         public async Task<Hotel> GetById(int? id)
         {
+            if (id == null) throw new ArgumentNullException("Cannot get entity 'Hotel' when 'id' is null.");
+
             string key = $"hotel-{id}";
             return await _memoryCache.GetOrCreateAsync(
                 key,
                 entry =>
                 {
                     entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-                    return _context.Hotels
+                     return _context.Hotels
                     .Include(h => h.Address)                                         
                     .Include(h => h.Rooms)
                     .Include(h => h.Comments)
@@ -92,7 +99,12 @@ namespace Infrastructure.Data.Repositories
                        
             var hotel = await GetById(id);
 
-            var comments = request.Comments == null ? hotel.Comments : new List<Comment>();
+            if(hotel == null)
+            {
+                return;
+            }
+
+            var comments = !request.Comments.Any() ? hotel.Comments : new List<Comment>();
 
             if (request.Images is not null)
             {

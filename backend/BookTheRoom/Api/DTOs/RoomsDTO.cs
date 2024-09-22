@@ -7,6 +7,7 @@ namespace Api.DTOs
         int HotelId,
         string Name,
         int Number,
+        decimal Price,
         string Preview,
         RoomCategory Category
     );

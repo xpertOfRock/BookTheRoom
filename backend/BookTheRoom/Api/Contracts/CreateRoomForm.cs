@@ -1,15 +1,11 @@
 ﻿namespace Api.Contracts
 {
     public record CreateRoomForm
-    (        
+    (   
+        int number,
         string Title,
         string Description,
-        decimal PricePerNight,
-        string Country,
-        string State,
-        string City,
-        string Street,
-        string PostalCode,
+        decimal PricePerNight,      
         List<IFormFile> Images
     );
     

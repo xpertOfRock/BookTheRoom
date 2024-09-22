@@ -19,10 +19,12 @@ namespace Infrastructure.Data.Repositories
         {
             await _context.Comments.AddAsync(comment);
         }
-        public async Task<Comment> GetById(int id)
-        {
-            return await _context.Comments.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
-        }
+        //public async Task<Comment> GetById(int? id)
+        //{
+        //    var comment = 
+
+        //    return await _context.Comments.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        //}
         public async Task Delete(int id, string userId = "null")
         {
             if(userId == "null")
@@ -30,7 +32,7 @@ namespace Infrastructure.Data.Repositories
                 return;
             }
 
-            var user = await _userManager.Users?.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null )
             {

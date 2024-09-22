@@ -29,6 +29,11 @@ namespace Infrastructure.Data.Repositories
         {
             var apartment = await _context.Apartments.FirstOrDefaultAsync(a => a.Id == id);
 
+            if (apartment == null)
+            {
+                return;
+            }
+
             _memoryCache.Remove($"hotel-{id}");
 
             if (apartment.Images != null && apartment.Images.Count > 0)

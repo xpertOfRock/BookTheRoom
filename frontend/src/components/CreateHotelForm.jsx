@@ -58,6 +58,20 @@ const CreateHotelForm = ({onCreate}) => {
     });
 
     onCreate(formData);
+
+    setForm({
+      name: '',
+      description: '',
+      rating: 0,
+      pool: false,
+      country: '',
+      state: '',
+      city: '',
+      street: '',
+      postalCode: '',
+      images: [],
+    });
+    
     toast({
       title: 'Created!',
       description: 'Hotel was created successfully!',

@@ -8,6 +8,6 @@ namespace Core.Interfaces
         Task Add(Comment comment);
         Task Update(int id, string description);
         Task Delete(int id, string userId = "null");
-        Task<Comment> GetById(int id);
+        //Task<Comment> GetById(int? id);
     }
 }
