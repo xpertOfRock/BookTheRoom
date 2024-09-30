@@ -96,9 +96,16 @@ namespace Infrastructure.Data.Repositories
 
         public async Task Update(int hotelId, int number, UpdateRoomRequest request)
         {
+            var room = await GetById(hotelId, number);
+
+            if (room == null)
+            {
+                return;
+            }
+
             string key = $"hotel-{hotelId}-room-{number}";
 
-            var room = await GetById(hotelId, number);
+            
 
             if (request.Images is not null)
             {

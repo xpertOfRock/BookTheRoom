@@ -37,7 +37,7 @@ namespace Infrastructure.Data.BackgroundServices
                                                                      && order.RoomNumber == room.Number);
                         bool booked = room.IsFree;
 
-                        var request = new UpdateRoomRequest(room.Name, room.Description, room.Price, booked, room.Category, room.Images);
+                        var request = new UpdateRoomRequest(room.Name, room.Description, room.Price, room.Category, room.Images, booked);
 
                         if (hasActiveOrder)
                         {

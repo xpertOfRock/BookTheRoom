@@ -27,7 +27,7 @@ namespace Api.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll([FromQuery] GetDataRequest request)
+        public async Task<IActionResult> GetAll([FromQuery] GetHotelsRequest request)
         {
             var hotels = await _mediator.Send(new GetHotelsQuery(request));
 
@@ -86,19 +86,6 @@ namespace Api.Controllers
         //[Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
-            foreach(var property in form.GetType().GetProperties())
-            {
-                if(property.Name == "Images")
-                {
-                    continue;
-                }
-
-                if(property is null)
-                {
-                    return BadRequest();
-                }
-            }
-
             var imagesUrl = new List<string>();
 
             if (form.Images is not null && form.Images.Any())
@@ -138,7 +125,7 @@ namespace Api.Controllers
         //[Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
-            var imagesUrl = new List<string>();
+            var images = new List<string>();
 
             if (form.Images is not null && form.Images.Any())
             {               
@@ -147,7 +134,7 @@ namespace Api.Controllers
                     using (var stream = file.OpenReadStream())
                     {
                         var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        imagesUrl.Add(resultForList.Url.ToString());
+                        images.Add(resultForList.Url.ToString());
                     }
                 }
             }
@@ -158,7 +145,7 @@ namespace Api.Controllers
                 form.Description,
                 form.Rating,
                 form.Pool,
-                imagesUrl,
+                images,
                 new List<Comment>()
             );            
 

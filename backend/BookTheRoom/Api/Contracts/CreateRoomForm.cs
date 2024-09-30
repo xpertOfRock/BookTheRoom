@@ -1,11 +1,14 @@
-﻿namespace Api.Contracts
+﻿using Core.Enums;
+
+namespace Api.Contracts
 {
     public record CreateRoomForm
-    (   
-        int number,
+    (
         string Title,
         string Description,
-        decimal PricePerNight,      
+        int Number,
+        decimal PricePerNight,
+        RoomCategory Category,           
         List<IFormFile> Images
     );
     

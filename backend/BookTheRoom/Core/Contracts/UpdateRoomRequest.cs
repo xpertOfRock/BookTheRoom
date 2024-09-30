@@ -8,8 +8,8 @@ namespace Core.Contracts
         string Name,
         string Description,
         decimal Price,
-        bool IsFree,
         RoomCategory Category,
-        List<string> Images
+        List<string> Images,
+        bool IsFree = true      
     );
 }

@@ -26,6 +26,8 @@ namespace Application.ExternalServices
             {
                 File = new FileDescription(fileName, stream),
                 Transformation = new Transformation()
+                .FetchFormat("auto")
+                .Quality("auto")
                 .Height(500)
                 .Width(500)
                 .Crop("fill")

@@ -18,6 +18,7 @@ const CreateHotelForm = ({onCreate}) => {
     name: '',
     description: '',
     rating: 0,
+    rooms: 0,
     pool: false,
     country: '',
     state: '',
@@ -26,9 +27,7 @@ const CreateHotelForm = ({onCreate}) => {
     postalCode: '',
     images: [],
   });
-
-  const toast = useToast();
-
+  var toast = useToast();
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prevForm) => ({
@@ -58,20 +57,6 @@ const CreateHotelForm = ({onCreate}) => {
     });
 
     onCreate(formData);
-
-    setForm({
-      name: '',
-      description: '',
-      rating: 0,
-      pool: false,
-      country: '',
-      state: '',
-      city: '',
-      street: '',
-      postalCode: '',
-      images: [],
-    });
-    
     toast({
       title: 'Created!',
       description: 'Hotel was created successfully!',
@@ -79,7 +64,6 @@ const CreateHotelForm = ({onCreate}) => {
       duration: 5000,
       isClosable: true,
     });
-    
   };
 
   return (
@@ -113,6 +97,18 @@ const CreateHotelForm = ({onCreate}) => {
               min={0}
               max={5}
               onChange={(value) => handleChange({ target: { name: 'rating', value } })}
+            >
+              <NumberInputField />
+            </NumberInput>
+          </FormControl>
+
+          <FormControl id="rooms" isRequired>
+            <FormLabel>Rooms</FormLabel>
+            <NumberInput
+              name="rooms"
+              value={form.rooms}
+              min={0}
+              onChange={(value) => handleChange({ target: { name: 'rooms', value } })}
             >
               <NumberInputField />
             </NumberInput>

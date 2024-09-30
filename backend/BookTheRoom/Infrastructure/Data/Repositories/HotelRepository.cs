@@ -47,18 +47,30 @@ namespace Infrastructure.Data.Repositories
             _context.Hotels.Remove(hotel);
         }
 
-        public async Task<List<Hotel>> GetAll(GetDataRequest request)
+        public async Task<List<Hotel>> GetAll(GetHotelsRequest request)
         {
-           
             var query = _context.Hotels
                 .Include(h => h.Address)
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
                             h.Name.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
-                            h.Address.City.ToLower().Contains(request.Search.ToLower())
-                            )                          
+                            h.Address.City.ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();
+
+            // Преобразуем строку в массив для стран
+            if (!string.IsNullOrWhiteSpace(request.Countries))
+            {
+                var countries = request.Countries.Split(',');
+                query = query.Where(h => countries.Contains(h.Address.Country));
+            }
+
+            // Преобразуем строку в массив для рейтингов
+            if (!string.IsNullOrWhiteSpace(request.Ratings))
+            {
+                var ratings = request.Ratings.Split(',').Select(int.Parse).ToList();
+                query = query.Where(h => ratings.Contains(h.Rating));
+            }
 
             Expression<Func<Hotel, object>> selectorKey = request.SortItem?.ToLower() switch
             {
@@ -66,19 +78,21 @@ namespace Infrastructure.Data.Repositories
                 "rating" => hotel => hotel.Rating,
                 _ => hotel => hotel.Id
             };
-                     
+
             query = request.SortOrder == "desc"
-                 ? query = query.OrderByDescending(selectorKey)
-                 : query = query.OrderBy(selectorKey);                    
+                ? query.OrderByDescending(selectorKey)
+                : query.OrderBy(selectorKey);
 
             return await query.ToListAsync();
         }
+
 
         public async Task<Hotel> GetById(int? id)
         {
             if (id == null) throw new ArgumentNullException("Cannot get entity 'Hotel' when 'id' is null.");
 
             string key = $"hotel-{id}";
+
             return await _memoryCache.GetOrCreateAsync(
                 key,
                 entry =>
@@ -95,16 +109,16 @@ namespace Infrastructure.Data.Repositories
 
         public async Task Update(int id, UpdateHotelRequest request)
         {
-            string key = $"hotel-{id}";
-                       
             var hotel = await GetById(id);
 
-            if(hotel == null)
+            if (hotel == null)
             {
                 return;
             }
 
-            var comments = !request.Comments.Any() ? hotel.Comments : new List<Comment>();
+            string key = $"hotel-{id}";                                  
+
+            var comments = !request.Comments.Any() ? hotel.Comments : request.Comments;
 
             if (request.Images is not null)
             {
