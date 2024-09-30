@@ -8,9 +8,10 @@ function Hotels({hotels, filter, setFilter}){
    
             <div className="flex flex-col w-1/2 gap-10">
                 <h1>Filters</h1>
-
                 <HotelFilter filter={filter} setFilter={setFilter}/>
-
+                    
+            </div>
+            <div className="flex flex-col w-1/2 gap-10">
                 <h1>Hotels</h1>      
 
                 {hotels.map((h) => (
