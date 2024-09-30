@@ -18,7 +18,6 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
                     Name = command.Name,
                     Description = command.Description,
                     Rating = command.Rating,
-                    RoomsAmount = command.RoomsAmount,
                     HasPool = command.HasPool,
                     Address = command.Address,
                     Images = command.Images                  

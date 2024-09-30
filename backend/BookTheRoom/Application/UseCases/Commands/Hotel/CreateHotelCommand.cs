@@ -19,7 +19,6 @@ namespace Application.UseCases.Commands.Hotel
             Name = request.Name;
             Description = request.Description;
             Rating = request.Rating;
-            RoomsAmount = request.Rooms;
             HasPool = request.Pool;
             Address = request.Address;
             Images = request.Images;

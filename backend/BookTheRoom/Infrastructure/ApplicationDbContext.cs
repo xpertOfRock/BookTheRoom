@@ -14,13 +14,14 @@ namespace Infrastructure
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Address> Addresses { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Apartment> Apartments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfiguration(new ApartmentConfiguration());
             modelBuilder.ApplyConfiguration(new CommentConfiguration());
             modelBuilder.ApplyConfiguration(new HotelConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());

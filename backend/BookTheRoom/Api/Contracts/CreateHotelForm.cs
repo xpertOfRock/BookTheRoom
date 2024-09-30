@@ -5,7 +5,6 @@
         string Name,
         string Description,
         int Rating,
-        int Rooms,
         bool Pool,
         string Country,
         string State,

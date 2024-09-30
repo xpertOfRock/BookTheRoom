@@ -5,8 +5,8 @@ namespace Core.Interfaces
 {
     public interface IHotelRepository
     {
-        Task<List<Hotel>> GetAll(GetDataRequest request);
-        Task<Hotel> GetById(int id);
+        Task<List<Hotel>> GetAll(GetHotelsRequest request);
+        Task<Hotel> GetById(int? id);
         Task Add(Hotel hotel);
         Task Update(int id, UpdateHotelRequest request);
         Task Delete(int id);

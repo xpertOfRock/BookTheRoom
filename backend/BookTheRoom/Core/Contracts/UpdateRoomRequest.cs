@@ -1,4 +1,5 @@
-﻿using Core.Enums;
+﻿using Core.Entities;
+using Core.Enums;
 
 namespace Core.Contracts
 {
@@ -9,6 +10,6 @@ namespace Core.Contracts
         decimal Price,
         RoomCategory Category,
         List<string> Images,
-        bool IsFree
+        bool IsFree = true      
     );
 }

@@ -26,6 +26,8 @@ namespace Application.ExternalServices
             {
                 File = new FileDescription(fileName, stream),
                 Transformation = new Transformation()
+                .FetchFormat("auto")
+                .Quality("auto")
                 .Height(500)
                 .Width(500)
                 .Crop("fill")
@@ -40,7 +42,10 @@ namespace Application.ExternalServices
 
         public async Task<DeletionResult> DeletePhotoAsync(string publicUrl)
         {
-            var publicId = publicUrl.Split('/').Last().Split('.')[0];
+            var publicId = publicUrl
+                .Split('/')
+                .Last()
+                .Split('.')[0];
             var deleteParams = new DeletionParams(publicId);
             return await _cloudinary.DestroyAsync(deleteParams);
         }

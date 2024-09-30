@@ -75,7 +75,7 @@ namespace Infrastructure.Data.BackgroundServices
             var _timer = new Timer(async entry =>
             {
                 await UpdateRoomStatus();
-            }, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            }, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

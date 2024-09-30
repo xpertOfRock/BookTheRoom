@@ -1,5 +1,4 @@
 ﻿using Api.Extensions;
-using Application.Interfaces;
 using Application.UseCases.Commands.Order;
 using Core.Contracts;
 using Infrastructure.Identity;
@@ -18,11 +17,12 @@ namespace Api.Controllers
         private readonly IMediator _mediator;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
-        public OrderController(
+        public OrderController
+        (
             IMediator mediator,
             IHttpContextAccessor contextAccessor,
             UserManager<ApplicationUser> userManager
-            )
+        )
         {
             _mediator = mediator;
             _contextAccessor = contextAccessor;
@@ -48,8 +48,9 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(int id, [FromBody] string value)
         {
+            return Ok();
         }
     }
 }

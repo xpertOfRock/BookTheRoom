@@ -6,13 +6,9 @@ using Application.UseCases.Queries.Hotel;
 using Core.Contracts;
 using Core.Entities;
 using Core.ValueObjects;
-using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.IdentityModel.Tokens;
-using System.Text.Json;
 
 
 namespace Api.Controllers
@@ -31,7 +27,7 @@ namespace Api.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll([FromQuery] GetDataRequest request)
+        public async Task<IActionResult> GetAll([FromQuery] GetHotelsRequest request)
         {
             var hotels = await _mediator.Send(new GetHotelsQuery(request));
 
@@ -75,8 +71,12 @@ namespace Api.Controllers
                 hotel.Rooms != null &&
                     hotel.Rooms.Any()
                     ? hotel.Rooms
-                    : new List<Room> { }
+                    : new List<Room>{ },
                
+                hotel.Comments != null &&
+                    hotel.Comments.Any()
+                    ? hotel.Comments
+                    : new List<Comment> { }
                 );
 
             return Ok(hotelDTO);
@@ -87,6 +87,7 @@ namespace Api.Controllers
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
             var imagesUrl = new List<string>();
+
             if (form.Images is not null && form.Images.Any())
             {
                 foreach (var file in form.Images)
@@ -97,14 +98,13 @@ namespace Api.Controllers
                         imagesUrl.Add(resultForList.Url.ToString());
                     }
                 }
-            }
-
+            }            
+            
             var request = new CreateHotelRequest
             (
                 form.Name,
                 form.Description,
                 form.Rating,
-                form.Rooms,
                 form.Pool,
                 new Address
                 (
@@ -123,17 +123,31 @@ namespace Api.Controllers
 
         [HttpPut("{id}")]
         //[Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Put(int id, [FromBody] UpdateHotelRequest request, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
-            if (files.Any())
-            {
-                foreach (var file in files)
+            var images = new List<string>();
+
+            if (form.Images is not null && form.Images.Any())
+            {               
+                foreach (var file in form.Images)
                 {
-                    var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
-                    request.Images.Add(resultForList.Url.ToString());
-                    file.OpenReadStream().Dispose();
+                    using (var stream = file.OpenReadStream())
+                    {
+                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                        images.Add(resultForList.Url.ToString());
+                    }
                 }
             }
+
+            var request = new UpdateHotelRequest
+            (
+                form.Name,
+                form.Description,
+                form.Rating,
+                form.Pool,
+                images,
+                new List<Comment>()
+            );            
 
             await _mediator.Send(new UpdateHotelCommand(id, request));
             return Ok();
