@@ -13,7 +13,7 @@ namespace Application.UseCases.Handlers.QueryHandlers.Hotel
         }
         public async Task<List<Core.Entities.Hotel>> Handle(GetHotelsQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.Hotels.GetAll(request.Request);
+            return await _unitOfWork.Hotels.GetAll(request.Filter);
         }
     }
 }

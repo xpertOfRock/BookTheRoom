@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using CloudinaryDotNet.Actions;
 using Core.Contracts;
 using Core.Entities;
 using Core.Interfaces;
@@ -20,13 +21,16 @@ namespace Infrastructure.Data.Repositories
             _memoryCache = memoryCache;
             _photoService = photoService;
         }
+
+        private const int maxItemsOnPage = 15;
+
         public async Task Add(Hotel hotel)
         {
             await _context.Hotels.AddAsync(hotel);
         }
 
         public async Task Delete(int id)
-        {
+        {            
             var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
 
             if(hotel == null)
@@ -46,7 +50,7 @@ namespace Infrastructure.Data.Repositories
             
             _context.Hotels.Remove(hotel);
         }
-
+        
         public async Task<List<Hotel>> GetAll(GetHotelsRequest request)
         {
             var query = _context.Hotels
@@ -58,14 +62,12 @@ namespace Infrastructure.Data.Repositories
                             h.Address.City.ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();
 
-            // Преобразуем строку в массив для стран
             if (!string.IsNullOrWhiteSpace(request.Countries))
             {
                 var countries = request.Countries.Split(',');
                 query = query.Where(h => countries.Contains(h.Address.Country));
             }
 
-            // Преобразуем строку в массив для рейтингов
             if (!string.IsNullOrWhiteSpace(request.Ratings))
             {
                 var ratings = request.Ratings.Split(',').Select(int.Parse).ToList();
@@ -82,6 +84,8 @@ namespace Infrastructure.Data.Repositories
             query = request.SortOrder == "desc"
                 ? query.OrderByDescending(selectorKey)
                 : query.OrderBy(selectorKey);
+
+            query = query.Skip((request.page - 1) * maxItemsOnPage).Take(maxItemsOnPage);
 
             return await query.ToListAsync();
         }
@@ -102,6 +106,7 @@ namespace Infrastructure.Data.Repositories
                     .Include(h => h.Address)                                         
                     .Include(h => h.Rooms)
                     .Include(h => h.Comments)
+                    .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);
                 });

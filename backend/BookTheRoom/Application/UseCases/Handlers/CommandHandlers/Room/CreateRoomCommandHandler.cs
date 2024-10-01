@@ -17,7 +17,9 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
         {
             var hotel = await _unitOfWork.Hotels.GetById(command.HotelId);
 
-            await _unitOfWork.Rooms.Add(new Core.Entities.Room 
+            await _unitOfWork.Rooms.Add
+            (
+                new Core.Entities.Room 
                 {
                     Name = command.Name,
                     Description = command.Description,

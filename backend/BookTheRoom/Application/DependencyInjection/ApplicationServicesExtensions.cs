@@ -1,7 +1,9 @@
-﻿using Application.UseCases.Commands.Comment;
+﻿using Application.UseCases.Commands.Apartment;
+using Application.UseCases.Commands.Comment;
 using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Commands.Order;
 using Application.UseCases.Commands.Room;
+using Application.UseCases.Queries.Apartment;
 using Application.UseCases.Queries.Hotel;
 using Application.UseCases.Queries.Order;
 using Application.UseCases.Queries.Room;
@@ -39,7 +41,14 @@ namespace Application.DependencyInjection
                     typeof(GetUserOrdersQuery).Assembly,
 
                     typeof(CreateCommentCommand).Assembly,
-                    typeof(UpdateCommentCommand).Assembly
+                    typeof(UpdateCommentCommand).Assembly,
+
+                    typeof(CreateApartmentCommand).Assembly,
+                    //typeof(UpdateApartmentCommand).Assembly,
+                    //typeof(DeleteApartmentCommand).Assembly,
+                    typeof(GetApartmentsQuery).Assembly,
+                    typeof(GetUsersApartmentsQuery).Assembly,
+                    typeof(GetApartmentQuery).Assembly
                 )
             );
 

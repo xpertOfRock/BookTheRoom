@@ -11,6 +11,5 @@ namespace Api.Contracts
         bool Pool,
         RoomCategory RoomCategory,
         List<IFormFile>? Images
-    );
-    
+    );    
 }

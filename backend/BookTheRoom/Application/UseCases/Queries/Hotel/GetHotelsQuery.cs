@@ -6,10 +6,10 @@ namespace Application.UseCases.Queries.Hotel
 {
     public class GetHotelsQuery : IRequest<List<Core.Entities.Hotel>>
     {
-        public GetHotelsRequest Request { get; set; }
+        public GetHotelsRequest Filter { get; set; }
         public GetHotelsQuery(GetHotelsRequest request)
         {
-            Request = request;
+            Filter = request;
         }
     }
 }

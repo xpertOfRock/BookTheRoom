@@ -13,14 +13,17 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
         }
         public async Task<Unit> Handle(CreateHotelCommand command, CancellationToken cancellationToken)
         {
-            await _unitOfWork.Hotels.Add(new Core.Entities.Hotel
+            await _unitOfWork.Hotels.Add
+            (
+                new Core.Entities.Hotel
                 {
                     Name = command.Name,
                     Description = command.Description,
                     Rating = command.Rating,
                     HasPool = command.HasPool,
                     Address = command.Address,
-                    Images = command.Images                  
+                    Images = command.Images,
+                    Comments = new List<Core.Entities.Comment>()
                 }
             );
 

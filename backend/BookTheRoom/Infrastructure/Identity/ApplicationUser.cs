@@ -1,5 +1,4 @@
 ﻿using Core.Entities;
-using Core.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Identity
