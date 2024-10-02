@@ -9,7 +9,7 @@ namespace Core.Contracts
         string Description,
         decimal Price,
         RoomCategory Category,
-        List<string> Images,
+        List<string>? Images,
         bool IsFree = true      
     );
 }

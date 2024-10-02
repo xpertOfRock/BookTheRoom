@@ -8,7 +8,7 @@ namespace Core.Contracts
         string Description,
         int Rating,
         bool HasPool,
-        List<string> Images,
-        List<Comment> Comments
+        List<string>? Images,
+        List<Comment>? Comments
     );
 }

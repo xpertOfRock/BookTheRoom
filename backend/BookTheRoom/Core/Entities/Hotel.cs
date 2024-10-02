@@ -1,5 +1,4 @@
 ﻿using Core.ValueObjects;
-using System.Net;
 
 namespace Core.Entities
 {

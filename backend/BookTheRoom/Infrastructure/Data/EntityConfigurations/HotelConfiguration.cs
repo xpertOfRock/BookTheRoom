@@ -60,7 +60,7 @@ namespace Infrastructure.Data.EntityConfigurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(h => h.Comments)
-                .WithOne()
+                .WithOne()               
                 .HasForeignKey(c => c.HotelId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

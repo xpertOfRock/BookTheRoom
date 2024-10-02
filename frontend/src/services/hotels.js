@@ -21,7 +21,7 @@ export const fetchHotels = async (filter) => {
 
 export const fetchHotel = async (id) => {  
   try{
-    let response = await axios.get("https://localhost:5286/api/hotel/" + id);
+      let response = await axios.get("https://localhost:5286/api/hotel/" + id);
       return response.data;
   }catch(e){
       console.error(e);
@@ -44,7 +44,7 @@ export const postHotel = async (formData) => {
 
 export const putHotel = async (id, hotel) => {
   try{
-    const response = await axios.put("http://localhost:5286/api/hotel/"+ id, hotel);
+    const response = await axios.put("https://localhost:5286/api/hotel/"+ id, hotel);
     return response.status;
   }catch(e){
     console.error(e);
@@ -53,7 +53,7 @@ export const putHotel = async (id, hotel) => {
 
 export const deleteHotel = async(id) => {
   try{
-    const response = await axios.delete("http://localhost:5286/api/hotel/" + id);
+    const response = await axios.delete("https://localhost:5286/api/hotel/" + id);
     return response.status;
   }catch(e){
     console.error(e);

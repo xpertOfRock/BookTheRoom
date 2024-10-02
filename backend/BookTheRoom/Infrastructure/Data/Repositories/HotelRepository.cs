@@ -121,9 +121,11 @@ namespace Infrastructure.Data.Repositories
                 return;
             }
 
-            string key = $"hotel-{id}";                                  
+            string key = $"hotel-{id}";
 
-            var comments = !request.Comments.Any() ? hotel.Comments : request.Comments;
+            var comments = (request.Comments != null && request.Comments.Any())
+                    ? request.Comments
+                    : hotel.Comments;
 
             if (request.Images is not null)
             {
@@ -147,7 +149,9 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.Rating, request.Rating)
                 .SetProperty(h => h.HasPool, request.HasPool)
-                .SetProperty(h => h.Comments, request.Comments));
+                /*.SetProperty(h => h.Comments, request.Comments)*/);
+
+            hotel = await GetById(id);
 
             _memoryCache.Set(key, hotel, TimeSpan.FromMinutes(2));
         }

@@ -62,6 +62,7 @@ namespace Api.Controllers
                 hotel.Name,
                 hotel.Description,
                 hotel.Address.ToString(),
+                hotel.Rating,
 
                 hotel.Images != null &&
                     hotel.Images.Any() 
@@ -145,8 +146,12 @@ namespace Api.Controllers
                 form.Description,
                 form.Rating,
                 form.Pool,
-                images,
-                new List<Comment>()
+
+                images.Any() 
+                    ? images 
+                    : null,
+
+                null
             );            
 
             await _mediator.Send(new UpdateHotelCommand(id, request));

@@ -5,7 +5,6 @@ using Application.Interfaces;
 using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Queries.Apartment;
-using Application.UseCases.Queries.Hotel;
 using Core.Contracts;
 using Core.Entities;
 using Core.ValueObjects;
@@ -79,6 +78,7 @@ namespace Api.Controllers
                 h.Title,
                 h.PriceForNight,
                 h.Address.ToString(),
+
                 h.Images != null &&
                     h.Images.Any()
                     ? h.Images.First()
