@@ -36,8 +36,8 @@ namespace Infrastructure.Data.Repositories
             {
                 return;
             }
-
-            _memoryCache.Remove($"hotel-{id}");
+            var key = $"apartment-{id}";
+            _memoryCache.Remove(key);
 
             if (apartment.Images != null && apartment.Images.Count > 0)
             {
@@ -48,6 +48,7 @@ namespace Infrastructure.Data.Repositories
             }
 
             _context.Apartments.Remove(apartment);
+
         }
         public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request)
         {
@@ -150,11 +151,17 @@ namespace Infrastructure.Data.Repositories
                 });
         }
 
-        public async Task Update(int id, UpdateApartmentRequest request)
+        public async Task Update(int? id, UpdateApartmentRequest request)
         {
-            string key = $"hotel-{id}";
-
             var apartment = await GetById(id);
+
+            if(id is null)
+            {
+                throw new ArgumentNullException($"Cannot get entity '{nameof(Apartment)}' with '{id}' is null.");
+            }
+            string key = $"apartment-{id}";
+           
+            _memoryCache.Remove(key);
 
             var comments = request.Comments == null ? apartment.Comments : new List<Comment>();
 
@@ -181,8 +188,6 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Title, request.Title)
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.PriceForNight, request.Price));
-
-            _memoryCache.Set(key, apartment, TimeSpan.FromMinutes(2));
         }
     }
 }

@@ -78,7 +78,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.Configure<HostOptions>(options =>
 {
     options.ServicesStartConcurrently = true;
-    options.ServicesStopConcurrently = false;
+    options.ServicesStopConcurrently = true;
 });
 
 //builder.Services.AddAuthentication(options =>

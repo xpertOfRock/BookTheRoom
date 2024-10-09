@@ -6,7 +6,7 @@ import UpdateHotelForm from './components/hotel/UpdateHotelForm';
 import Hotels from './components/hotel/Hotels';
 import Navbar from './components/Navbar'; 
 import Home from './components/Home'; 
-import Apartments from './components/Apartments';
+import Apartments from './components/apartment/Apartments';
 import FAQ from './components/FAQ';
 import Support from './components/Support';
 

@@ -3,16 +3,14 @@ import axios from "axios"
 export const fetchHotels = async (filter) => {
   try {
     const params = {
-      search: filter?.search || undefined,
-      sortItem: filter?.sortItem || undefined,
-      sortOrder: filter?.sortOrder || undefined,
+      search: filter?.search,
+      sortItem: filter?.sortItem,
+      sortOrder: filter?.sortOrder,
       countries: filter?.countries.length > 0 ? filter.countries.join(",") : undefined,
       ratings: filter?.ratings.length > 0 ? filter.ratings.join(",") : undefined,
     };
 
-    console.log("Params sent to backend:", params); 
-
-    let result = await axios.get("https://localhost:5286/api/hotel", { params });
+    let result = await axios.get("https://localhost:5286/api/apartment", { params });
     return result.data.hotels;
   } catch (e) {
     console.error(e);

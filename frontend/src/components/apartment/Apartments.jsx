@@ -1,5 +1,5 @@
-import ApartmentCard from '../components/ApartmentCard';
-import ApartmentFilter from '../components/ApartmentFilter';
+import ApartmentCard from './ApartmentCard';
+import ApartmentFilter from './ApartmentFilter';
 
 function Apartments({ apartments, filter, setFilter }) {
   

@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using CloudinaryDotNet.Actions;
 using Core.Contracts;
 using Core.Entities;
 using Core.Interfaces;
@@ -123,6 +122,8 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{id}";
 
+            _memoryCache.Remove(key);
+
             var comments = (request.Comments != null && request.Comments.Any())
                     ? request.Comments
                     : hotel.Comments;
@@ -150,10 +151,6 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Rating, request.Rating)
                 .SetProperty(h => h.HasPool, request.HasPool)
                 /*.SetProperty(h => h.Comments, request.Comments)*/);
-
-            hotel = await GetById(id);
-
-            _memoryCache.Set(key, hotel, TimeSpan.FromMinutes(2));
         }
     }
 }
