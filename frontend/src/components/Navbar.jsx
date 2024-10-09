@@ -33,7 +33,7 @@ function Navbar() {
         </HStack>
 
         <Flex alignItems="center">
-          <Button colorScheme="teal" size="sm">Login</Button>
+          <Button as={RouterLink} to="/login" colorScheme="blue" size="sm">Login</Button>
         </Flex>
       </Flex>
 

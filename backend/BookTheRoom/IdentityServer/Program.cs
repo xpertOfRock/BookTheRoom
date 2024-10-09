@@ -41,8 +41,10 @@ internal class Program
             options.Events.RaiseInformationEvents = true;
             options.Events.RaiseFailureEvents = true;
             options.Events.RaiseSuccessEvents = true;
-
             options.EmitStaticAudienceClaim = true;
+            options.UserInteraction.ErrorUrl = "https://localhost:3000/error";
+            options.UserInteraction.LoginUrl = "https://localhost:3000/login";
+            options.UserInteraction.LogoutUrl = "https://localhost:3000/logout";
         })
             .AddAspNetIdentity<ApplicationUser>()
             .AddInMemoryClients(Configuration.GetClients())
