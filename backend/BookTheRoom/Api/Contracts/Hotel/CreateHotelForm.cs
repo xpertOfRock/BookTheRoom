@@ -1,10 +1,11 @@
-﻿namespace Api.Contracts
+﻿namespace Api.Contracts.Hotel
 {
-    public record CreateApartmentForm
+    public record CreateHotelForm
     (
-        string Title,
+        string Name,
         string Description,
-        decimal PricePerNight,
+        int Rating,
+        bool Pool,
         string Country,
         string State,
         string City,

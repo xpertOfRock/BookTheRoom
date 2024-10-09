@@ -1,4 +1,4 @@
-﻿namespace Api.Contracts
+﻿namespace Api.Contracts.Apartment
 {
     public record UpdateApartmentForm
     (

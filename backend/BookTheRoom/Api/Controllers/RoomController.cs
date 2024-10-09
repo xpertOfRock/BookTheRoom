@@ -1,4 +1,4 @@
-﻿using Api.Contracts;
+﻿using Api.Contracts.Room;
 using Api.DTOs;
 using Application.Interfaces;
 using Application.UseCases.Commands.Room;

@@ -1,4 +1,5 @@
-﻿using Api.Contracts;
+﻿using Api.Contracts.Apartment;
+using Api.Contracts.Hotel;
 using Api.DTOs;
 using Api.Extensions;
 using Application.Interfaces;

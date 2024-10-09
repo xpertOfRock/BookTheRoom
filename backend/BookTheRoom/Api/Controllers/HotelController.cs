@@ -1,4 +1,4 @@
-﻿using Api.Contracts;
+﻿using Api.Contracts.Hotel;
 using Api.DTOs;
 using Application.Interfaces;
 using Application.UseCases.Commands.Hotel;
