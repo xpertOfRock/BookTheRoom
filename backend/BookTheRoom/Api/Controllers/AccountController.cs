@@ -1,7 +1,5 @@
 ﻿using Api.Contracts.Account;
 using Application.Interfaces;
-using Core.Entities;
-using Core.ValueObjects;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -26,19 +24,16 @@ namespace Api.Controllers
             _emailService = emailService;
         }
 
-
-
-
-
-        [HttpPost]
-        public async Task<IActionResult> Authorize(AuthorizeRequest request)
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] AuthorizeRequest request)
         {
-            var thisUser = await _userManager.FindByEmailAsync(request.EmailOrUsername)
-                ?? await _userManager.FindByNameAsync(request.EmailOrUsername);
+
+            var thisUser = await _userManager.FindByEmailAsync(request.EmailOrUsername) ??
+                            await _userManager.FindByNameAsync(request.EmailOrUsername);
 
             if (thisUser == null)
             {
-                return Unauthorized();
+                return BadRequest();
             }
 
             var passwordCheck = await _userManager.CheckPasswordAsync(thisUser, request.Password);
@@ -49,25 +44,28 @@ namespace Api.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Redirect("/");
+                    return Ok();
                 }
             }
-            else
-            {
-                Unauthorized();
-            }
-            return Ok();
-        }
-        
-        [HttpPost]        
-        public async Task<IActionResult> Register(RegisterRequest request)
-        {
 
-            var user = await _userManager.FindByNameAsync(request.Username) ?? await _userManager.FindByEmailAsync(request.Email);
+            return BadRequest();
+        }
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user != null)
             {
-                return Unauthorized();
+                return BadRequest();
+            }
+
+            user = await _userManager.FindByNameAsync(request.Username);
+
+            if (user != null)
+            {
+                return BadRequest();
             }
 
             var newUser = new ApplicationUser()
@@ -75,52 +73,71 @@ namespace Api.Controllers
                 Email = request.Email,
                 UserName = request.Username,
                 PhoneNumber = request.PhoneNumber,
-                Age = request.Age,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Orders = new List<Order>(),
-                Apartments = new List<Apartment>(),
-                Comments = new List<Comment>()
             };
+
             var newUserResponse = await _userManager.CreateAsync(newUser, request.Password);
 
-            if (newUserResponse.Succeeded)
+            if (!newUserResponse.Succeeded)
             {
-                await _userManager.AddToRoleAsync(newUser, UserRole.Admin);
-                await _signInManager.PasswordSignInAsync(newUser, request.Password, false, false);
+                return BadRequest(newUserResponse.Errors);
             }
+
+            await _userManager.AddToRoleAsync(newUser, UserRole.Admin);
+            await _signInManager.PasswordSignInAsync(newUser, request.Password, false, false);
 
             const string subject = "Registration";
             const string body = "Thanks for choosing Book The Room! Hope you will be satisfied with our service!";
 
             _emailService.SendEmail(newUser.Email, subject, body);
-            return RedirectToAction("Index", "Home");
+
+            return Ok();
         }
 
-
+        [HttpPost("Logout")]
         [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            HttpContext.Response.Cookies.Delete("access_token");
-            return Redirect("/");
+            return Ok();
         }
-
+        [HttpGet("Profile/{userName}")]
         [Authorize]
-        [HttpGet("{id}")]      
         public async Task<IActionResult> Profile([FromRoute] string userName)
         {
             var user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
             return Ok(user);
         }
 
+        //[HttpPut("Profile/{userName}/Edit")]
+        //[Authorize]
+        //public async Task<IActionResult> EditProfile([FromRoute] string userName, [FromBody] EditProfileViewModel model)
+        //{
+        //    var user = await _userManager.FindByNameAsync(userName);
 
-        [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> EditProfile([FromRoute] string userName)
-        {
-            return Ok();
-        }
+        //    if (user == null)
+        //    {
+        //        return NotFound(new { message = "User not found." });
+        //    }
 
+        //    // Здесь можно добавить логику для изменения профиля
+        //    // Например, обновление Email, PhoneNumber и т.д.
+        //    user.Email = model.Email;
+        //    user.PhoneNumber = model.PhoneNumber;
+
+        //    var result = await _userManager.UpdateAsync(user);
+
+        //    if (result.Succeeded)
+        //    {
+        //        return Ok(new { message = "Profile updated successfully." });
+        //    }
+
+        //    return BadRequest(result.Errors);
+        //}
     }
 }

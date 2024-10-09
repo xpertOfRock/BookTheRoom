@@ -7,10 +7,9 @@ using Infrastructure;
 using Infrastructure.Data.BackgroundServices;
 using Infrastructure.Data.Repositories;
 using Infrastructure.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 internal class Program
 {
@@ -48,6 +47,15 @@ internal class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
         });
 
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+            options.SlidingExpiration = true;
+        });
+
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
         {
             config.Password.RequiredLength = 5;
@@ -55,9 +63,10 @@ internal class Program
             config.Password.RequireNonAlphanumeric = false;
             config.Password.RequireUppercase = false;
         })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<ApplicationDbContext>()            
+            .AddDefaultTokenProviders();        
 
+        builder.Services.AddAuthorization();
 
         builder.Services.AddHttpClient();
 
@@ -102,11 +111,15 @@ internal class Program
         //    await SeedData.Initialize(services);
         //}
 
+        app.UseHttpsRedirection();
+
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+
         app.UseCors();
+
         app.UseAuthentication();
         app.UseAuthorization();
-
-        app.UseHttpsRedirection();
 
         app.MapControllers();
 

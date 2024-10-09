@@ -6,6 +6,7 @@ using Application.UseCases.Queries.Hotel;
 using Core.Contracts;
 using Core.Entities;
 using Core.ValueObjects;
+using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -84,7 +85,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
             var imagesUrl = new List<string>();
@@ -123,7 +124,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
             var images = new List<string>();
@@ -159,7 +160,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _mediator.Send(new DeleteHotelCommand(id));

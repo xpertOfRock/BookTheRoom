@@ -8,7 +8,7 @@ function Hotels(){
     const [filter, setFilter] = useState({        
         search: "",
         sortItem: "id",
-        sortOrder: "asc",
+        sortOrder: "desc",
         countries: [],
         ratings: []
     });
