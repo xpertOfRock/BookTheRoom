@@ -10,7 +10,7 @@ export const fetchHotels = async (filter) => {
       ratings: filter?.ratings.length > 0 ? filter.ratings.join(",") : undefined,
     };
 
-    let result = await axios.get("https://localhost:5286/api/apartment", { params });
+    let result = await axios.get("https://localhost:5286/api/hotel", { params });
     return result.data.hotels;
   } catch (e) {
     console.error(e);
