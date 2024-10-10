@@ -1,9 +1,40 @@
-import { Box, Flex, HStack, Link, IconButton, useDisclosure, Stack, Button } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons"; 
-import { Link as RouterLink } from "react-router-dom";
+import { Box, Flex, HStack, Link, IconButton, useDisclosure, Stack, Button } from '@chakra-ui/react';
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'; 
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getCurrentToken, logout, refreshToken } from '../services/auth';
 
 function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = getCurrentToken();
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsAuthenticated(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isAuthenticated) {
+        refreshToken();
+      }
+    }, 10 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
 
   return (
     <Box bg="gray.800" px={4}>
@@ -12,33 +43,52 @@ function Navbar() {
           size="md"
           icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
           aria-label="Open Menu"
-          display={{ md: "none" }}
+          display={{ md: 'none' }}
           onClick={isOpen ? onClose : onOpen}
         />
-        
+
         <HStack spacing={8} alignItems="center">
           <Box color="white" fontSize="xl" fontWeight="bold">Book The Room</Box>
 
-          <HStack
-            as="nav"
-            spacing={4}
-            display={{ base: "none", md: "flex" }}
-          >
-            <Link as={RouterLink} to="/" px={2} py={1} rounded="md" _hover={{ bg: "gray.700" }} color="white">Home</Link>
-            <Link as={RouterLink} to="/hotels" px={2} py={1} rounded="md" _hover={{ bg: "gray.700" }} color="white">Hotels</Link>
-            <Link as={RouterLink} to="/apartments" px={2} py={1} rounded="md" _hover={{ bg: "gray.700" }} color="white">Apartments</Link>
-            <Link as={RouterLink} to="/faq" px={2} py={1} rounded="md" _hover={{ bg: "gray.700" }} color="white">FAQ</Link>
-            <Link as={RouterLink} to="/support" px={2} py={1} rounded="md" _hover={{ bg: "gray.700" }} color="white">Support</Link>
+          <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
+            <Link as={RouterLink} to="/" px={2} py={1} rounded="md" _hover={{ bg: 'gray.700' }} color="white">
+              Home
+            </Link>
+            <Link as={RouterLink} to="/hotels" px={2} py={1} rounded="md" _hover={{ bg: 'gray.700' }} color="white">
+              Hotels
+            </Link>
+            <Link as={RouterLink} to="/apartments" px={2} py={1} rounded="md" _hover={{ bg: 'gray.700' }} color="white">
+              Apartments
+            </Link>
+            <Link as={RouterLink} to="/faq" px={2} py={1} rounded="md" _hover={{ bg: 'gray.700' }} color="white">
+              FAQ
+            </Link>
+            <Link as={RouterLink} to="/support" px={2} py={1} rounded="md" _hover={{ bg: 'gray.700' }} color="white">
+              Support
+            </Link>
           </HStack>
         </HStack>
 
         <Flex alignItems="center">
-          <Button as={RouterLink} to="/login" colorScheme="blue" size="sm">Login</Button>
+          {isAuthenticated ? (
+            <Button colorScheme="red" size="sm" onClick={handleLogout}>
+              Logout
+            </Button>
+          ) : (
+            <>
+              <Button as={RouterLink} to="/login" colorScheme="blue" size="sm" mr={2}>
+                Login
+              </Button>
+              <Button as={RouterLink} to="/register" colorScheme="green" size="sm">
+                Register
+              </Button>
+            </>
+          )}
         </Flex>
       </Flex>
 
       {isOpen ? (
-        <Box pb={4} display={{ md: "none" }}>
+        <Box pb={4} display={{ md: 'none' }}>
           <Stack as="nav" spacing={4}>
             <Link as={RouterLink} to="/">Home</Link>
             <Link as={RouterLink} to="/hotels">Hotels</Link>

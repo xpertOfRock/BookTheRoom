@@ -9,7 +9,7 @@ import Apartments from './components/apartment/Apartments';
 import FAQ from './components/FAQ';
 import Support from './components/Support';
 import Login from './components/authorization/Login';
-
+import Register from './components/authorization/Register';
 
 function App() { 
  
@@ -29,6 +29,7 @@ function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/support" element={<Support />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>        
       </>
     </Router>

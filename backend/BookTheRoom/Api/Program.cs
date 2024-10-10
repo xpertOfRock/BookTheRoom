@@ -8,8 +8,11 @@ using Infrastructure.Data.BackgroundServices;
 using Infrastructure.Data.Repositories;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 internal class Program
 {
@@ -47,15 +50,6 @@ internal class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
         });
 
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.Cookie.HttpOnly = true;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.Cookie.SameSite = SameSiteMode.Lax;
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-            options.SlidingExpiration = true;
-        });
-
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
         {
             config.Password.RequiredLength = 5;
@@ -69,6 +63,25 @@ internal class Program
         builder.Services.AddAuthorization();
 
         builder.Services.AddHttpClient();
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!))
+            };
+        });
 
         builder.Services.AddCors(options =>
 
