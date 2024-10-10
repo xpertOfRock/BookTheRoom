@@ -1,30 +1,31 @@
-import { Box, Flex, HStack, Link, IconButton, useDisclosure, Stack, Button } from '@chakra-ui/react';
+// src/components/Navbar.js
+import { Box, Flex, HStack, Link, IconButton, useDisclosure, Stack, Button, Text } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'; 
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getCurrentToken, logout, refreshToken } from '../services/auth';
+import { getCurrentToken, getCurrentUser, logout, refreshToken } from '../services/auth';
 
 function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const checkAuthStatus = () => {
     const token = getCurrentToken();
-    if (token) {
+    const currentUser = getCurrentUser();
+    if (token && currentUser) {
       setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
+      setUser(currentUser);
+    } else {
       setIsAuthenticated(false);
-      navigate('/');
-    } catch (error) {
-      console.error('Logout failed', error);
+      setUser(null);
     }
   };
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,6 +36,17 @@ function Navbar() {
 
     return () => clearInterval(interval);
   }, [isAuthenticated]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsAuthenticated(false);
+      setUser(null);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
+  };
 
   return (
     <Box bg="gray.800" px={4}>
@@ -71,9 +83,12 @@ function Navbar() {
 
         <Flex alignItems="center">
           {isAuthenticated ? (
-            <Button colorScheme="red" size="sm" onClick={handleLogout}>
-              Logout
-            </Button>
+            <>
+              <Text color="white" mr={4}>Welcome, {user?.userName || user?.email}</Text>
+              <Button colorScheme="red" size="sm" onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
           ) : (
             <>
               <Button as={RouterLink} to="/login" colorScheme="blue" size="sm" mr={2}>

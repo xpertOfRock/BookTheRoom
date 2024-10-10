@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -52,10 +53,12 @@ namespace Api.Controllers
                 return BadRequest(new { message = "Invalid login attempt." });
             }
 
+            await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
+
             var token = GenerateJwtToken(user);
             var refreshToken = await GenerateAndStoreRefreshToken(user);
-
-            return Ok(new { token, refreshToken });
+            var userJson = JsonConvert.SerializeObject(user);
+            return Ok(new { token, refreshToken, user });
         }
 
         [HttpPost("Register")]
@@ -101,8 +104,9 @@ namespace Api.Controllers
 
             var token = GenerateJwtToken(newUser);
             var refreshToken = await GenerateAndStoreRefreshToken(newUser);
+            var userJson = JsonConvert.SerializeObject(newUser);
 
-            return Ok(new { token, refreshToken });
+            return Ok(new { token, refreshToken, newUser });
         }
 
         [HttpPost("Logout")]
@@ -183,7 +187,12 @@ namespace Api.Controllers
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.HomePhone, user.PhoneNumber),
+                new Claim(ClaimTypes.GivenName, user.FirstName),
+                new Claim(ClaimTypes.Surname, user.LastName)
             };
 
             var jwtSettings = _configuration.GetSection("Jwt");

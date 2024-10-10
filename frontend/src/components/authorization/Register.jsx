@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register } from '../services/auth';
+import { register } from '../../services/auth';
 import { Box, Button, Input, Stack, Heading, Text } from '@chakra-ui/react';
 
 function Register() {
