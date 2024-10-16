@@ -9,6 +9,7 @@ namespace Application.Interfaces
         IRoomRepository Rooms { get; }
         IOrderRepository Orders { get; }
         ICommentRepository Comments { get; }
+        IServiceRepository Services { get; set; }
         Task SaveChangesAsync();
     }
 }

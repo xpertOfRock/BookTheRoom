@@ -32,6 +32,7 @@ namespace Infrastructure.Data.Repositories
             Rooms = new RoomRepository(_context, _memoryCache, _photoService);
             Orders = new OrderRepository(_context, _memoryCache);
             Comments = new CommentRepository(_context, _userManager);
+            Services = new ServiceRepository(_context);
         }
 
         public IHotelRepository Hotels { get; private set; }
@@ -39,6 +40,7 @@ namespace Infrastructure.Data.Repositories
         public IOrderRepository Orders { get; private set; }
         public IApartmentRepository Apartments { get; private set; }
         public ICommentRepository Comments { get; private set; }
+        public IServiceRepository Services { get; set; }
 
         public async Task SaveChangesAsync()
         {

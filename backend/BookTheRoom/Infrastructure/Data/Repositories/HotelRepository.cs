@@ -54,6 +54,8 @@ namespace Infrastructure.Data.Repositories
         {
             var query = _context.Hotels
                 .Include(h => h.Address)
+                .Include(h => h.Services)
+                .AsSplitQuery()
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
                             h.Name.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
@@ -105,6 +107,7 @@ namespace Infrastructure.Data.Repositories
                     .Include(h => h.Address)                                         
                     .Include(h => h.Rooms)
                     .Include(h => h.Comments)
+                    .Include(h => h.Services)
                     .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);

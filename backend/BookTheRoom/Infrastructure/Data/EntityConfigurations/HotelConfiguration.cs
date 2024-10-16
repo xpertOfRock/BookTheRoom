@@ -30,7 +30,7 @@ namespace Infrastructure.Data.EntityConfigurations
                 .HasConversion(
                     v => string.Join(';', v),
                     v => v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
-                );
+                );            
 
             builder.OwnsOne(h => h.Address, a =>
             {
@@ -53,6 +53,11 @@ namespace Infrastructure.Data.EntityConfigurations
                     .IsRequired()
                     .HasMaxLength(20);
             });
+
+            builder.HasMany(h => h.Services)
+                .WithOne()
+                .HasForeignKey(s => s.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(h => h.Rooms)
                 .WithOne()

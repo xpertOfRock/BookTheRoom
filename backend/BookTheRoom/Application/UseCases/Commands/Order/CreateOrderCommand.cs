@@ -8,15 +8,13 @@ namespace Application.UseCases.Commands.Order
         public int HotelId { get; set; }
         public int Number { get; set; }
         public string? UserId { get; set; }
-        public string NonceFromClient { get; set; }
         public CreateOrderRequest Request { get; set; }
-        public CreateOrderCommand(int hotelId, int number, string? userId, string nonceFromClient, CreateOrderRequest request)
+        public CreateOrderCommand(int hotelId, int number, string? userId, CreateOrderRequest request)
         {
             HotelId = hotelId;
             Number = number;
             UserId = userId;
             Request = request;
-            NonceFromClient = nonceFromClient;
         }
     }
 }

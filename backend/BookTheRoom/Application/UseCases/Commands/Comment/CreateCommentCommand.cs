@@ -18,7 +18,7 @@ namespace Application.UseCases.Commands.Comment
             string userId,
             CreateCommentRequest request,
             int? hotelId = null,
-            int? apartmentId = null            
+            int? apartmentId = null
         )
         {
             UserId = userId;

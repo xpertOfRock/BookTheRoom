@@ -9,6 +9,7 @@ namespace Core.Contracts
         string Number,
         bool MinibarIncluded,
         bool MealsIncluded,
+        bool IsPaid,
         DateTime CheckIn,
         DateTime CheckOut,
         DateTime CreatedAt,

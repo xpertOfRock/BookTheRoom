@@ -18,6 +18,7 @@ namespace Infrastructure.Data.Repositories
         public async Task Add(Comment comment)
         {
             await _context.Comments.AddAsync(comment);
+            
         }
         //public async Task<Comment> GetById(int? id)
         //{

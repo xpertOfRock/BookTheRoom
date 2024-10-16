@@ -28,7 +28,7 @@ namespace Infrastructure.Data.Repositories
                      .Where(o =>
                             o.CheckIn <= DateTime.UtcNow &&
                             o.CheckOut >= DateTime.UtcNow &&
-                            o.Status == OrderStatus.Active )
+                            (o.Status == OrderStatus.Active || o.Status == OrderStatus.Pending))
                      .AsNoTracking()
                      .ToListAsync();
         }
@@ -116,9 +116,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(o => o.Status, request.Status)
                 .SetProperty(o => o.MinibarIncluded, request.MinibarIncluded)
                 .SetProperty(o => o.MealsIncluded, request.MealsIncluded)
-                );
-
-            
+                );            
         }
     }
 }

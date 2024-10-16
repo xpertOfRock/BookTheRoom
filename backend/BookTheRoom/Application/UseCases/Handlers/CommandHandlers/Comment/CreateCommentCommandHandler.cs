@@ -4,7 +4,7 @@ using Core.Entities;
 using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Comment
-{   
+{
     public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, Unit>
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -30,11 +30,11 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
 
                     var hotel = await _unitOfWork.Hotels.GetById(request.HotelId);
 
-                    if (hotel == null) 
+                    if (hotel == null)
                     {
                         return Unit.Value;
                     }
-                  
+
                     await _unitOfWork.Comments.Add(comment);
 
                     hotel.Comments?.Add(comment);
@@ -54,6 +54,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
                     apartment.Comments?.Add(comment);
                     break;
             }
+            await _unitOfWork.SaveChangesAsync();
             return Unit.Value;
         }
     }
