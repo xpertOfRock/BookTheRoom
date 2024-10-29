@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Core.Contracts;
 using Core.Entities;
+using Core.Enums;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -71,6 +72,12 @@ namespace Infrastructure.Data.Repositories
             {
                 var ratings = request.Ratings.Split(',').Select(int.Parse).ToList();
                 query = query.Where(h => ratings.Contains(h.Rating));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Services))
+            {
+                var services = request.Services.Split(',').Select(service => Enum.Parse<HotelService>(service, true));
+                query = query.Where(h => h.Services.Any(x => services.Contains(x.ServiceName)));
             }
 
             Expression<Func<Hotel, object>> selectorKey = request.SortItem?.ToLower() switch
