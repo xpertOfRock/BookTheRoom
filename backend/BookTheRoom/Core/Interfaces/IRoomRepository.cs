@@ -5,7 +5,7 @@ namespace Core.Interfaces
 {
     public interface IRoomRepository
     {
-        Task<List<Room>> GetAll(int hotelId, GetDataRequest request);
+        Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request);
         Task<List<Room>> GetAllRooms();
         Task<Room> GetById(int? hotelId, int? number);
         Task Add(Room room);

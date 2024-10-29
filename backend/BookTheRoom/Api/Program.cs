@@ -34,7 +34,7 @@ internal class Program
         builder.Services.AddScoped<IPaymentService, PaymentService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
 
-        builder.Services.AddHostedService<OrderStatusUpdater>();
+        //builder.Services.AddHostedService<OrderStatusUpdater>();
         builder.Services.AddHostedService<RoomStatusUpdater>();
 
         builder.Services.Configure<HostOptions>(options =>

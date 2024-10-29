@@ -42,9 +42,9 @@ namespace Api.Controllers
 
             var nonceFromClient = Request.Form["payment_method_nonce"]!;
                      
-            await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, nonceFromClient!, request));
+            var result = await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, nonceFromClient!, request));
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPut("{id}")]

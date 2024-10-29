@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.UseCases.Commands.Order
 {
-    public class CreateOrderCommand : IRequest<Unit>
+    public class CreateOrderCommand : IRequest<Core.Entities.Order>
     {
         public int HotelId { get; set; }
         public int Number { get; set; }

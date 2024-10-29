@@ -1,11 +1,6 @@
 ﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Data.EntityConfigurations
 {
@@ -63,7 +58,7 @@ namespace Infrastructure.Data.EntityConfigurations
 
             builder.HasMany(h => h.Comments)
                 .WithOne()
-                .HasForeignKey(c => c.HotelId)
+                .HasForeignKey(c => c.ApartmentId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

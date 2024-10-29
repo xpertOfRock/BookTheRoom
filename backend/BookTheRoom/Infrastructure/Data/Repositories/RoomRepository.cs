@@ -53,7 +53,7 @@ namespace Infrastructure.Data.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
-        public async Task<List<Room>> GetAll(int hotelId, GetDataRequest request)
+        public async Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request)
         {
             var query = _context.Rooms
                 .Where(r => r.HotelId == hotelId && 
@@ -61,6 +61,18 @@ namespace Infrastructure.Data.Repositories
                             r.Name.ToLower().Contains(request.Search.ToLower()) ) 
                             )
                 .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(request.Categories))
+            {
+                var categories = request.Categories.Split(',');
+                query = query.Where(r => categories.Contains(Enum.GetName(r.Category)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Prices))
+            {
+                var prices = request.Prices.Split(',').Select(decimal.Parse).ToList();
+                query = query.Where(r => prices.Contains(r.Price));
+            }
 
             Expression<Func<Room, object>> selectorKey = request.SortItem?.ToLower() switch
             {
