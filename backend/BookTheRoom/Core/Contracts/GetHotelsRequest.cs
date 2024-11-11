@@ -8,6 +8,7 @@
         string? SortOrder,
         string? Countries,
         string? Ratings,
+        string? Services,
         int page = 1
     );
 }

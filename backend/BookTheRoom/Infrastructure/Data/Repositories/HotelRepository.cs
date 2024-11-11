@@ -131,9 +131,6 @@ namespace Infrastructure.Data.Repositories
 
             _memoryCache.Remove(key);
 
-            var comments = (request.Comments != null && request.Comments.Any())
-                    ? request.Comments
-                    : hotel.Comments;
 
             if (request.Images is not null)
             {

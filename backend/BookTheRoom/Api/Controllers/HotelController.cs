@@ -36,8 +36,8 @@ namespace Api.Controllers
                 h.Id,
                 h.Name,
                 h.Images != null &&
-                    h.Images.Any() 
-                    ? h.Images.First() 
+                    h.Images.Any()
+                    ? h.Images.First()
                     : "No Image",
                 h.Rating,
                 h.Address.ToString()
@@ -53,7 +53,7 @@ namespace Api.Controllers
         {
             var hotel = await _mediator.Send(new GetHotelQuery(id));
 
-            if(hotel is null)
+            if (hotel is null)
             {
                 return NotFound($"Hotel with ID: {id} doesn't exist.");
             }
@@ -66,15 +66,15 @@ namespace Api.Controllers
                 hotel.Rating,
 
                 hotel.Images != null &&
-                    hotel.Images.Any() 
-                    ? hotel.Images 
-                    : new List<string> {""},
+                    hotel.Images.Any()
+                    ? hotel.Images
+                    : new List<string> { "" },
 
                 hotel.Rooms != null &&
                     hotel.Rooms.Any()
                     ? hotel.Rooms
-                    : new List<Room>{ },
-               
+                    : new List<Room> { },
+
                 hotel.Comments != null &&
                     hotel.Comments.Any()
                     ? hotel.Comments
@@ -94,11 +94,9 @@ namespace Api.Controllers
             {
                 foreach (var file in form.Images)
                 {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        imagesUrl.Add(resultForList.Url.ToString());
-                    }
+                    using var stream = file.OpenReadStream();
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                    imagesUrl.Add(resultForList.Url.ToString());
                 }
             }            
             
@@ -150,9 +148,7 @@ namespace Api.Controllers
 
                 images.Any() 
                     ? images 
-                    : null,
-
-                null
+                    : null
             );            
 
             await _mediator.Send(new UpdateHotelCommand(id, request));

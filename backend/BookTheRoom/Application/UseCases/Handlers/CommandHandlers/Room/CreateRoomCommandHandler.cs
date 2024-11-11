@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.UseCases.Commands.Room;
 using Core.Contracts;
-using Core.Entities;
 using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Room
@@ -34,8 +33,6 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
 
             var images = command.Images.Any() ? command.Images : hotel.Images;
 
-            var comments = hotel.Comments.Any() ? hotel.Comments : new List<Core.Entities.Comment>();
-
             hotel.Rooms!.Add(room);
 
             await _unitOfWork.Hotels.Update
@@ -46,8 +43,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
                         hotel.Description,
                         hotel.Rating,
                         hotel.HasPool,
-                        images,
-                        comments
+                        images
                     )
                 );
 

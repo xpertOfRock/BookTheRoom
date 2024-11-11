@@ -30,6 +30,16 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
 
             var overallPrice = days * price;
 
+            if (command.Request.MealsIncluded)
+            {
+                overallPrice = overallPrice * 1.1m;
+            }
+
+            if (command.Request.MealsIncluded)
+            {
+                overallPrice = overallPrice * 1.1m;
+            }
+
             var gateway = _paymentService.CreateGateway();
             var clientToken = gateway.ClientToken.Generate();
 
