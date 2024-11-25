@@ -15,6 +15,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
         public async Task<Unit> Handle(CreateRoomCommand command, CancellationToken cancellationToken)
         {
             await _unitOfWork.BeginTransactionAsync();
+
             try
             {
                 var hotel = await _unitOfWork.Hotels.GetById(command.HotelId);

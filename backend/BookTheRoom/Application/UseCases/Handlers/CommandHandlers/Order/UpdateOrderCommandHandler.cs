@@ -13,10 +13,9 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
         }
         public async Task<Unit> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
         {
+            await _unitOfWork.BeginTransactionAsync();
             try
-            {
-                await _unitOfWork.BeginTransactionAsync();
-
+            {               
                 await _unitOfWork.Orders.Update(request.Id, request.Request);
 
                 await _unitOfWork.SaveChangesAsync();
