@@ -13,10 +13,20 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
         }
         public async Task<Unit> Handle(UpdateRoomCommand command, CancellationToken cancellationToken)
         {
-            await _unitOfWork.Rooms.Update(command.HotelId, command.Number, command.Request);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.Rooms.Update(command.HotelId, command.Number, command.Request);
 
-            await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new InvalidOperationException("An error occurred while processing the room.", ex);
+            }
             return Unit.Value;
         }
     }

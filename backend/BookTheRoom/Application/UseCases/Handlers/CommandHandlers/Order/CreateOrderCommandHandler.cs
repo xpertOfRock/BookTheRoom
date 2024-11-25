@@ -19,84 +19,80 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
         }
         public async Task<Core.Entities.Order> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
         {
-            var hotel = await _unitOfWork.Hotels.GetById(command.HotelId);
-            var room = await _unitOfWork.Rooms.GetById(command.HotelId, command.Number);
+            await _unitOfWork.BeginTransactionAsync();
 
-            var duration = command.Request.CheckOut.Subtract(command.Request.CheckIn);
-
-            int days = (int)Math.Ceiling(duration.TotalDays);
-
-            var price = room.Price;
-
-            var overallPrice = days * price;
-
-            if (command.Request.MealsIncluded)
+            try
             {
-                overallPrice = overallPrice * 1.1m;
-            }
+                var hotel = await _unitOfWork.Hotels.GetById(command.HotelId);
+                var room = await _unitOfWork.Rooms.GetById(command.HotelId, command.Number);
 
-            if (command.Request.MealsIncluded)
-            {
-                overallPrice = overallPrice * 1.1m;
-            }
+                var duration = command.Request.CheckOut.Subtract(command.Request.CheckIn);
+                int days = (int)Math.Ceiling(duration.TotalDays);
+                var price = room.Price;
 
-            var gateway = _paymentService.CreateGateway();
-            var clientToken = gateway.ClientToken.Generate();
+                decimal multiplier = 1.0m;
+                if (command.Request.MealsIncluded) multiplier += 0.1m;
+                if (command.Request.MinibarIncluded) multiplier += 0.1m;
 
-            string nonceFromClient = command.Request.NonceFromClient;
-            
-            var order = new Core.Entities.Order
-            {
-                Email = command.Request.Email,
-                Phone = command.Request.Number,
-                CreatedAt = DateTime.UtcNow,
-                CheckIn = command.Request.CheckIn,
-                CheckOut = command.Request.CheckOut,
-                OverallPrice = overallPrice,
-                IsPaid = command.Request.PaidImmediately,
-                UserId = command.UserId,
-                HotelId = command.HotelId,
-                RoomId = command.Number,
-                Hotel = hotel,
-                Room = room
-            };
+                var overallPrice = days * price * multiplier;
 
-            if (command.Request.PaidImmediately)
-            {
-                var request = new TransactionRequest
+                var order = new Core.Entities.Order
                 {
-                    Amount = order.OverallPrice,
-                    OrderId = order.Id.ToString(),
-                    PaymentMethodNonce = nonceFromClient,
-                    Options = new TransactionOptionsRequest
-                    {
-                        SubmitForSettlement = true
-                    }
+                    Email = command.Request.Email,
+                    Phone = command.Request.Number,
+                    CreatedAt = DateTime.UtcNow,
+                    CheckIn = command.Request.CheckIn,
+                    CheckOut = command.Request.CheckOut,
+                    OverallPrice = overallPrice,
+                    IsPaid = false,
+                    UserId = command.UserId,
+                    HotelId = command.HotelId,
+                    RoomId = command.Number,
+                    Hotel = hotel,
+                    Room = room
                 };
-                var result = await gateway.Transaction.SaleAsync(request);
 
-                if (result.Target.ProcessorResponseText == "Approved" || result.IsSuccess())
-                {
-                    await _unitOfWork.Orders.Add(order);
-
-                    SendMail(order.Email, order);
-
-                    await _unitOfWork.SaveChangesAsync();
-                }
-            }
-            else
-            {
-                await _unitOfWork.Orders.Add(order);
-
-                SendMail(order.Email, order);
-
-                await _unitOfWork.SaveChangesAsync();
-            }
                 
 
-            
-            return order;
-        }
+                if (command.Request.PaidImmediately)
+                {
+                    var gateway = _paymentService.CreateGateway();
+                    var request = new TransactionRequest
+                    {
+                        Amount = order.OverallPrice,
+                        OrderId = order.Id.ToString(),
+                        PaymentMethodNonce = command.NonceFromClient,
+                        Options = new TransactionOptionsRequest
+                        {
+                            SubmitForSettlement = true
+                        }
+                    };
+
+                    var result = await gateway.Transaction.SaleAsync(request);
+
+                    if (!result.IsSuccess() || result.Target.ProcessorResponseText != "Approved")
+                    {
+                        await _unitOfWork.RollbackAsync();
+                        return new Core.Entities.Order { Status = Core.Enums.OrderStatus.Error };
+                    }
+                    order.IsPaid = true;                  
+                }
+
+                await _unitOfWork.Orders.Add(order);
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
+
+                SendMail(order.Email, order);
+                return order;            
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new InvalidOperationException("An error occurred while processing the order.", ex);
+            }
+        }   
+        
         private void SendMail(string email, Core.Entities.Order order)
         {
             var duration = order.CheckOut.Subtract(order.CheckIn);

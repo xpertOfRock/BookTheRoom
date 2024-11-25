@@ -14,7 +14,19 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
         }
         public async Task<Unit> Handle(UpdateCommentCommand request, CancellationToken cancellationToken)
         {
-            await _unitOfWork.Comments.Update(request.Id, request.Description);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.Comments.Update(request.Id, request.Description);
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new InvalidOperationException("An error occurred while processing the comment.", ex);
+            }
             return Unit.Value;
         }
     }

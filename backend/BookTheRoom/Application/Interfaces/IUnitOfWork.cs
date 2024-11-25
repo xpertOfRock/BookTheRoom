@@ -9,6 +9,9 @@ namespace Application.Interfaces
         IRoomRepository Rooms { get; }
         IOrderRepository Orders { get; }
         ICommentRepository Comments { get; }
+        Task BeginTransactionAsync();
+        Task CommitAsync();
+        Task RollbackAsync();
         Task SaveChangesAsync();
     }
 }

@@ -44,7 +44,20 @@ namespace Infrastructure.Data.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public async Task BeginTransactionAsync()
+        {
+            await _context.Database.BeginTransactionAsync();
+        }
 
+        public async Task CommitAsync()
+        {
+            await _context.Database.CurrentTransaction?.CommitAsync();
+        }
+
+        public async Task RollbackAsync()
+        {
+            await _context.Database.CurrentTransaction?.RollbackAsync();
+        }
         public void Dispose()
         {
             _context.Dispose();
