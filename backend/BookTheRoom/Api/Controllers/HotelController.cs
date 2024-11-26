@@ -1,4 +1,4 @@
-﻿using Api.Contracts;
+﻿using Api.Contracts.Hotel;
 using Api.DTOs;
 using Application.Interfaces;
 using Application.UseCases.Commands.Hotel;
@@ -10,9 +10,6 @@ using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.IdentityModel.Tokens;
-using System.Text.Json;
 
 
 namespace Api.Controllers
@@ -31,7 +28,7 @@ namespace Api.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll([FromQuery] GetDataRequest request)
+        public async Task<IActionResult> GetAll([FromQuery] GetHotelsRequest request)
         {
             var hotels = await _mediator.Send(new GetHotelsQuery(request));
 
@@ -39,8 +36,8 @@ namespace Api.Controllers
                 h.Id,
                 h.Name,
                 h.Images != null &&
-                    h.Images.Any() 
-                    ? h.Images.First() 
+                    h.Images.Any()
+                    ? h.Images.First()
                     : "No Image",
                 h.Rating,
                 h.Address.ToString()
@@ -56,7 +53,7 @@ namespace Api.Controllers
         {
             var hotel = await _mediator.Send(new GetHotelQuery(id));
 
-            if(hotel is null)
+            if (hotel is null)
             {
                 return NotFound($"Hotel with ID: {id} doesn't exist.");
             }
@@ -66,51 +63,40 @@ namespace Api.Controllers
                 hotel.Name,
                 hotel.Description,
                 hotel.Address.ToString(),
+                hotel.Rating,
 
                 hotel.Images != null &&
-                    hotel.Images.Any() 
-                    ? hotel.Images 
-                    : new List<string> {""},
+                    hotel.Images.Any()
+                    ? hotel.Images
+                    : new List<string> { "" },
 
                 hotel.Rooms != null &&
                     hotel.Rooms.Any()
                     ? hotel.Rooms
-                    : new List<Room> { }
-               
+                    : new List<Room> { },
+
+                hotel.Comments != null &&
+                    hotel.Comments.Any()
+                    ? hotel.Comments
+                    : new List<Comment> { }
                 );
 
             return Ok(hotelDTO);
         }
 
         [HttpPost]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
-
-            foreach(var property in form.GetType().GetProperties())
-            {
-                if(property.Name == "Images")
-                {
-                    continue;
-                }
-
-                if(property is null)
-                {
-                    return BadRequest();
-                }
-            }
-
             var imagesUrl = new List<string>();
 
             if (form.Images is not null && form.Images.Any())
             {
                 foreach (var file in form.Images)
                 {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        imagesUrl.Add(resultForList.Url.ToString());
-                    }
+                    using var stream = file.OpenReadStream();
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                    imagesUrl.Add(resultForList.Url.ToString());
                 }
             }            
             
@@ -136,10 +122,10 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
-            var imagesUrl = new List<string>();
+            var images = new List<string>();
 
             if (form.Images is not null && form.Images.Any())
             {               
@@ -148,7 +134,7 @@ namespace Api.Controllers
                     using (var stream = file.OpenReadStream())
                     {
                         var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        imagesUrl.Add(resultForList.Url.ToString());
+                        images.Add(resultForList.Url.ToString());
                     }
                 }
             }
@@ -159,7 +145,10 @@ namespace Api.Controllers
                 form.Description,
                 form.Rating,
                 form.Pool,
-                imagesUrl
+
+                images.Any() 
+                    ? images 
+                    : null
             );            
 
             await _mediator.Send(new UpdateHotelCommand(id, request));
@@ -167,7 +156,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _mediator.Send(new DeleteHotelCommand(id));

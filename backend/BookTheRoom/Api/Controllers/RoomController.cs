@@ -1,4 +1,4 @@
-﻿using Api.Contracts;
+﻿using Api.Contracts.Room;
 using Api.DTOs;
 using Application.Interfaces;
 using Application.UseCases.Commands.Room;
@@ -26,7 +26,7 @@ namespace Api.Controllers
 
         [HttpGet("{hotelId}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll(int hotelId, [FromQuery] GetDataRequest request)
+        public async Task<IActionResult> GetAll(int hotelId, [FromQuery] GetRoomsRequest request)
         {            
             var rooms = await _mediator.Send(new GetHotelRoomsQuery(hotelId, request));
 
@@ -34,6 +34,7 @@ namespace Api.Controllers
                 r.HotelId,
                 r.Name,
                 r.Number,
+                r.Price,
                 r.Images != null &&
                     r.Images.Any()
                     ? r.Images.First()
@@ -75,38 +76,59 @@ namespace Api.Controllers
 
         [HttpPost("{hotelId}")]
         //[Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Post(int hotelId, [FromBody] CreateRoomRequest request, [FromForm] List<IFormFile>? files)
+        public async Task<IActionResult> Post(int hotelId, [FromForm] CreateRoomForm form)
         {
-            if (files.Count > 0)
+            var images = new List<string>();
+
+            if (form.Images.Any())
             {
-                foreach (var file in files)
+                foreach (var file in form.Images)
                 {
                     var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
-                    request.Images.Add(resultForList.Url.ToString());
+                    images.Add(resultForList.Url.ToString());
                     file.OpenReadStream().Dispose();
                 }
             }
+
+            var request = new CreateRoomRequest
+            (
+                form.Title,
+                form.Description,
+                form.Number,
+                form.PricePerNight,
+                form.Category,
+                images
+            );
+
             await _mediator.Send(new CreateRoomCommand(hotelId, request));
             return Ok();
         }
 
         [HttpPut("{hotelId}/{number}")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Put(
-            int hotelId,
-            int number,
-            [FromBody] UpdateRoomRequest request,
-            [FromForm] List<IFormFile>? files)
+        public async Task<IActionResult> Put(int hotelId, int number, [FromForm] UpdateRoomForm form)
         {
-            if (files.Count > 0)
+            var images = new List<string>();
+
+            if (form.Images.Any())
             {
-                foreach (var file in files)
+                foreach (var file in form.Images)
                 {
                     var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
-                    request.Images.Add(resultForList.Url.ToString());
+                    images.Add(resultForList.Url.ToString());
                     file.OpenReadStream().Dispose();
                 }
             }
+
+            var request = new UpdateRoomRequest
+            (
+                form.Name,
+                form.Description,
+                form.Price,
+                form.RoomCategory,
+                images
+            );
+
             await _mediator.Send(new UpdateRoomCommand(hotelId, number, request));
             return Ok();
         }

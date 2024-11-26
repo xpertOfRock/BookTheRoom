@@ -13,9 +13,21 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
         }
         public async Task<Unit> Handle(DeleteHotelCommand command, CancellationToken cancellationToken)
         {
-            await _unitOfWork.Hotels.Delete(command.Id);
+            await _unitOfWork.BeginTransactionAsync();
 
-            await _unitOfWork.SaveChangesAsync();
+            try
+            {
+                await _unitOfWork.Hotels.Delete(command.Id);
+
+                await _unitOfWork.SaveChangesAsync();
+
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new InvalidOperationException("An error occurred while processing the hotel.", ex);
+            }
 
             return Unit.Value;
         }

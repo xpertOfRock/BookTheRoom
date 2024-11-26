@@ -1,4 +1,6 @@
-﻿namespace Api.Contracts
+﻿using Core.Enums;
+
+namespace Api.Contracts.Hotel
 {
     public record UpdateHotelForm
     (

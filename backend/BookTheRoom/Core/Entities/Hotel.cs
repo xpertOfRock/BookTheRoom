@@ -1,5 +1,4 @@
 ﻿using Core.ValueObjects;
-using System.Net;
 
 namespace Core.Entities
 {
@@ -14,6 +13,7 @@ namespace Core.Entities
 
         public Address Address { get; set; }
         public List<Room>? Rooms { get; set; }
-        public List<Comment>? Comments { get; set; }        
+        public List<Comment>? Comments { get; set; }
+        public List<Service>? Services { get; set; }
     }
 }

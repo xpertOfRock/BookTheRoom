@@ -1,65 +1,38 @@
 import './App.css';
-import { useEffect, useState } from 'react';
-import { fetchHotels, postHotel } from './services/hotels';
-import HotelCard from './components/HotelCard';
-import Filter from './components/Filter';
-import CreateHotelForm from './components/CreateHotelForm';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import CreateHotelForm from './components/hotel/CreateHotelForm';
+import UpdateHotelForm from './components/hotel/UpdateHotelForm';
+import Hotels from './components/hotel/Hotels';
+import Navbar from './components/Navbar'; 
+import Home from './components/Home'; 
+import Apartments from './components/apartment/Apartments';
+import FAQ from './components/FAQ';
+import Support from './components/Support';
+import Login from './components/authorization/Login';
+import Register from './components/authorization/Register';
 
-function App() {
-
-  const [hotels, setHotels] = useState([]);
-  const [filter, setFilter] = useState({
-    search: "",
-    sortItem: "id",
-    sortOrder: "asc"
-  });
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      var hotels = await fetchHotels(filter);
-
-      console.log(hotels);
-
-      setHotels(hotels);
-    }
-
-    fetchData();
-  }, [filter]);
-  
-  const onCreate = async (hotelForm) => {
-      await postHotel(hotelForm);
-      let hotels = await fetchHotels(filter);
-      setHotels(hotels);
-  }
-
+function App() { 
+ 
   return (
-    <section className="p-8 flex flex-row justify-start itemx-staart gap-12">
-      <div className="flex flex-col w-1/2 gap-10">
-        <h1>Create hotel</h1>
-        <CreateHotelForm onCreate={onCreate}/>
-        <h1>Filters</h1>
-        <Filter filter={filter} setFilter={setFilter}/>
-      </div>
+    <Router>
+      <>
+        <header>
+          <Navbar />
+        </header>
 
-      <div className="flex flex-col w-1/2 gap-10">
-        <h1>Hotels</h1>      
-          <ul className="flex flex-col gap-5 w-1/2">
-          {hotels.map((h) => (
-            <li key = {h.id}>
-              <ul>
-                <HotelCard
-                  name={h.name}
-                  rating={h.rating}
-                  address={h.address}
-                  preview={h.preview}
-                />
-              </ul>
-            </li>
-          ))}
-        </ul>        
-      </div>
-      </section>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/hotels" element={<Hotels />} />
+          <Route path="/hotels/create" element={<CreateHotelForm/> } />
+          <Route path="/hotels/update/:id" element={<UpdateHotelForm /> } />
+          <Route path="/apartments" element={<Apartments />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>        
+      </>
+    </Router>
   );
 }
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { postHotel } from '../../services/hotels';
 import {
   Box,
   Button,
@@ -13,12 +14,11 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-const CreateHotelForm = ({onCreate}) => {
+const CreateHotelForm = ({ filter, setHotels }) => {
   const [form, setForm] = useState({
     name: '',
     description: '',
     rating: 0,
-    rooms: 0,
     pool: false,
     country: '',
     state: '',
@@ -45,6 +45,46 @@ const CreateHotelForm = ({onCreate}) => {
     }));
   };
 
+  const handleRatingChange = (value) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      rating: value,
+    }));
+  };
+
+  const onCreate = async (hotelForm) => {
+    try {
+      await postHotel(hotelForm);
+      setForm({
+        name: '',
+        description: '',
+        rating: 0,
+        pool: false,
+        country: '',
+        state: '',
+        city: '',
+        street: '',
+        postalCode: '',
+        images: [],
+      });
+      toast({
+        title: 'Hotel Created!',
+        description: 'The hotel was successfully created.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error!',
+        description: 'An error occurred while creating the hotel.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -58,15 +98,7 @@ const CreateHotelForm = ({onCreate}) => {
       }
     });
 
-    onCreate(formData);
-    toast({
-      title: 'Created!',
-      description: 'Hotel was created successfully!',
-      status: 'success',
-      duration: 5000,
-      isClosable: true,
-    });
-    
+    await onCreate(formData);
   };
 
   return (
@@ -99,19 +131,7 @@ const CreateHotelForm = ({onCreate}) => {
               value={form.rating}
               min={0}
               max={5}
-              onChange={(value) => handleChange({ target: { name: 'rating', value } })}
-            >
-              <NumberInputField />
-            </NumberInput>
-          </FormControl>
-
-          <FormControl id="rooms" isRequired>
-            <FormLabel>Rooms</FormLabel>
-            <NumberInput
-              name="rooms"
-              value={form.rooms}
-              min={0}
-              onChange={(value) => handleChange({ target: { name: 'rooms', value } })}
+              onChange={handleRatingChange}
             >
               <NumberInputField />
             </NumberInput>
@@ -187,14 +207,7 @@ const CreateHotelForm = ({onCreate}) => {
             />
           </FormControl>
 
-          <Button 
-            type="submit"
-            bgColor="skyBlue" 
-            color="white"
-            size="lg"
-            width="full"
-            _hover={{ bgColor: 'lightCabernet' }}
-          >
+          <Button type="submit" colorScheme="teal" size="lg" width="full">
             Create Hotel
           </Button>
         </VStack>

@@ -72,7 +72,7 @@ namespace Infrastructure.Data.Repositories
                 "status" => order => order.Status.ToString(),
                 "date" => order => order.CreatedAt,
                 _ => order => order.Id,
-            }; ; ;
+            };
 
             if (request.SortOrder == "desc")
             {
@@ -87,12 +87,12 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        //public async Task<Order> GetById(int orderId)
-        //{
-        //    return await _context.Orders
-        //        .AsNoTracking()
-        //        .FirstOrDefaultAsync(o => o.Id == orderId);
-        //}
+        public async Task<Order> GetById(int orderId)
+        {
+            return await _context.Orders
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+        }
 
         public async Task<List<Order>> GetExpiredOrders()
         {
@@ -108,6 +108,8 @@ namespace Infrastructure.Data.Repositories
         {
             string key = $"order-{id}";
 
+            _memoryCache.Remove(key);
+
             await _context.Orders
                 .Where(o => o.Id == id)
                 .ExecuteUpdateAsync(e => e
@@ -116,11 +118,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(o => o.MealsIncluded, request.MealsIncluded)
                 );
 
-            var order = await _context.Orders
-                .AsNoTracking()
-                .FirstOrDefaultAsync(o => o.Id == id);
-
-            _memoryCache.Set(key, order, TimeSpan.FromMinutes(2));
+            
         }
     }
 }

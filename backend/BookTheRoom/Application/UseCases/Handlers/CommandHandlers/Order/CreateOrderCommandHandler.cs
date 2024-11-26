@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {
-    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Unit>
+    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Core.Entities.Order>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
@@ -17,88 +17,115 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
             _emailService = emailService;
 
         }
-        public async Task<Unit> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
+        public async Task<Core.Entities.Order> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
         {
-            var hotel = await _unitOfWork.Hotels.GetById(command.HotelId);
-            var room = await _unitOfWork.Rooms.GetById(command.HotelId, command.Number);
+            await _unitOfWork.BeginTransactionAsync();
 
-            var duration = command.Request.CheckOut.Subtract(command.Request.CheckIn);
+            try
+            {
+                var hotel = await _unitOfWork.Hotels.GetById(command.HotelId);
+                var room = await _unitOfWork.Rooms.GetById(command.HotelId, command.Number);
+
+                var duration = command.Request.CheckOut.Subtract(command.Request.CheckIn);
+                int days = (int)Math.Ceiling(duration.TotalDays);
+                var price = room.Price;
+
+                decimal multiplier = 1.0m;
+                if (command.Request.MealsIncluded) multiplier += 0.1m;
+                if (command.Request.MinibarIncluded) multiplier += 0.1m;
+
+                var overallPrice = days * price * multiplier;
+
+                var order = new Core.Entities.Order
+                {
+                    Email = command.Request.Email,
+                    Phone = command.Request.Number,
+                    CreatedAt = DateTime.UtcNow,
+                    CheckIn = command.Request.CheckIn,
+                    CheckOut = command.Request.CheckOut,
+                    OverallPrice = overallPrice,
+                    IsPaid = false,
+                    UserId = command.UserId,
+                    HotelId = command.HotelId,
+                    RoomId = command.Number,
+                    Hotel = hotel,
+                    Room = room
+                };
+
+                
+
+                if (command.Request.PaidImmediately)
+                {
+                    var gateway = _paymentService.CreateGateway();
+                    var request = new TransactionRequest
+                    {
+                        Amount = order.OverallPrice,
+                        OrderId = order.Id.ToString(),
+                        PaymentMethodNonce = command.NonceFromClient,
+                        Options = new TransactionOptionsRequest
+                        {
+                            SubmitForSettlement = true
+                        }
+                    };
+
+                    var result = await gateway.Transaction.SaleAsync(request);
+
+                    if (!result.IsSuccess() || result.Target.ProcessorResponseText != "Approved")
+                    {
+                        await _unitOfWork.RollbackAsync();
+                        return new Core.Entities.Order { Status = Core.Enums.OrderStatus.Error };
+                    }
+                    order.IsPaid = true;                  
+                }
+
+                await _unitOfWork.Orders.Add(order);
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
+
+                SendMail(order.Email, order);
+                return order;            
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new InvalidOperationException("An error occurred while processing the order.", ex);
+            }
+        }   
+        
+        private void SendMail(string email, Core.Entities.Order order)
+        {
+            var duration = order.CheckOut.Subtract(order.CheckIn);
 
             int days = (int)Math.Ceiling(duration.TotalDays);
 
-            var price = room.Price;
+            string subject = $"Order No. {order.Id}";
 
-            if(command.Request.MealsIncluded is true)
+            string isPaidInformation = string.Empty;
+
+            switch (order.IsPaid) 
             {
-                price *= 1.1m;
+                case true:
+                    isPaidInformation = $"You have successfully booked the room with immediate payment!\n" +
+                                        $"In case you want to cancel this reservation and return your money, please contact customer service.\n";
+                    break;
+                case false:
+                    isPaidInformation = $"Attention!\nYou successfully booked the room without immediate payment!\n" +
+                                        $"After arriving at your hotel you will have to pay your reservation at the hotel reception.\n";
+                    break;
             }
 
-            if(command.Request.MinibarIncluded is true)
-            {
-                price *= 1.1m;
-            }
+            string body = "Thanks for choosing Book The Room!\n\n" +
+                         
+                         $"Your hotel: {order.Hotel.Name} ( Address: {order.Hotel.Address.ToString()} )\n {isPaidInformation}" +                           
+                         $"Room No. : {order.Room.Number}\n" +
+                         $"Duration: {days} days\n" +
+                         $"Check in date: {order.CheckIn.ToString("dd.MM.yyyy HH:mm")}\n" +
+                         $"Check out date: {order.CheckOut.ToString("dd.MM.yyyy HH:mm")}\n" +
+                         $"Overall price : {Math.Round(order.OverallPrice, 2)}\n\n" +
+                         $"Have a nice day!";
 
-            var overallPrice = days * price;
-
-            var gateway = _paymentService.CreateGateway();
-            var clientToken = gateway.ClientToken.Generate();
-
-            string nonceFromClient = command.Request.NonceFromClient;
-
-            var order = new Core.Entities.Order
-            {
-                Email = command.Request.Email,
-                Phone = command.Request.Number,
-                CreatedAt = DateTime.UtcNow,
-                CheckIn = command.Request.CheckIn,
-                CheckOut = command.Request.CheckOut,
-                MealsIncluded = command.Request.MealsIncluded,
-                MinibarIncluded = command.Request.MinibarIncluded,
-                OverallPrice = overallPrice,
-                UserId = command.UserId,
-                HotelId = command.HotelId,
-                RoomId = command.Number,
-                Hotel = hotel,
-                Room = room
-            };
-
-            var request = new TransactionRequest
-            {
-                Amount = order.OverallPrice,
-                OrderId = order.Id.ToString(),
-                PaymentMethodNonce = nonceFromClient,
-                Options = new TransactionOptionsRequest
-                {
-                    SubmitForSettlement = true
-                }
-            };
-
-            Result<Transaction> result = await gateway.Transaction.SaleAsync(request);
-
-            if (result.Target.ProcessorResponseText == "Approved")
-            {
-                await _unitOfWork.Orders.Add(order);
-
-                string subject = $"Order No. {order.Id}";
-                string body = "Thanks for choosing Book The Room!\n\n" +
-                             $"Your hotel: {order.Hotel.Name}\n" +
-                             $"Address: {order.Hotel.Address.Country}," +
-                                $" {order.Hotel.Address.State}," +
-                                $" {order.Hotel.Address.City}," +
-                                $" {order.Hotel.Address.Street}," +
-                                $" {order.Hotel.Address.PostalCode}\n" +
-                             $"Room No. : {order.Room.Number}\n" +
-                             $"Duration: {days} days\n" +
-                             $"Check in date: {order.CheckIn.ToString("dd.MM.yyyy HH:mm")}\n" +
-                             $"Check out date: {order.CheckOut.ToString("dd.MM.yyyy HH:mm")}\n" +
-                             $"Overall price : {Math.Round(order.OverallPrice, 2)}\n\n" +
-                             $"Have a nice day!";
-                
-                _emailService.SendEmail(order.Email, subject, body);
-                
-                await _unitOfWork.SaveChangesAsync();
-            }
-            return Unit.Value;
+            _emailService.SendEmail(email, subject, body);
         }
     }
 }

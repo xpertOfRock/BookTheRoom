@@ -8,10 +8,11 @@ namespace Core.Contracts
         string Email,
         string Number,
         bool MinibarIncluded,
-        bool MealsIncluded,
+        bool MealsIncluded,        
         DateTime CheckIn,
         DateTime CheckOut,
         DateTime CreatedAt,
-        OrderStatus Status            
+        OrderStatus Status,
+        bool PaidImmediately = false
     );
 }

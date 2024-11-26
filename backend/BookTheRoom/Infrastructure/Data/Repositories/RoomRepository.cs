@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using CloudinaryDotNet.Actions;
 using Core.Contracts;
 using Core.Entities;
 using Core.Interfaces;
@@ -27,9 +26,16 @@ namespace Infrastructure.Data.Repositories
 
         public async Task Delete(int hotelId, int number)
         {
-            var room = await _context.Rooms.FindAsync(hotelId, number);
+            var room = await GetById(hotelId, number);
 
-            _memoryCache.Remove($"hotel-{hotelId}-room-{number}");
+            if(room == null)
+            {
+                return;
+            }
+
+            string key = $"hotel-{hotelId}-room-{number}";
+
+            _memoryCache.Remove(key);
 
             if (room.Images != null && room.Images.Count > 0)
             {
@@ -43,9 +49,11 @@ namespace Infrastructure.Data.Repositories
         }
         public async Task<List<Room>> GetAllRooms()
         {
-            return await _context.Rooms.AsNoTracking().ToListAsync();
+            return await _context.Rooms
+                .AsNoTracking()
+                .ToListAsync();
         }
-        public async Task<List<Room>> GetAll(int hotelId, GetDataRequest request)
+        public async Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request)
         {
             var query = _context.Rooms
                 .Where(r => r.HotelId == hotelId && 
@@ -53,6 +61,18 @@ namespace Infrastructure.Data.Repositories
                             r.Name.ToLower().Contains(request.Search.ToLower()) ) 
                             )
                 .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(request.Categories))
+            {
+                var categories = request.Categories.Split(',');
+                query = query.Where(r => categories.Contains(Enum.GetName(r.Category)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Prices))
+            {
+                var prices = request.Prices.Split(',').Select(decimal.Parse).ToList();
+                query = query.Where(r => prices.Contains(r.Price));
+            }
 
             Expression<Func<Room, object>> selectorKey = request.SortItem?.ToLower() switch
             {
@@ -67,10 +87,12 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Room> GetById(int hotelId, int number)
+        public async Task<Room> GetById(int? hotelId, int? number)
         {
-            string key = $"hotel-{hotelId}-room-{number}";
+            if (hotelId == null || number == null) throw new ArgumentNullException("Cannot get entity 'Hotel' when 'id' is null.");
 
+            string key = $"hotel-{hotelId}-room-{number}";
+            
             return await _memoryCache.GetOrCreateAsync(
                 key,
                 entry =>
@@ -87,7 +109,31 @@ namespace Infrastructure.Data.Repositories
 
         public async Task Update(int hotelId, int number, UpdateRoomRequest request)
         {
+            var room = await GetById(hotelId, number);
+
+            if (room == null)
+            {
+                return;
+            }
+
             string key = $"hotel-{hotelId}-room-{number}";
+
+            _memoryCache.Remove(key);
+
+            if (request.Images is not null)
+            {
+                if (room.Images != null && room.Images.Any())
+                {
+                    foreach (var image in room.Images)
+                    {
+                        await _photoService.DeletePhotoAsync(image);
+                    }
+                }
+                await _context.Rooms
+                        .Where(h => h.HotelId == hotelId && h.Number == number)
+                        .ExecuteUpdateAsync(e => e
+                        .SetProperty(h => h.Images, request.Images));
+            }
 
             await _context.Rooms
                 .Where(r => r.HotelId == hotelId && r.Number == number)
@@ -95,18 +141,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(r => r.Name, request.Name)
                 .SetProperty(r => r.Description, request.Description)
                 .SetProperty(r => r.Price, request.Price)
-                .SetProperty(r => r.Images, request.Images)
-                .SetProperty(r => r.Category, request.Category)
-                );
-
-            var room = await _context.Rooms
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r =>
-                    r.HotelId == hotelId &&
-                    r.Number == number
-                );
-
-            _memoryCache.Set(key, room, TimeSpan.FromMinutes(2));
+                .SetProperty(r => r.Category, request.Category));
         }
     }
 }
