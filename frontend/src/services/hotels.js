@@ -61,7 +61,6 @@ export const putHotel = async (id, hotel) => {
   }
 };
 
-// Delete a hotel by ID (requires authentication)
 export const deleteHotel = async (id) => {
   try {
     const token = getToken();

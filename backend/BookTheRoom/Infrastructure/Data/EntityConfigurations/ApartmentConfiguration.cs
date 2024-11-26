@@ -18,7 +18,7 @@ namespace Infrastructure.Data.EntityConfigurations
 
             builder.Property(h => h.Description)
                 .IsRequired()
-                .HasMaxLength(1000);
+                .HasMaxLength(2000);
 
  
             builder.Property(h => h.OwnerId)               

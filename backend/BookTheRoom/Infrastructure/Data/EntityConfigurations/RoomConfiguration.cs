@@ -13,7 +13,7 @@ namespace Infrastructure.Data.EntityConfigurations
 
             builder.Property(r => r.Description)
                 .IsRequired()
-                .HasMaxLength(1000);
+                .HasMaxLength(2000);
 
             builder.Property(r => r.Price)
                 .IsRequired()

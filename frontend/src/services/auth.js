@@ -39,7 +39,6 @@ export const logout = async () => {
   await axios.post(`${API_URL}/Logout`);
 };
 
-// Получение текущего токена
 export const getCurrentToken = () => {
   return localStorage.getItem('accessToken');
 };

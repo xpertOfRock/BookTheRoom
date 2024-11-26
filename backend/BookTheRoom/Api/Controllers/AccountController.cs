@@ -58,7 +58,7 @@ namespace Api.Controllers
             var token = GenerateJwtToken(user);
             var refreshToken = await GenerateAndStoreRefreshToken(user);
             var userJson = JsonConvert.SerializeObject(user);
-            return Ok(new { token, refreshToken, user });
+            return Ok(new { token, refreshToken, user, userJson });
         }
 
         [HttpPost("Register")]
@@ -84,6 +84,7 @@ namespace Api.Controllers
                 UserName = request.Username,
                 PhoneNumber = request.PhoneNumber,
                 Age = request.Age,
+                Role = UserRole.User,
                 Orders = new List<Order>(),
                 Apartments = new List<Apartment>()
             };
@@ -106,7 +107,8 @@ namespace Api.Controllers
             var refreshToken = await GenerateAndStoreRefreshToken(newUser);
             var userJson = JsonConvert.SerializeObject(newUser);
 
-            return Ok(new { token, refreshToken, newUser });
+            return Ok(new { token, refreshToken, newUser, userJson });
+
         }
 
         [HttpPost("Logout")]

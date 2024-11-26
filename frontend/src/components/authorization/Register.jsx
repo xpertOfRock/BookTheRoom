@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../../services/auth';
+import InputMask from 'react-input-mask';
 import { Box, Button, Input, Stack, Heading, Text } from '@chakra-ui/react';
 
 function Register() {
@@ -10,23 +11,26 @@ function Register() {
     email: '',
     username: '',
     phoneNumber: '',
-    age: 0,
-    password: ''
+    age: '',
+    password: '',
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUserData((prevData) => ({
+      ...prevData,
+      [name]: name === 'age' ? Number(value) : value,
+    }));
   };
 
   const handleRegister = async () => {
     try {
       await register(userData);
-
       navigate('/');
     } catch (error) {
-      setError('Registration failed. Please try again.');
+      setError(error.response?.data?.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -50,8 +54,10 @@ function Register() {
         <Input
           placeholder="Email"
           name="email"
+          type="email"
           value={userData.email}
           onChange={handleChange}
+          maxLength={254}
         />
         <Input
           placeholder="Username"
@@ -59,16 +65,27 @@ function Register() {
           value={userData.username}
           onChange={handleChange}
         />
-        <Input
-          placeholder="Phone Number"
-          name="phoneNumber"
+        <InputMask
+          mask="+38 (999) 999-99-99"
           value={userData.phoneNumber}
           onChange={handleChange}
-        />
+        >
+          {(inputProps) => (
+            <Input
+              {...inputProps}
+              type="tel"
+              placeholder="Phone Number"
+              name="phoneNumber" // Добавлен атрибут name
+            />
+          )}
+        </InputMask>
         <Input
           placeholder="Age"
           name="age"
           type="number"
+          min={1}
+          max={100}
+          step={1}
           value={userData.age}
           onChange={handleChange}
         />
@@ -76,6 +93,7 @@ function Register() {
           placeholder="Password"
           name="password"
           type="password"
+          maxLength={20}
           value={userData.password}
           onChange={handleChange}
         />
