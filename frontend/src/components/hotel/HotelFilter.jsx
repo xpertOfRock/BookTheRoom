@@ -11,7 +11,6 @@ function HotelFilter({ filter, setFilter }) {
     "Egypt", "Netherlands", "United Kingdom", "Poland"
   ];
 
-  // Обновляем фильтры при монтировании компонента
   useEffect(() => {
     setFilter((prevFilter) => ({
       ...prevFilter,

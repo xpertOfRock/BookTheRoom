@@ -1,11 +1,10 @@
-﻿namespace Api.Contracts
+﻿namespace Api.Contracts.Apartment
 {
     public record UpdateApartmentForm
     (
         string Title,
         string Description,
-        int Rating,
-        bool Pool,
+        decimal PricePerNight,
         List<IFormFile>? Images
     );
 }

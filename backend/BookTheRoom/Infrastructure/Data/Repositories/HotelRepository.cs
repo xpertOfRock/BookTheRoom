@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Core.Contracts;
 using Core.Entities;
+using Core.Enums;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -20,13 +21,16 @@ namespace Infrastructure.Data.Repositories
             _memoryCache = memoryCache;
             _photoService = photoService;
         }
+
+        private const int maxItemsOnPage = 15;
+
         public async Task Add(Hotel hotel)
         {
             await _context.Hotels.AddAsync(hotel);
         }
 
         public async Task Delete(int id)
-        {
+        {            
             var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
 
             if(hotel == null)
@@ -46,7 +50,7 @@ namespace Infrastructure.Data.Repositories
             
             _context.Hotels.Remove(hotel);
         }
-
+        
         public async Task<List<Hotel>> GetAll(GetHotelsRequest request)
         {
             var query = _context.Hotels
@@ -58,18 +62,22 @@ namespace Infrastructure.Data.Repositories
                             h.Address.City.ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();
 
-            // Преобразуем строку в массив для стран
             if (!string.IsNullOrWhiteSpace(request.Countries))
             {
                 var countries = request.Countries.Split(',');
                 query = query.Where(h => countries.Contains(h.Address.Country));
             }
 
-            // Преобразуем строку в массив для рейтингов
             if (!string.IsNullOrWhiteSpace(request.Ratings))
             {
                 var ratings = request.Ratings.Split(',').Select(int.Parse).ToList();
                 query = query.Where(h => ratings.Contains(h.Rating));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Services))
+            {
+                var services = request.Services.Split(',').Select(service => Enum.Parse<HotelService>(service, true));
+                query = query.Where(h => h.Services.Any(x => services.Contains(x.ServiceName)));
             }
 
             Expression<Func<Hotel, object>> selectorKey = request.SortItem?.ToLower() switch
@@ -82,6 +90,8 @@ namespace Infrastructure.Data.Repositories
             query = request.SortOrder == "desc"
                 ? query.OrderByDescending(selectorKey)
                 : query.OrderBy(selectorKey);
+
+            query = query.Skip((request.page - 1) * maxItemsOnPage).Take(maxItemsOnPage);
 
             return await query.ToListAsync();
         }
@@ -102,6 +112,7 @@ namespace Infrastructure.Data.Repositories
                     .Include(h => h.Address)                                         
                     .Include(h => h.Rooms)
                     .Include(h => h.Comments)
+                    .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);
                 });
@@ -116,9 +127,10 @@ namespace Infrastructure.Data.Repositories
                 return;
             }
 
-            string key = $"hotel-{id}";                                  
+            string key = $"hotel-{id}";
 
-            var comments = !request.Comments.Any() ? hotel.Comments : request.Comments;
+            _memoryCache.Remove(key);
+
 
             if (request.Images is not null)
             {
@@ -142,9 +154,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.Rating, request.Rating)
                 .SetProperty(h => h.HasPool, request.HasPool)
-                .SetProperty(h => h.Comments, request.Comments));
-
-            _memoryCache.Set(key, hotel, TimeSpan.FromMinutes(2));
+                /*.SetProperty(h => h.Comments, request.Comments)*/);
         }
     }
 }

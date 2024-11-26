@@ -1,8 +1,28 @@
-import HotelCard from '../components/HotelCard';
-import HotelFilter from '../components/HotelFilter';
+import HotelCard from './HotelCard';
+import HotelFilter from './HotelFilter';
+import { fetchHotels } from '../../services/hotels';
+import { useEffect, useState } from 'react';
 
-function Hotels({hotels, filter, setFilter}){
-    
+function Hotels(){
+    const [hotels, setHotels] = useState([]);
+    const [filter, setFilter] = useState({        
+        search: "",
+        sortItem: "id",
+        sortOrder: "desc",
+        countries: [],
+        ratings: []
+    });
+
+    useEffect(() => {
+
+        const fetchData = async () => {
+            let hotels = await fetchHotels(filter);
+            setHotels(hotels);
+        }
+
+        fetchData();
+    }, [filter]);
+
     return (        
         <section className="p-8 flex flex-row justify-start itemx-staart gap-12">
    

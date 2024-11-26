@@ -7,6 +7,7 @@ namespace Api.DTOs
         int Id,
         string Title,
         string Description,
+        string Owner,
         string Address,
         List<string>? Images,
         List<Comment>? Comments

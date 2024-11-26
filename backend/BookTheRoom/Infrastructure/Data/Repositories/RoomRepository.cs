@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using CloudinaryDotNet.Actions;
 using Core.Contracts;
 using Core.Entities;
 using Core.Interfaces;
@@ -27,14 +26,16 @@ namespace Infrastructure.Data.Repositories
 
         public async Task Delete(int hotelId, int number)
         {
-            var room = await _context.Rooms
-                .FirstOrDefaultAsync(r => r.HotelId == hotelId && r.Number == number);
+            var room = await GetById(hotelId, number);
 
             if(room == null)
             {
                 return;
             }
-            _memoryCache.Remove($"hotel-{hotelId}-room-{number}");
+
+            string key = $"hotel-{hotelId}-room-{number}";
+
+            _memoryCache.Remove(key);
 
             if (room.Images != null && room.Images.Count > 0)
             {
@@ -52,7 +53,7 @@ namespace Infrastructure.Data.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
-        public async Task<List<Room>> GetAll(int hotelId, GetDataRequest request)
+        public async Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request)
         {
             var query = _context.Rooms
                 .Where(r => r.HotelId == hotelId && 
@@ -60,6 +61,18 @@ namespace Infrastructure.Data.Repositories
                             r.Name.ToLower().Contains(request.Search.ToLower()) ) 
                             )
                 .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(request.Categories))
+            {
+                var categories = request.Categories.Split(',');
+                query = query.Where(r => categories.Contains(Enum.GetName(r.Category)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Prices))
+            {
+                var prices = request.Prices.Split(',').Select(decimal.Parse).ToList();
+                query = query.Where(r => prices.Contains(r.Price));
+            }
 
             Expression<Func<Room, object>> selectorKey = request.SortItem?.ToLower() switch
             {
@@ -105,7 +118,7 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            
+            _memoryCache.Remove(key);
 
             if (request.Images is not null)
             {
@@ -129,9 +142,6 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(r => r.Description, request.Description)
                 .SetProperty(r => r.Price, request.Price)
                 .SetProperty(r => r.Category, request.Category));
-
-
-            _memoryCache.Set(key, room, TimeSpan.FromMinutes(2));
         }
     }
 }

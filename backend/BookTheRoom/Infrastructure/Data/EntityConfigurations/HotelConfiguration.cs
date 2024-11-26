@@ -12,27 +12,33 @@ namespace Infrastructure.Data.EntityConfigurations
             builder.HasKey(h => h.Id);
             builder.Property(h => h.Id).ValueGeneratedOnAdd();
 
-            builder.Property(h => h.Name)
+            builder
+                .Property(h => h.Name)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(h => h.Description)
+            builder
+                .Property(h => h.Description)
                 .IsRequired()
-                .HasMaxLength(1000);
+                .HasMaxLength(2000);
 
-            builder.Property(h => h.Rating)
+            builder
+                .Property(h => h.Rating)
                 .IsRequired();
 
-            builder.Property(h => h.HasPool)
+            builder
+                .Property(h => h.HasPool)
                 .IsRequired();
 
-            builder.Property(h => h.Images)
+            builder
+                .Property(h => h.Images)
                 .HasConversion(
                     v => string.Join(';', v),
                     v => v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
                 );
 
-            builder.OwnsOne(h => h.Address, a =>
+            builder
+                .OwnsOne(h => h.Address, a =>
             {
                 a.Property(ad => ad.Street)
                     .IsRequired()
@@ -54,12 +60,20 @@ namespace Infrastructure.Data.EntityConfigurations
                     .HasMaxLength(20);
             });
 
-            builder.HasMany(h => h.Rooms)
+            builder
+                .HasMany(h => h.Rooms)
                 .WithOne()
                 .HasForeignKey(r => r.HotelId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(h => h.Comments)
+            builder
+                .HasMany(h => h.Comments)
+                .WithOne()               
+                .HasForeignKey(c => c.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .HasMany(h => h.Services)
                 .WithOne()
                 .HasForeignKey(c => c.HotelId)
                 .OnDelete(DeleteBehavior.Cascade);

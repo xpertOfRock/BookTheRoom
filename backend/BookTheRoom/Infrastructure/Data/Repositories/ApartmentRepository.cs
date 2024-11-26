@@ -20,6 +20,9 @@ namespace Infrastructure.Data.Repositories
             _memoryCache = memoryCache;
             _photoService = photoService;
         }
+
+        private const int maxItemsOnPage = 15;
+
         public async Task Add(Apartment apartment)
         {
             await _context.Apartments.AddAsync(apartment);
@@ -33,8 +36,8 @@ namespace Infrastructure.Data.Repositories
             {
                 return;
             }
-
-            _memoryCache.Remove($"hotel-{id}");
+            var key = $"apartment-{id}";
+            _memoryCache.Remove(key);
 
             if (apartment.Images != null && apartment.Images.Count > 0)
             {
@@ -45,9 +48,47 @@ namespace Infrastructure.Data.Repositories
             }
 
             _context.Apartments.Remove(apartment);
-        }
 
-        public async Task<List<Apartment>> GetAll(GetDataRequest request)
+        }
+        public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request)
+        {
+            var query = _context.Apartments
+                .Include(h => h.Address)
+                .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
+                            h.Title.ToLower().Contains(request.Search.ToLower()) ||
+                            h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
+                            h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
+                            h.Address.City.ToLower().Contains(request.Search.ToLower()))
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(request.Countries))
+            {
+                var countries = request.Countries.Split(',');
+                query = query.Where(h => countries.Contains(h.Address.Country));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Prices))
+            {
+                var prices = request.Prices.Split(',').Select(decimal.Parse).ToList();
+                query = query.Where(h => prices[0] < h.PriceForNight && prices[1] < h.PriceForNight);
+            }
+
+            Expression<Func<Apartment, object>> selectorKey = request.SortItem?.ToLower() switch
+            {
+                "title" => apartment => apartment.Title,
+                "price" => apartment => apartment.PriceForNight,
+                _ => apartment => apartment.Id
+            };
+
+            query = request.SortOrder == "desc"
+                ? query.OrderByDescending(selectorKey)
+                : query.OrderBy(selectorKey);
+
+            query = query.Skip((request.page - 1) * maxItemsOnPage).Take(maxItemsOnPage);
+
+            return await query.ToListAsync();
+        }
+        public async Task<List<Apartment>> GetAll(GetApartmentsRequest request)
         {
             var query = _context.Apartments
                 .Include(h => h.Address)                
@@ -57,15 +98,38 @@ namespace Infrastructure.Data.Repositories
                             h.Address.City.ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();
 
+            if (!string.IsNullOrWhiteSpace(request.Countries))
+            {
+                var countries = request.Countries.Split(',');
+                query = query.Where(h => countries.Contains(h.Address.Country));
+            }
+
+            if 
+            (
+                !string.IsNullOrWhiteSpace(request.Prices) &&
+                request.Prices.Split(',').Select(decimal.Parse).ToList().Count == 2
+            )
+            {
+                var prices = request.Prices
+                    .Split(',')
+                    .Select(decimal.Parse)
+                    .ToList();
+                query = query.Where(h => prices[0] < h.PriceForNight && prices[1] < h.PriceForNight);
+            }
+
             Expression<Func<Apartment, object>> selectorKey = request.SortItem?.ToLower() switch
             {
-                "name" => apartment => apartment.Title,
+                "title" => apartment => apartment.Title,
+                "price" => apartment => apartment.PriceForNight,
                 _ => apartment => apartment.Id
             };
+
 
             query = request.SortOrder == "desc"
                  ? query = query.OrderByDescending(selectorKey)
                  : query = query.OrderBy(selectorKey);
+
+            query = query.Skip((request.page - 1) * maxItemsOnPage).Take(maxItemsOnPage);
 
             return await query.ToListAsync();
         }
@@ -81,16 +145,23 @@ namespace Infrastructure.Data.Repositories
                     return _context.Apartments
                     .Include(h => h.Address)
                     .Include(h => h.Comments)
+                    .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);
                 });
         }
 
-        public async Task Update(int id, UpdateApartmentRequest request)
+        public async Task Update(int? id, UpdateApartmentRequest request)
         {
-            string key = $"hotel-{id}";
-
             var apartment = await GetById(id);
+
+            if(id is null)
+            {
+                throw new ArgumentNullException($"Cannot get entity '{nameof(Apartment)}' with '{id}' is null.");
+            }
+            string key = $"apartment-{id}";
+           
+            _memoryCache.Remove(key);
 
             var comments = request.Comments == null ? apartment.Comments : new List<Comment>();
 
@@ -117,8 +188,6 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Title, request.Title)
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.PriceForNight, request.Price));
-
-            _memoryCache.Set(key, apartment, TimeSpan.FromMinutes(2));
         }
     }
 }

@@ -27,8 +27,11 @@ namespace IdentityServer
                 {
                     ClientId = "react_client_app",
                     AllowedGrantTypes = GrantTypes.Code,
-                    AllowedCorsOrigins = { "https://localhost:3000", "https://localhost:5286"},
-                    ClientSecrets = new List<Secret> { new Secret("MegaSuperSecureSecret".Sha256()) },
+                    AccessTokenLifetime = 3600, // Время жизни access token в секундах (1 час)
+                    AllowOfflineAccess = true,  // Разрешает использование refresh tokens
+                    RefreshTokenUsage = TokenUsage.OneTimeOnly, // Refresh токен можно использовать только один раз
+                    AbsoluteRefreshTokenLifetime = 2592000, // Время жизни refresh токена (30 дней)
+                    ClientSecrets = { new Secret("MegaSuperSecureSecret".Sha256()) },
                     RedirectUris = { "https://localhost:3000/callback" },
                     PostLogoutRedirectUris = { "https://localhost:3000/" },
                     AllowedScopes = {
@@ -38,7 +41,6 @@ namespace IdentityServer
                         "api.read",
                         "api.write"
                     }
-                    
                 }
 
             };

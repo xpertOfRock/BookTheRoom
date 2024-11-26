@@ -1,4 +1,4 @@
-﻿using Api.Contracts;
+﻿using Api.Contracts.Hotel;
 using Api.DTOs;
 using Application.Interfaces;
 using Application.UseCases.Commands.Hotel;
@@ -6,6 +6,7 @@ using Application.UseCases.Queries.Hotel;
 using Core.Contracts;
 using Core.Entities;
 using Core.ValueObjects;
+using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,8 +36,8 @@ namespace Api.Controllers
                 h.Id,
                 h.Name,
                 h.Images != null &&
-                    h.Images.Any() 
-                    ? h.Images.First() 
+                    h.Images.Any()
+                    ? h.Images.First()
                     : "No Image",
                 h.Rating,
                 h.Address.ToString()
@@ -52,7 +53,7 @@ namespace Api.Controllers
         {
             var hotel = await _mediator.Send(new GetHotelQuery(id));
 
-            if(hotel is null)
+            if (hotel is null)
             {
                 return NotFound($"Hotel with ID: {id} doesn't exist.");
             }
@@ -62,17 +63,18 @@ namespace Api.Controllers
                 hotel.Name,
                 hotel.Description,
                 hotel.Address.ToString(),
+                hotel.Rating,
 
                 hotel.Images != null &&
-                    hotel.Images.Any() 
-                    ? hotel.Images 
-                    : new List<string> {""},
+                    hotel.Images.Any()
+                    ? hotel.Images
+                    : new List<string> { "" },
 
                 hotel.Rooms != null &&
                     hotel.Rooms.Any()
                     ? hotel.Rooms
-                    : new List<Room>{ },
-               
+                    : new List<Room> { },
+
                 hotel.Comments != null &&
                     hotel.Comments.Any()
                     ? hotel.Comments
@@ -83,7 +85,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
             var imagesUrl = new List<string>();
@@ -92,11 +94,9 @@ namespace Api.Controllers
             {
                 foreach (var file in form.Images)
                 {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        imagesUrl.Add(resultForList.Url.ToString());
-                    }
+                    using var stream = file.OpenReadStream();
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                    imagesUrl.Add(resultForList.Url.ToString());
                 }
             }            
             
@@ -122,7 +122,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
             var images = new List<string>();
@@ -145,8 +145,10 @@ namespace Api.Controllers
                 form.Description,
                 form.Rating,
                 form.Pool,
-                images,
-                new List<Comment>()
+
+                images.Any() 
+                    ? images 
+                    : null
             );            
 
             await _mediator.Send(new UpdateHotelCommand(id, request));
@@ -154,7 +156,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _mediator.Send(new DeleteHotelCommand(id));

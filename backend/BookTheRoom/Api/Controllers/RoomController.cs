@@ -1,4 +1,4 @@
-﻿using Api.Contracts;
+﻿using Api.Contracts.Room;
 using Api.DTOs;
 using Application.Interfaces;
 using Application.UseCases.Commands.Room;
@@ -26,7 +26,7 @@ namespace Api.Controllers
 
         [HttpGet("{hotelId}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll(int hotelId, [FromQuery] GetDataRequest request)
+        public async Task<IActionResult> GetAll(int hotelId, [FromQuery] GetRoomsRequest request)
         {            
             var rooms = await _mediator.Send(new GetHotelRoomsQuery(hotelId, request));
 

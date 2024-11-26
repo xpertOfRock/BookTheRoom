@@ -1,5 +1,4 @@
 ﻿using Core.Entities;
-using Core.ValueObjects;
 
 namespace Api.DTOs
 {
@@ -9,6 +8,7 @@ namespace Api.DTOs
         string Name,
         string Description,
         string Address,
+        int Rating, 
         List<string>? Images,
         List<Room>? Rooms,
         List<Comment>? Comments

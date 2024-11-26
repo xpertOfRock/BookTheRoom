@@ -1,11 +1,6 @@
 ﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Data.EntityConfigurations
 {
@@ -23,9 +18,10 @@ namespace Infrastructure.Data.EntityConfigurations
 
             builder.Property(h => h.Description)
                 .IsRequired()
-                .HasMaxLength(1000);
+                .HasMaxLength(2000);
 
-            builder.Property(h => h.OwnerId)
+ 
+            builder.Property(h => h.OwnerId)               
                 .IsRequired();
 
             builder.Property(h => h.Images)
@@ -62,7 +58,7 @@ namespace Infrastructure.Data.EntityConfigurations
 
             builder.HasMany(h => h.Comments)
                 .WithOne()
-                .HasForeignKey(c => c.HotelId)
+                .HasForeignKey(c => c.ApartmentId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

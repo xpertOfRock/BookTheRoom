@@ -7,7 +7,7 @@ namespace Core.Contracts
         string Title,
         string Description,
         decimal Price,
-        List<string> Images,
-        List<Comment> Comments
+        List<string>? Images,
+        List<Comment>? Comments
     );
 }
