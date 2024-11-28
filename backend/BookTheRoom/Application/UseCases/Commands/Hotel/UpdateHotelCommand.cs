@@ -1,6 +1,4 @@
 ﻿using Core.Contracts;
-using Core.Entities;
-using Core.ValueObjects;
 using MediatR;
 
 namespace Application.UseCases.Commands.Hotel

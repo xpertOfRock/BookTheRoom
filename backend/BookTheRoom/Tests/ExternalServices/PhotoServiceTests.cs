@@ -3,7 +3,7 @@ using Application.Interfaces;
 using Application.Settings;
 using CloudinaryDotNet.Actions;
 
-namespace Tests.External_Services
+namespace Tests.ExternalServices
 {
     public class PhotoServiceTests
     {
