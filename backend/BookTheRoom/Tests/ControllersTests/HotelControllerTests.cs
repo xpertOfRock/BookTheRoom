@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Api.Controllers;
 using Api.Contracts.Hotel;
+using Core.TasksResults;
 
 namespace Tests.ControllersTests
 {  
@@ -48,11 +49,13 @@ namespace Tests.ControllersTests
 
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<UpdateHotelCommand>(), default))
-                .ReturnsAsync(Unit.Value);
+                .ReturnsAsync(new Success("Entity 'Hotel' was updated successfuly."));
 
             var result = await _controller.Put(hotelId, form);
 
-            var okResult = Assert.IsType<OkResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var actualResult = okResult.Value as Success;
+            Assert.Equal("Entity 'Hotel' was updated successfuly.", actualResult?.Message);
 
             _mockPhotoService.Verify(x => x.AddPhotoAsync(It.IsAny<string>(), It.IsAny<Stream>()), Times.Exactly(2));
             _mockMediator.Verify(x => x.Send(It.IsAny<UpdateHotelCommand>(), default), Times.Once);

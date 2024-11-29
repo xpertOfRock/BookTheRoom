@@ -27,7 +27,7 @@ namespace Infrastructure.Data.Repositories
 
         public async Task<IResult> Add(Hotel hotel)
         {
-            var existingHotel = await _context.Hotels.AsNoTracking().FirstOrDefaultAsync(h => h.Name == hotel.Name && h.Address == hotel.Address);
+            Hotel? existingHotel = await _context.Hotels.AsNoTracking().FirstOrDefaultAsync(h => h.Name == hotel.Name);
 
             if(existingHotel is not null)
             {
@@ -167,7 +167,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.HasPool, request.HasPool)
                 /*.SetProperty(h => h.Comments, request.Comments)*/);
 
-            return new Success("Entity 'Hotel' was deleted successfuly.");
+            return new Success("Entity 'Hotel' was updated successfuly.");
         }
     }
 }

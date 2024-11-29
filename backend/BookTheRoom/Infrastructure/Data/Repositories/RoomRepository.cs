@@ -24,7 +24,7 @@ namespace Infrastructure.Data.Repositories
         //return new Fail("Impossible to update a non-existent entity.");
         public async Task<IResult> Add(Room room)
         {
-            var existingRoom = GetById(room.HotelId, room.Number);
+            Room? existingRoom = _context.Rooms.AsNoTracking().FirstOrDefault(r => r.HotelId == room.HotelId && r.Number == room.Number);
 
             if (existingRoom is not null)
             {
