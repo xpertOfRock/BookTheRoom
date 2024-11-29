@@ -45,7 +45,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
                         (
                             hotel.Name,
                             hotel.Description,
-                            hotel.Rating,
+                            (uint)hotel.Rating,
                             hotel.HasPool,
                             images
                         )

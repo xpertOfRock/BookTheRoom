@@ -1,12 +1,10 @@
-﻿using Core.Entities;
-
-namespace Core.Contracts
+﻿namespace Core.Contracts
 {
     public record UpdateHotelRequest
     (
         string Name,
         string Description,
-        int Rating,
+        uint Rating,
         bool HasPool,
         List<string>? Images
     );

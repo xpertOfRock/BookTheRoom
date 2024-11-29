@@ -6,7 +6,7 @@ namespace Api.Contracts.Hotel
     (
         string Name,
         string Description,
-        int Rating,
+        uint Rating,
         bool Pool,
         List<IFormFile>? Images
     );

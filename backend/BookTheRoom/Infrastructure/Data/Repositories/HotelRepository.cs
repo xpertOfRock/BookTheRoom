@@ -152,7 +152,7 @@ namespace Infrastructure.Data.Repositories
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(h => h.Name, request.Name)
                 .SetProperty(h => h.Description, request.Description)
-                .SetProperty(h => h.Rating, request.Rating)
+                .SetProperty(h => h.Rating, (int)request.Rating)
                 .SetProperty(h => h.HasPool, request.HasPool)
                 /*.SetProperty(h => h.Comments, request.Comments)*/);
         }
