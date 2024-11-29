@@ -5,9 +5,9 @@ namespace Core.Interfaces
 {
     public interface ICommentRepository
     {
-        Task Add(Comment comment);
-        Task Update(int id, string description);
-        Task Delete(int id, string userId = "null");
+        Task<IResult> Add(Comment comment);
+        Task<IResult> Update(int id, string description);
+        Task<IResult> Delete(int id, string userId = "null");
         //Task<Comment> GetById(int? id);
     }
 }

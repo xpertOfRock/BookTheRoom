@@ -1,22 +1,26 @@
 ﻿using Application.Interfaces;
 using Application.UseCases.Commands.Comment;
-using Core.Entities;
+using Core.Interfaces;
+using Core.TasksResults;
 using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Comment
 {   
-    public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, Unit>
+    public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         public CreateCommentCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<Unit> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
         {
             await _unitOfWork.BeginTransactionAsync();
+
             try
             {
+                IResult result = new Fail("Variable that represents property type for the eentity 'Comment' was not passed as the parameter in method.");
+
                 var comment = new Core.Entities.Comment
                 {
                     Description = request.Description,
@@ -33,12 +37,13 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
 
                         var hotel = await _unitOfWork.Hotels.GetById(request.HotelId);
 
-                        if (hotel == null)
+                        if (hotel is null)
                         {
-                            return Unit.Value;
+                            await _unitOfWork.RollbackAsync();
+                            return new Fail("Impossible to add comment to a non-existent hotel.");
                         }
 
-                        await _unitOfWork.Comments.Add(comment);
+                        result = await _unitOfWork.Comments.Add(comment);
 
                         hotel.Comments?.Add(comment);
                         break;
@@ -47,26 +52,29 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
 
                         var apartment = await _unitOfWork.Apartments.GetById(request.ApartmentId);
 
-                        if (apartment == null)
+                        if (apartment is null)
                         {
-                            return Unit.Value;
+                            await _unitOfWork.RollbackAsync();
+                            return new Fail("Impossible to add comment to a non-existent apartments.");
                         }
 
-                        await _unitOfWork.Comments.Add(comment);
+                        result = await _unitOfWork.Comments.Add(comment);
 
                         apartment.Comments?.Add(comment);
                         break;
                 }
+               
                 await _unitOfWork.SaveChangesAsync();
 
                 await _unitOfWork.CommitAsync();
+
+                return result;
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
                 throw new InvalidOperationException("An error occurred while processing the comment.", ex);
             }
-            return Unit.Value;
         }
     }
 }

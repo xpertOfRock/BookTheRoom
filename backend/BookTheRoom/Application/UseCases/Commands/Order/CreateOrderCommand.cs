@@ -1,9 +1,10 @@
 ﻿using Core.Contracts;
+using Core.Interfaces;
 using MediatR;
 
 namespace Application.UseCases.Commands.Order
 {
-    public class CreateOrderCommand : IRequest<Core.Entities.Order>
+    public class CreateOrderCommand : IRequest<IResult>
     {
         public int HotelId { get; set; }
         public int Number { get; set; }

@@ -1,9 +1,9 @@
-﻿using Core.Enums;
+﻿using Core.Interfaces;
 using MediatR;
 
 namespace Application.UseCases.Commands.Comment
 {
-    public class UpdateCommentCommand : IRequest<Unit>
+    public class UpdateCommentCommand : IRequest<IResult>
     {
         public int Id { get; set; }
         public string Description { get; set; }

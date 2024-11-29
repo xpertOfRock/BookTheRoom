@@ -1,23 +1,25 @@
 ﻿using Application.Interfaces;
 using Application.UseCases.Commands.Hotel;
+using Core.Interfaces;
+using Core.TasksResults;
 using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 {
-    public class CreateHotelCommandHandler : IRequestHandler<CreateHotelCommand, Unit>
+    public class CreateHotelCommandHandler : IRequestHandler<CreateHotelCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         public CreateHotelCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<Unit> Handle(CreateHotelCommand command, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(CreateHotelCommand command, CancellationToken cancellationToken)
         {
             await _unitOfWork.BeginTransactionAsync();
 
             try
             {
-                await _unitOfWork.Hotels.Add
+                var result = await _unitOfWork.Hotels.Add
                 (
                     new Core.Entities.Hotel
                     {
@@ -31,16 +33,23 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
                     }
                 );
 
+                if (!result.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return result;
+                }
+
                 await _unitOfWork.SaveChangesAsync();
+
                 await _unitOfWork.CommitAsync();
+
+                return result;
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
                 throw new InvalidOperationException("An error occurred while processing the hotel.", ex);
             }
-
-            return Unit.Value;
         }
     }
 }

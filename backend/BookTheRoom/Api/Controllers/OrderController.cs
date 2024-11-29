@@ -44,13 +44,13 @@ namespace Api.Controllers
                      
             var result = await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, nonceFromClient!, request));
 
-            return Ok(result);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] string value)
-        {
-            return Ok();
-        }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> Put(int id, [FromBody] string value)
+        //{
+        //    return Ok();
+        //}
     }
 }

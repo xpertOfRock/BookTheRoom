@@ -1,11 +1,12 @@
 ﻿using Core.Contracts;
 using Core.Enums;
+using Core.Interfaces;
 using MediatR;
 using System.Xml;
 
 namespace Application.UseCases.Commands.Room
 {
-    public class UpdateRoomCommand : IRequest<Unit>
+    public class UpdateRoomCommand : IRequest<IResult>
     {
         public int HotelId { get; set; }
         public int Number { get; set; }

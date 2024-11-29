@@ -100,8 +100,9 @@ namespace Api.Controllers
                 images
             );
 
-            await _mediator.Send(new CreateRoomCommand(hotelId, request));
-            return Ok();
+            var result = await _mediator.Send(new CreateRoomCommand(hotelId, request));
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("{hotelId}/{number}")]
@@ -114,9 +115,9 @@ namespace Api.Controllers
             {
                 foreach (var file in form.Images)
                 {
-                    var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
+                    using var stream = file.OpenReadStream();
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
                     images.Add(resultForList.Url.ToString());
-                    file.OpenReadStream().Dispose();
                 }
             }
 
@@ -129,16 +130,18 @@ namespace Api.Controllers
                 images
             );
 
-            await _mediator.Send(new UpdateRoomCommand(hotelId, number, request));
-            return Ok();
+            var result = await _mediator.Send(new UpdateRoomCommand(hotelId, number, request));
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpDelete("{hotelId}/{number}")]
         [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Delete(int hotelId, int number)
         {
-            await _mediator.Send(new DeleteRoomCommand(hotelId, number));
-            return Ok();
+            var result = await _mediator.Send(new DeleteRoomCommand(hotelId, number));
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
 }

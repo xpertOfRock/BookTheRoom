@@ -2,6 +2,7 @@
 using Core.Entities;
 using Core.Enums;
 using Core.Interfaces;
+using Core.TasksResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Linq.Expressions;
@@ -17,9 +18,11 @@ namespace Infrastructure.Data.Repositories
             _context = context;
             _memoryCache = memoryCache;
         }
-        public async Task Add(Order order)
+
+        public async Task<IResult> Add(Order order)
         {
             await _context.Orders.AddAsync(order);
+            return new Success("Entity 'Order' was created successfuly.");
         }
 
         public async Task<List<Order>> GetActiveOrders()

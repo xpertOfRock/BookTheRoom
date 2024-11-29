@@ -1,10 +1,11 @@
 ﻿using Core.Contracts;
 using Core.Enums;
+using Core.Interfaces;
 using MediatR;
 
 namespace Application.UseCases.Commands.Room
 {
-    public class CreateRoomCommand : IRequest<Unit>
+    public class CreateRoomCommand : IRequest<IResult>
     {
         public string Name { get; set; }
         public string Description { get; set; }
