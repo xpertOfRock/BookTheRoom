@@ -4,7 +4,7 @@
     (
         string Name,
         string Description,
-        uint Rating,
+        int Rating,
         bool HasPool,
         List<string>? Images
     );

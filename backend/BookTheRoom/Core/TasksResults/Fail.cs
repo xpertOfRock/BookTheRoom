@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using Core.Enums;
+using Core.Interfaces;
 
 namespace Core.TasksResults
 {
@@ -7,9 +8,11 @@ namespace Core.TasksResults
         public bool IsSuccess => false;
 
         public string Message { get; }
-        public Fail(string message)
+        public ErrorStatuses Status { get; } 
+        public Fail(string message, ErrorStatuses status = ErrorStatuses.None)
         {
             Message = message;
+            Status = status;
         }
     }
 }

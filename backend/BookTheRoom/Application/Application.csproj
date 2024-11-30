@@ -17,6 +17,7 @@
 	<ItemGroup>
     <PackageReference Include="Braintree" Version="5.23.0" />
     <PackageReference Include="CloudinaryDotNet" Version="1.26.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
     <PackageReference Include="MailKit" Version="4.4.0" />
     <PackageReference Include="MediatR" Version="12.3.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
@@ -26,6 +27,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UseCases\Validators\Order\" />
+    <Folder Include="UseCases\Validators\Comment\" />
   </ItemGroup>
 
 </Project>

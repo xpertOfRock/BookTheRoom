@@ -1,8 +1,10 @@
 ﻿using Application.Interfaces;
+using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Commands.Room;
 using Core.Contracts;
 using Core.Interfaces;
 using Core.TasksResults;
+using FluentValidation;
 using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Room
@@ -10,9 +12,11 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
     public class CreateRoomCommandHandler : IRequestHandler<CreateRoomCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CreateRoomCommandHandler(IUnitOfWork unitOfWork)
+        private readonly IValidator<CreateRoomCommand> _validator;
+        public CreateRoomCommandHandler(IUnitOfWork unitOfWork, IValidator<CreateRoomCommand> validator)
         {
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
         public async Task<IResult> Handle(CreateRoomCommand command, CancellationToken cancellationToken)
         {
@@ -20,6 +24,13 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
 
             try
             {
+                var validationResult = _validator.Validate(command);
+
+                if (!validationResult.IsValid)
+                {
+                    return new Fail(validationResult.ToDictionary().ToString()!, Core.Enums.ErrorStatuses.ValidationError);
+                }
+
                 var hotel = await _unitOfWork.Hotels.GetById(command.HotelId);
 
                 if (hotel is null)
@@ -59,7 +70,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
                         (
                             hotel.Name,
                             hotel.Description,
-                            (uint)hotel.Rating,
+                            hotel.Rating,
                             hotel.HasPool,
                             images
                         )

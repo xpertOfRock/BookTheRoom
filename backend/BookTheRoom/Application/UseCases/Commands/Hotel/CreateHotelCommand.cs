@@ -10,7 +10,6 @@ namespace Application.UseCases.Commands.Hotel
         public string Name { get; set; }
         public string Description { get; set; }
         public int Rating { get; set; }
-        public int RoomsAmount { get; set; }
         public bool HasPool { get; set; }
 
         public Address Address { get; set; }

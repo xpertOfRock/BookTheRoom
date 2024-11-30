@@ -2,6 +2,7 @@
 using Application.UseCases.Commands.Hotel;
 using Core.Interfaces;
 using Core.TasksResults;
+using FluentValidation;
 using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Hotel
@@ -9,9 +10,11 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
     public class CreateHotelCommandHandler : IRequestHandler<CreateHotelCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CreateHotelCommandHandler(IUnitOfWork unitOfWork)
+        private readonly IValidator<CreateHotelCommand> _validator;
+        public CreateHotelCommandHandler(IUnitOfWork unitOfWork, IValidator<CreateHotelCommand> validator)
         {
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
         public async Task<IResult> Handle(CreateHotelCommand command, CancellationToken cancellationToken)
         {
@@ -19,6 +22,13 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 
             try
             {
+                var validationResult = _validator.Validate(command);
+
+                if (!validationResult.IsValid)
+                {
+                    return new Fail(validationResult.ToDictionary().ToString()!, Core.Enums.ErrorStatuses.ValidationError);
+                }
+
                 var result = await _unitOfWork.Hotels.Add
                 (
                     new Core.Entities.Hotel

@@ -84,9 +84,9 @@ namespace Api.Controllers
             {
                 foreach (var file in form.Images)
                 {
-                    var resultForList = await _photoService.AddPhotoAsync(file.Name, file.OpenReadStream());
+                    using var stream = file.OpenReadStream();
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
                     images.Add(resultForList.Url.ToString());
-                    file.OpenReadStream().Dispose();
                 }
             }
 

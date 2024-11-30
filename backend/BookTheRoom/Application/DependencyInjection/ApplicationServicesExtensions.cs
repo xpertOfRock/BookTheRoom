@@ -7,6 +7,8 @@ using Application.UseCases.Queries.Apartment;
 using Application.UseCases.Queries.Hotel;
 using Application.UseCases.Queries.Order;
 using Application.UseCases.Queries.Room;
+using Application.UseCases.Validators.Address;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.DependencyInjection
@@ -52,6 +54,25 @@ namespace Application.DependencyInjection
                 )
             );
 
+            return services;
+        }
+        public static IServiceCollection AddApplicationValidators(this IServiceCollection services)
+        {
+            services.AddScoped<IValidator<Core.ValueObjects.Address>, AddressValidator>();
+
+            services.AddValidatorsFromAssemblies(new[]
+            {
+                typeof(CreateHotelCommand).Assembly,
+                typeof(UpdateHotelCommand).Assembly,
+
+                typeof(CreateRoomCommand).Assembly,
+                typeof(UpdateRoomCommand).Assembly,
+
+                typeof(CreateApartmentCommand).Assembly,
+                //typeof(UpdateApartmentCommand).Assembly,              
+
+                //typeof(CreateOrderCommand).Assembly
+            });
             return services;
         }
     }

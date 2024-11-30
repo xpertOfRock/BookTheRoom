@@ -45,6 +45,8 @@ internal class Program
 
         builder.Services.AddApplicationMediatr();
 
+        builder.Services.AddApplicationValidators();
+
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
