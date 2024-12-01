@@ -27,7 +27,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
 
                 if (!validationResult.IsValid)
                 {
-                    return new Fail(validationResult.ToDictionary().ToString()!, Core.Enums.ErrorStatuses.ValidationError);
+                    return new Fail("Validation is failed.", Core.Enums.ErrorStatuses.ValidationError);
                 }
 
                 var result = await _unitOfWork.Rooms.Update(command.HotelId, command.Number, command.Request);
