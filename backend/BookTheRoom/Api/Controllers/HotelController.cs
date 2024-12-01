@@ -123,7 +123,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
             var images = new List<string>();
