@@ -117,8 +117,9 @@ namespace Api.Controllers
                 imagesUrl
             );
 
-           await _mediator.Send(new CreateHotelCommand(request));
-            return Ok();
+            var result = await _mediator.Send(new CreateHotelCommand(request));
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("{id}")]
@@ -151,16 +152,18 @@ namespace Api.Controllers
                     : null
             );            
 
-            await _mediator.Send(new UpdateHotelCommand(id, request));
-            return Ok();
+            var result = await _mediator.Send(new UpdateHotelCommand(id, request));
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
-            await _mediator.Send(new DeleteHotelCommand(id));
-            return Ok();
+            var result = await _mediator.Send(new DeleteHotelCommand(id));
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
 }

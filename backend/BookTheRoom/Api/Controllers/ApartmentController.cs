@@ -4,7 +4,6 @@ using Api.DTOs;
 using Api.Extensions;
 using Application.Interfaces;
 using Application.UseCases.Commands.Apartment;
-using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Queries.Apartment;
 using Core.Contracts;
 using Core.Entities;
@@ -142,11 +141,10 @@ namespace Api.Controllers
             {
                 foreach (var file in form.Images)
                 {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        imagesUrl.Add(resultForList.Url.ToString());
-                    }
+                    using var stream = file.OpenReadStream();                    
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                    imagesUrl.Add(resultForList.Url.ToString());
+                    
                 }
             }
 
@@ -168,47 +166,54 @@ namespace Api.Controllers
                 imagesUrl
             );
 
-            await _mediator.Send(new CreateApartmentCommand(request));
-            return Ok();
+            var result = await _mediator.Send(new CreateApartmentCommand(request));
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+
         }
 
-        [HttpPut("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
-        {
-            var images = new List<string>();
+        //[HttpPut("{id}")]
+        ////[Authorize(Roles = UserRole.Admin)]
+        //public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
+        //{
+        //    var images = new List<string>();
 
-            if (form.Images is not null && form.Images.Any())
-            {
-                foreach (var file in form.Images)
-                {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        images.Add(resultForList.Url.ToString());
-                    }
-                }
-            }
+        //    if (form.Images is not null && form.Images.Any())
+        //    {
+        //        foreach (var file in form.Images)
+        //        {
+        //            using (var stream = file.OpenReadStream())
+        //            {
+        //                var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+        //                images.Add(resultForList.Url.ToString());
+        //            }
+        //        }
+        //    }
 
-            var request = new UpdateHotelRequest
-            (
-                form.Name,
-                form.Description,
-                form.Rating,
-                form.Pool,
-                images
-            );
+        //    var request = new UpdateHotelRequest
+        //    (
+        //        form.Name,
+        //        form.Description,
+        //        form.Rating,
+        //        form.Pool,
+        //        images
+        //    );
 
-            await _mediator.Send(new UpdateHotelCommand(id, request));
-            return Ok();
-        }
+        //    var result = await _mediator.Send(new UpdateHotelCommand(id, request));
+        //    if (!result.IsSuccess) return BadRequest(result);
+            
+        //    return Ok(result);
+        //}
 
-        [HttpDelete("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _mediator.Send(new DeleteHotelCommand(id));
-            return Ok();
-        }
+        //[HttpDelete("{id}")]
+        ////[Authorize(Roles = UserRole.Admin)]
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var result = await _mediator.Send(new DeleteHotelCommand(id));
+
+        //    if (!result.IsSuccess) return BadRequest(result);
+        //    
+        //    return Ok(result);
+        //}
     }
 }

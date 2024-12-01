@@ -52,6 +52,7 @@ export const putHotel = async (id, hotel) => {
     const token = getToken();
     const response = await axios.put(`${API_URL}/${id}`, hotel, {
       headers: {
+        'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${token}`,
       },
     });

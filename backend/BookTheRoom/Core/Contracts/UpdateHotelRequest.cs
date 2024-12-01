@@ -1,6 +1,4 @@
-﻿using Core.Entities;
-
-namespace Core.Contracts
+﻿namespace Core.Contracts
 {
     public record UpdateHotelRequest
     (

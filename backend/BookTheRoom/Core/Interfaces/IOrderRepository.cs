@@ -10,7 +10,7 @@ namespace Core.Interfaces
         Task<List<Order>> GetActiveOrders();
         Task<List<Order>> GetExpiredOrders();
         //Task<Order> GetById(int id);
-        Task Add(Order order);
+        Task<IResult> Add(Order order);
         Task Update(int id, UpdateOrderRequest request);
 
     }

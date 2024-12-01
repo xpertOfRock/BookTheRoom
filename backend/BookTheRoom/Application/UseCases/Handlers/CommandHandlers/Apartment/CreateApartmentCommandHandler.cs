@@ -1,43 +1,66 @@
 ﻿using Application.Interfaces;
 using Application.UseCases.Commands.Apartment;
+using Application.UseCases.Commands.Hotel;
+using Core.Interfaces;
+using Core.TasksResults;
+using FluentValidation;
 using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 {
-    public class CreateApartmentCommandHandler : IRequestHandler<CreateApartmentCommand, Unit>
+    public class CreateApartmentCommandHandler : IRequestHandler<CreateApartmentCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CreateApartmentCommandHandler(IUnitOfWork unitOfWork)
+        private readonly IValidator<CreateApartmentCommand> _validator;
+        public CreateApartmentCommandHandler(IUnitOfWork unitOfWork, IValidator<CreateApartmentCommand> validator)
         {
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
-        public async Task<Unit> Handle(CreateApartmentCommand request, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(CreateApartmentCommand command, CancellationToken cancellationToken)
         {
             await _unitOfWork.BeginTransactionAsync();
+
             try
             {
-                await _unitOfWork.Apartments.Add
+                var validationResult = _validator.Validate(command);
+
+                if (!validationResult.IsValid)
+                {
+                    return new Fail("Validation is failed.", Core.Enums.ErrorStatuses.ValidationError);
+                }
+
+                var result =  await _unitOfWork.Apartments.Add
                 (
                     new Core.Entities.Apartment
                     {
-                        Title = request.Title,
-                        Description = request.Description,
-                        OwnerId = request.OwnerId,
-                        PriceForNight = request.Price,
-                        Address = request.Address,
-                        Images = request.Images,
+                        Title = command.Title,
+                        Description = command.Description,
+                        OwnerId = command.OwnerId,
+                        PriceForNight = command.Price,
+                        Address = command.Address,
+                        Images = command.Images,
                         Comments = new List<Core.Entities.Comment>()
                     }
                 );
+
+                if (!result.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return result;
+                }
+
                 await _unitOfWork.SaveChangesAsync();
+
                 await _unitOfWork.CommitAsync();
+
+                return result;
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
                 throw new InvalidOperationException("An error occurred while processing the apartment.", ex);
             }
-            return Unit.Value;
         }
     }
 }

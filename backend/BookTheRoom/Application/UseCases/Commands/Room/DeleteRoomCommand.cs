@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using Core.Interfaces;
+using MediatR;
 
 namespace Application.UseCases.Commands.Room
 {
-    public class DeleteRoomCommand : IRequest<Unit>
+    public class DeleteRoomCommand : IRequest<IResult>
     {
         public int HotelId { get; set; }
         public int Number { get; set; }

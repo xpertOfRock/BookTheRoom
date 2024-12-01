@@ -1,11 +1,13 @@
 ﻿using Application.Interfaces;
 using Application.UseCases.Commands.Order;
 using Braintree;
+using Core.Interfaces;
+using Core.TasksResults;
 using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {
-    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Core.Entities.Order>
+    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
@@ -17,7 +19,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
             _emailService = emailService;
 
         }
-        public async Task<Core.Entities.Order> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
         {
             await _unitOfWork.BeginTransactionAsync();
 
@@ -68,23 +70,25 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
                         }
                     };
 
-                    var result = await gateway.Transaction.SaleAsync(request);
+                    var transactionResult = await gateway.Transaction.SaleAsync(request);
 
-                    if (!result.IsSuccess() || result.Target.ProcessorResponseText != "Approved")
+                    if (!transactionResult.IsSuccess() || transactionResult.Target.ProcessorResponseText != "Approved")
                     {
                         await _unitOfWork.RollbackAsync();
-                        return new Core.Entities.Order { Status = Core.Enums.OrderStatus.Error };
+                        return new Fail("Card details are invalid or not enough funds on given card.");
                     }
                     order.IsPaid = true;                  
                 }
 
-                await _unitOfWork.Orders.Add(order);
+                var result =  await _unitOfWork.Orders.Add(order);
 
                 await _unitOfWork.SaveChangesAsync();
+
                 await _unitOfWork.CommitAsync();
 
                 SendMail(order.Email, order);
-                return order;            
+
+                return result;            
             }
             catch (Exception ex)
             {

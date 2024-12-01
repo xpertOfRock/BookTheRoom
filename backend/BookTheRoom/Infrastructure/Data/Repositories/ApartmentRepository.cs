@@ -2,6 +2,7 @@
 using Core.Contracts;
 using Core.Entities;
 using Core.Interfaces;
+using Core.TasksResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Linq.Expressions;
@@ -23,19 +24,30 @@ namespace Infrastructure.Data.Repositories
 
         private const int maxItemsOnPage = 15;
 
-        public async Task Add(Apartment apartment)
+        public async Task<IResult> Add(Apartment apartment)
         {
+            
+            var existingApartment = _context.Apartments.AsNoTracking().FirstOrDefaultAsync(a => a.Address == apartment.Address);
+
+            if (existingApartment is not null) 
+            { 
+                return new Fail("Entity with this address already exists.");
+            }
+
             await _context.Apartments.AddAsync(apartment);
+
+            return new Success("New entity 'Apartment' created successfuly.");
         }
 
-        public async Task Delete(int id)
+        public async Task<IResult> Delete(int id)
         {
             var apartment = await _context.Apartments.FirstOrDefaultAsync(a => a.Id == id);
 
             if (apartment == null)
             {
-                return;
+                return new Fail("Impossible to delete a non-existent entity.");
             }
+
             var key = $"apartment-{id}";
             _memoryCache.Remove(key);
 
@@ -49,6 +61,7 @@ namespace Infrastructure.Data.Repositories
 
             _context.Apartments.Remove(apartment);
 
+            return new Success("Entity 'Apartment' was deleted successfuly.");
         }
         public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request)
         {
@@ -151,13 +164,18 @@ namespace Infrastructure.Data.Repositories
                 });
         }
 
-        public async Task Update(int? id, UpdateApartmentRequest request)
-        {
-            var apartment = await GetById(id);
-
+        public async Task<IResult> Update(int? id, UpdateApartmentRequest request)
+        {           
             if(id is null)
             {
                 throw new ArgumentNullException($"Cannot get entity '{nameof(Apartment)}' with '{id}' is null.");
+            }
+
+            var apartment = await GetById(id);
+
+            if(apartment == null)
+            {
+                return new Fail("Impossible to update a non-existent entity.");
             }
             string key = $"apartment-{id}";
            
@@ -188,6 +206,8 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Title, request.Title)
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.PriceForNight, request.Price));
+
+            return new Success("Entity 'Apartment' was deleted successfuly.");
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using Core.Contracts;
+using Core.Interfaces;
 using Core.ValueObjects;
 using MediatR;
 
 namespace Application.UseCases.Commands.Apartment
 {
-    public class CreateApartmentCommand : IRequest<Unit>
+    public class CreateApartmentCommand : IRequest<IResult>
     {
         public string Title { get; set; }
         public string Description { get; set; }

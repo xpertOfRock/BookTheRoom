@@ -1,7 +1,7 @@
 ﻿using Application.ExternalServices;
 using Application.Settings;
 
-namespace Tests.External_Services
+namespace Tests.ExternalServices
 {
     public class PaymentServiceTests
     {

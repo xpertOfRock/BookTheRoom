@@ -1,10 +1,11 @@
-﻿using Core.Contracts;
+﻿using Core.Interfaces;
+using Core.Contracts;
 using Core.Enums;
 using MediatR;
 
 namespace Application.UseCases.Commands.Comment
 {
-    public class CreateCommentCommand : IRequest<Unit>
+    public class CreateCommentCommand : IRequest<IResult>
     {
         public string UserId { get; set; }
         public int? HotelId { get; set; }

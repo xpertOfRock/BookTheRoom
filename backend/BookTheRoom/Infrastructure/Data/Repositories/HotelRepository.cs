@@ -3,6 +3,7 @@ using Core.Contracts;
 using Core.Entities;
 using Core.Enums;
 using Core.Interfaces;
+using Core.TasksResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Linq.Expressions;
@@ -24,18 +25,27 @@ namespace Infrastructure.Data.Repositories
 
         private const int maxItemsOnPage = 15;
 
-        public async Task Add(Hotel hotel)
+        public async Task<IResult> Add(Hotel hotel)
         {
-            await _context.Hotels.AddAsync(hotel);
-        }
+            Hotel? existingHotel = await _context.Hotels.AsNoTracking().FirstOrDefaultAsync(h => h.Name == hotel.Name);
 
-        public async Task Delete(int id)
+            if(existingHotel is not null)
+            {
+                return new Fail("Entity with this address and name already exists.");
+            }
+
+            await _context.Hotels.AddAsync(hotel);
+
+            return new Success("Entity 'Hotel' was created successfuly.");
+        }
+        
+        public async Task<IResult> Delete(int id)
         {            
             var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
 
             if(hotel == null)
             {
-                return;
+                return new Fail("Impossible to delete a non-existent entity.");
             }
 
             _memoryCache.Remove($"hotel-{id}");
@@ -49,6 +59,7 @@ namespace Infrastructure.Data.Repositories
             }
             
             _context.Hotels.Remove(hotel);
+            return new Success("Entity 'Hotel' was deleted successfuly.");
         }
         
         public async Task<List<Hotel>> GetAll(GetHotelsRequest request)
@@ -118,13 +129,13 @@ namespace Infrastructure.Data.Repositories
                 });
         }
 
-        public async Task Update(int id, UpdateHotelRequest request)
+        public async Task<IResult> Update(int id, UpdateHotelRequest request)
         {
             var hotel = await GetById(id);
 
             if (hotel == null)
             {
-                return;
+                return new Fail("Impossible to update a non-existent entity.");
             }
 
             string key = $"hotel-{id}";
@@ -152,9 +163,11 @@ namespace Infrastructure.Data.Repositories
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(h => h.Name, request.Name)
                 .SetProperty(h => h.Description, request.Description)
-                .SetProperty(h => h.Rating, request.Rating)
+                .SetProperty(h => h.Rating, (int)request.Rating)
                 .SetProperty(h => h.HasPool, request.HasPool)
                 /*.SetProperty(h => h.Comments, request.Comments)*/);
+
+            return new Success("Entity 'Hotel' was updated successfuly.");
         }
     }
 }
