@@ -125,7 +125,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize]
         public async Task<IActionResult> Post([FromForm] CreateApartmentForm form)
         {
             if (!User.Identity.IsAuthenticated)
