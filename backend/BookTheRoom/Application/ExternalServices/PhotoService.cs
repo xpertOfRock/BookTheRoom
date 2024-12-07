@@ -25,13 +25,6 @@ namespace Application.ExternalServices
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(fileName, stream),
-                Transformation = new Transformation()
-                .FetchFormat("auto")
-                .Quality("auto")
-                .Height(500)
-                .Width(500)
-                .Crop("fill")
-                .Gravity("face")
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
