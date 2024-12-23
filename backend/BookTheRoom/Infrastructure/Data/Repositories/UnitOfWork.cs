@@ -1,8 +1,5 @@
-﻿using Application.Interfaces;
-using Core.Interfaces;
-using Infrastructure.Identity;
+﻿using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Data.Repositories
 {
@@ -10,7 +7,7 @@ namespace Infrastructure.Data.Repositories
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _distributedCache;
         private readonly IPhotoService _photoService;
         
 
@@ -18,19 +15,19 @@ namespace Infrastructure.Data.Repositories
         (
             UserManager<ApplicationUser> userManager,
             ApplicationDbContext context,
-            IMemoryCache memoryCache,
+            IDistributedCache memoryCache,
             IPhotoService photoService
         )
         {
             _userManager = userManager;
             _context = context;
-            _memoryCache = memoryCache;
+            _distributedCache = memoryCache;
             _photoService = photoService;
             
-            Apartments = new ApartmentRepository(_context, _memoryCache, _photoService);
-            Hotels = new HotelRepository(_context, _memoryCache, _photoService);
-            Rooms = new RoomRepository(_context, _memoryCache, _photoService);
-            Orders = new OrderRepository(_context, _memoryCache);
+            Apartments = new ApartmentRepository(_context, _distributedCache, _photoService);
+            Hotels = new HotelRepository(_context, _distributedCache, _photoService);
+            Rooms = new RoomRepository(_context, _distributedCache, _photoService);
+            Orders = new OrderRepository(_context, _distributedCache);
             Comments = new CommentRepository(_context, _userManager);
         }
 

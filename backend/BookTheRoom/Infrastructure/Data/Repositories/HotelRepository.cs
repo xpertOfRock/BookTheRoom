@@ -1,25 +1,17 @@
-﻿using Application.Interfaces;
-using Core.Contracts;
-using Core.Entities;
-using Core.Enums;
-using Core.Interfaces;
-using Core.TasksResults;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using System.Linq.Expressions;
+﻿using Newtonsoft.Json;
 
 namespace Infrastructure.Data.Repositories
 {
     public class HotelRepository : IHotelRepository
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _distributedCache;
         private readonly IPhotoService _photoService;
         private readonly ApplicationDbContext _context;
         
-        public HotelRepository(ApplicationDbContext context, IMemoryCache memoryCache, IPhotoService photoService)
+        public HotelRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService)
         {
             _context = context;
-            _memoryCache = memoryCache;
+            _distributedCache = distributedCache;
             _photoService = photoService;
         }
 
@@ -48,7 +40,7 @@ namespace Infrastructure.Data.Repositories
                 return new Fail("Impossible to delete a non-existent entity.");
             }
 
-            _memoryCache.Remove($"hotel-{id}");
+            _distributedCache.Remove($"hotel-{id}");
 
             if (hotel.Images != null && hotel.Images.Count > 0)
             {
@@ -108,25 +100,41 @@ namespace Infrastructure.Data.Repositories
         }
 
 
-        public async Task<Hotel> GetById(int? id)
+        public async Task<Hotel?> GetById(int? id, CancellationToken cancellationToken = default)
         {
             if (id == null) throw new ArgumentNullException("Cannot get entity 'Hotel' when 'id' is null.");
 
             string key = $"hotel-{id}";
+            string? cachedHotel = await _distributedCache.GetStringAsync(key, cancellationToken);
 
-            return await _memoryCache.GetOrCreateAsync(
-                key,
-                entry =>
-                {
-                    entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-                     return _context.Hotels
-                    .Include(h => h.Address)                                         
+            Hotel? hotel;
+
+            if (string.IsNullOrEmpty(cachedHotel))
+            {
+                hotel = await _context.Hotels
+                    .Include(h => h.Address)
                     .Include(h => h.Rooms)
                     .Include(h => h.Comments)
                     .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);
-                });
+
+                if (hotel is null)
+                {
+                    return hotel;
+                }
+
+                await _distributedCache.SetStringAsync(
+                    key,
+                    JsonConvert.SerializeObject(hotel),
+                    cancellationToken
+                    );
+
+                return hotel;
+            }
+
+            hotel = JsonConvert.DeserializeObject<Hotel>(cachedHotel);
+            return hotel;
         }
 
         public async Task<IResult> Update(int id, UpdateHotelRequest request)
@@ -140,8 +148,7 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{id}";
 
-            _memoryCache.Remove(key);
-
+            _distributedCache.Remove(key);
 
             if (request.Images is not null)
             {
@@ -163,9 +170,8 @@ namespace Infrastructure.Data.Repositories
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(h => h.Name, request.Name)
                 .SetProperty(h => h.Description, request.Description)
-                .SetProperty(h => h.Rating, (int)request.Rating)
-                .SetProperty(h => h.HasPool, request.HasPool)
-                /*.SetProperty(h => h.Comments, request.Comments)*/);
+                .SetProperty(h => h.Rating, request.Rating)
+                .SetProperty(h => h.HasPool, request.HasPool));
 
             return new Success("Entity 'Hotel' was updated successfuly.");
         }

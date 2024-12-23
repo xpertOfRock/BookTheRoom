@@ -1,8 +1,4 @@
-﻿using Core.Contracts;
-using Core.Enums;
-using MediatR;
-
-namespace Application.UseCases.Commands.Order
+﻿namespace Application.UseCases.Commands.Order
 {
     public class UpdateOrderCommand : IRequest<Unit>
     {

@@ -1,9 +1,4 @@
-﻿using Core.Interfaces;
-using Core.Contracts;
-using Core.Enums;
-using MediatR;
-
-namespace Application.UseCases.Commands.Comment
+﻿namespace Application.UseCases.Commands.Comment
 {
     public class CreateCommentCommand : IRequest<IResult>
     {

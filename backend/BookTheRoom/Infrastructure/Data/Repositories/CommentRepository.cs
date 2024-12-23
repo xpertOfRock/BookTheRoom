@@ -1,9 +1,5 @@
-﻿using Core.Entities;
-using Core.Interfaces;
-using Core.TasksResults;
-using Infrastructure.Identity;
+﻿using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Repositories
 {

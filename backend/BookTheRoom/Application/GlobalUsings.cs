@@ -1,0 +1,8 @@
+﻿global using Application.Interfaces;
+global using Core.Contracts;
+global using Core.Enums;
+global using Core.Interfaces;
+global using Core.ValueObjects;
+global using Core.TasksResults;
+global using MediatR;
+global using FluentValidation;

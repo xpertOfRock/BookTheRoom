@@ -119,7 +119,7 @@ namespace Api.Controllers
 
             var result = await _mediator.Send(new CreateHotelCommand(request));
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return result.IsSuccess ? Created() : BadRequest(result);
         }
 
         [HttpPut("{id}")]

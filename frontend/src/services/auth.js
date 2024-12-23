@@ -1,6 +1,6 @@
 import axios from 'axios';
-
-const API_URL = 'https://localhost:5286/api/Account';
+// "https://localhost:5286/api/hotel";
+const API_URL = "https://localhost:6061/api/account";
 
 
 export const login = async (emailOrUsername, password) => {

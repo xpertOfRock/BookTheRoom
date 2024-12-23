@@ -1,10 +1,4 @@
-﻿using Application.Interfaces;
-using Application.UseCases.Commands.Apartment;
-using Application.UseCases.Commands.Hotel;
-using Core.Interfaces;
-using Core.TasksResults;
-using FluentValidation;
-using MediatR;
+﻿using Application.UseCases.Commands.Apartment;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 {

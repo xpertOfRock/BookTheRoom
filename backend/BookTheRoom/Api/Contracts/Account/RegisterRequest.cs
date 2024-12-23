@@ -5,9 +5,9 @@
         string FirstName,
         string LastName,
         string Password,
-        int Age,
         string Email,
         string Username,
-        string PhoneNumber   
+        string PhoneNumber,
+        DateTime BirthDate
     );   
 }

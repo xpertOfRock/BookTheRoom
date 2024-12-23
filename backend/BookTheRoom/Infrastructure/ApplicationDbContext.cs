@@ -1,9 +1,7 @@
-﻿using Core.Entities;
-using Core.ValueObjects;
-using Infrastructure.Data.EntityConfigurations;
+﻿using Infrastructure.Data.EntityConfigurations;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Infrastructure
 {
@@ -21,7 +19,7 @@ namespace Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-           
+
             modelBuilder.ApplyConfiguration(new ApartmentConfiguration());
             modelBuilder.ApplyConfiguration(new CommentConfiguration());
             modelBuilder.ApplyConfiguration(new HotelConfiguration());

@@ -44,7 +44,7 @@ namespace Api.Controllers
                      
             var result = await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, nonceFromClient!, request));
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return result.IsSuccess ? Created() : BadRequest(result);
         }
 
         //[HttpPut("{id}")]

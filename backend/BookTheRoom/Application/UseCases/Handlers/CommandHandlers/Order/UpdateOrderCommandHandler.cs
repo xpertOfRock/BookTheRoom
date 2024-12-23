@@ -1,6 +1,4 @@
-﻿using Application.Interfaces;
-using Application.UseCases.Commands.Order;
-using MediatR;
+﻿using Application.UseCases.Commands.Order;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {

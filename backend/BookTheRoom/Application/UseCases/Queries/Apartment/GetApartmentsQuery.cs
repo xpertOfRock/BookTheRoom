@@ -1,8 +1,4 @@
-﻿using Core.Contracts;
-using Core.Entities;
-using MediatR;
-
-namespace Application.UseCases.Queries.Apartment
+﻿namespace Application.UseCases.Queries.Apartment
 {
     public class GetApartmentsQuery : IRequest<List<Core.Entities.Apartment>>
     {

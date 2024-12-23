@@ -1,10 +1,4 @@
-﻿using Core.Contracts;
-using Core.Enums;
-using Core.Interfaces;
-using MediatR;
-using System.Xml;
-
-namespace Application.UseCases.Commands.Room
+﻿namespace Application.UseCases.Commands.Room
 {
     public class UpdateRoomCommand : IRequest<IResult>
     {

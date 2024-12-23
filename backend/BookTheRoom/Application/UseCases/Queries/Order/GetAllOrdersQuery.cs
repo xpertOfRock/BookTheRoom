@@ -1,8 +1,6 @@
-﻿using MediatR;
-
-namespace Application.UseCases.Queries.Order
+﻿namespace Application.UseCases.Queries.Order
 {
-    public class GetAllOrdersQuery : IRequest<List<Core.Entities.Order>>
+    public class GetAllOrdersQuery : IRequest<List<Core.Entities.Order>?>
     {
     }
 }

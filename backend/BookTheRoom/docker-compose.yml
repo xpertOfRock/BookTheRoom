@@ -1,0 +1,16 @@
+services:
+
+  booktheroomdb:
+    image: postgres
+
+  distributedcache:
+    image: redis
+
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+
+volumes:
+  postgres_booktheroom:

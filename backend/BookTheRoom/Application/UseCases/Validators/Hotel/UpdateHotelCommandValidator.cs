@@ -1,5 +1,4 @@
 ﻿using Application.UseCases.Commands.Hotel;
-using FluentValidation;
 
 namespace Application.UseCases.Validators.Hotel
 {

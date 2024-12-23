@@ -1,24 +1,17 @@
-﻿using Application.Interfaces;
-using Core.Contracts;
-using Core.Entities;
-using Core.Interfaces;
-using Core.TasksResults;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using System.Linq.Expressions;
+﻿using Newtonsoft.Json;
 
 namespace Infrastructure.Data.Repositories
 {
     public class ApartmentRepository : IApartmentRepository
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _distributedCache;
         private readonly IPhotoService _photoService;
         private readonly ApplicationDbContext _context;
 
-        public ApartmentRepository(ApplicationDbContext context, IMemoryCache memoryCache, IPhotoService photoService)
+        public ApartmentRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService)
         {
             _context = context;
-            _memoryCache = memoryCache;
+            _distributedCache = distributedCache;
             _photoService = photoService;
         }
 
@@ -49,7 +42,7 @@ namespace Infrastructure.Data.Repositories
             }
 
             var key = $"apartment-{id}";
-            _memoryCache.Remove(key);
+            _distributedCache.Remove(key);
 
             if (apartment.Images != null && apartment.Images.Count > 0)
             {
@@ -147,23 +140,39 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Apartment> GetById(int? id)
+        public async Task<Apartment?> GetById(int? id, CancellationToken cancellationToken = default)
         {
             string key = $"apartment-{id}";
-            return await _memoryCache.GetOrCreateAsync(
-                key,
-                entry =>
-                {
-                    entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-                    return _context.Apartments
+            string? cachedApartment = await _distributedCache.GetStringAsync(key, cancellationToken);
+
+            Apartment? apartment;
+
+            if (string.IsNullOrEmpty(cachedApartment))
+            {
+                apartment = await _context.Apartments
                     .Include(h => h.Address)
                     .Include(h => h.Comments)
                     .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);
-                });
-        }
 
+                if(apartment is null)
+                {
+                    return apartment;
+                }
+
+                await _distributedCache.SetStringAsync(
+                    key,
+                    JsonConvert.SerializeObject(apartment),
+                    cancellationToken
+                    );
+
+                return apartment;
+            }
+
+            apartment = JsonConvert.DeserializeObject<Apartment>(cachedApartment);
+            return apartment;
+        }
         public async Task<IResult> Update(int? id, UpdateApartmentRequest request)
         {           
             if(id is null)
@@ -177,9 +186,10 @@ namespace Infrastructure.Data.Repositories
             {
                 return new Fail("Impossible to update a non-existent entity.");
             }
+
             string key = $"apartment-{id}";
            
-            _memoryCache.Remove(key);
+            _distributedCache.Remove(key);
 
             var comments = request.Comments == null ? apartment.Comments : new List<Comment>();
 

@@ -1,27 +1,19 @@
-﻿using Application.Interfaces;
-using Core.Contracts;
-using Core.Entities;
-using Core.Interfaces;
-using Core.TasksResults;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using System.Linq.Expressions;
+﻿using Newtonsoft.Json;
 
 namespace Infrastructure.Data.Repositories
 {
     public class RoomRepository : IRoomRepository
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _distributedCache;
         private readonly IPhotoService _photoService;
         private readonly ApplicationDbContext _context;
-        public RoomRepository(ApplicationDbContext context, IMemoryCache memoryCache, IPhotoService photoService)
+        public RoomRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService)
         {
             _context = context;
-            _memoryCache = memoryCache;
+            _distributedCache = distributedCache;
             _photoService = photoService;
         }
-        //return new Success("Entity 'Room' was deleted successfuly.");
-        //return new Fail("Impossible to update a non-existent entity.");
+
         public async Task<IResult> Add(Room room)
         {
             Room? existingRoom = _context.Rooms.AsNoTracking().FirstOrDefault(r => r.HotelId == room.HotelId && r.Number == room.Number);
@@ -47,7 +39,7 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            _memoryCache.Remove(key);
+            _distributedCache.Remove(key);
 
             if (room.Images != null && room.Images.Count > 0)
             {
@@ -101,24 +93,40 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Room> GetById(int? hotelId, int? number)
+        public async Task<Room?> GetById(int? hotelId, int? number, CancellationToken cancellationToken = default)
         {
             if (hotelId == null || number == null) throw new ArgumentNullException("Cannot get entity 'Hotel' when 'id' is null.");
 
             string key = $"hotel-{hotelId}-room-{number}";
-            
-            return await _memoryCache.GetOrCreateAsync(
-                key,
-                entry =>
-                {
-                    entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-                    return _context.Rooms
+
+            string? cachedHotel = await _distributedCache.GetStringAsync(key, cancellationToken);
+
+            Room? room;
+
+            if (string.IsNullOrEmpty(cachedHotel))
+            {
+                room = await _context.Rooms
                     .AsNoTracking()
                     .FirstOrDefaultAsync(
                         r => r.HotelId == hotelId &&
-                        r.Number == number
-                        );
-                });
+                        r.Number == number);
+
+                if (room is null)
+                {
+                    return room;
+                }
+
+                await _distributedCache.SetStringAsync(
+                    key,
+                    JsonConvert.SerializeObject(room),
+                    cancellationToken
+                    );
+
+                return room;
+            }
+
+            room = JsonConvert.DeserializeObject<Room>(cachedHotel);
+            return room;
         }
 
         public async Task<IResult> Update(int hotelId, int number, UpdateRoomRequest request)
@@ -132,7 +140,7 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            _memoryCache.Remove(key);
+            _distributedCache.Remove(key);
 
             if (request.Images is not null)
             {

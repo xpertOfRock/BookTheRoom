@@ -7,7 +7,7 @@
         public string State { get; }
         public string Street { get; }            
         public string PostalCode { get; }
-        
+
 
         public Address(string country, string state, string city, string street, string postalCode)
         {

@@ -8,7 +8,6 @@ using Application.UseCases.Queries.Hotel;
 using Application.UseCases.Queries.Order;
 using Application.UseCases.Queries.Room;
 using Application.UseCases.Validators.Address;
-using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.DependencyInjection

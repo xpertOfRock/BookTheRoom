@@ -38,7 +38,7 @@ namespace Infrastructure.Data.EntityConfigurations
             builder
                 .Property(c => c.CreatedAt)
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(c => c.UpdatedAt)
                     .IsRequired(false);

@@ -1,0 +1,9 @@
+﻿global using Application.Interfaces;
+global using Core.Contracts;
+global using Core.Entities;
+global using Core.Enums;
+global using Core.Interfaces;
+global using Core.TasksResults;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Caching.Distributed;
+global using System.Linq.Expressions;

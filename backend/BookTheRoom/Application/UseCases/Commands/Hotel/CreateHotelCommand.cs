@@ -1,9 +1,4 @@
-﻿using Core.Interfaces;
-using Core.Contracts;
-using Core.ValueObjects;
-using MediatR;
-
-namespace Application.UseCases.Commands.Hotel
+﻿namespace Application.UseCases.Commands.Hotel
 {
     public class CreateHotelCommand : IRequest<IResult>
     {

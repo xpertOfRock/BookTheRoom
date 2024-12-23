@@ -11,7 +11,7 @@ function Register() {
     email: '',
     username: '',
     phoneNumber: '',
-    age: '',
+    birthdate: '', // Используем birthdate вместо age
     password: '',
   });
   const [error, setError] = useState('');
@@ -21,7 +21,7 @@ function Register() {
     const { name, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
-      [name]: name === 'age' ? Number(value) : value,
+      [name]: value,
     }));
   };
 
@@ -75,18 +75,15 @@ function Register() {
               {...inputProps}
               type="tel"
               placeholder="Phone Number"
-              name="phoneNumber" // Добавлен атрибут name
+              name="phoneNumber" // Обязательно добавляем name
             />
           )}
         </InputMask>
         <Input
-          placeholder="Age"
-          name="age"
-          type="number"
-          min={1}
-          max={100}
-          step={1}
-          value={userData.age}
+          placeholder="Birthdate"
+          name="birthdate"
+          type="date" // Ввод даты
+          value={userData.birthdate}
           onChange={handleChange}
         />
         <Input

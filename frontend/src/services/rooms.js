@@ -1,5 +1,8 @@
 import axios from "axios"
 
+// "https://localhost:5286/api/room";
+const API_URL = "https://localhost:6061/api/room";
+
 export const fetchRooms = async (filter) => {
   try {
     const params = {
@@ -10,7 +13,7 @@ export const fetchRooms = async (filter) => {
       prices: filter?.ratings.length > 0 ? filter.ratings.join(",") : undefined,
     };
 
-    let result = await axios.get("https://localhost:5286/api/room", { params });
+    let result = await axios.get(API_URL, { params });
     return result.data.hotels;
   } catch (e) {
     console.error(e);
@@ -20,7 +23,7 @@ export const fetchRooms = async (filter) => {
 
 export const fetchRoom = async (id) => {  
   try{
-      let response = await axios.get("https://localhost:5286/api/room/" + id);
+      let response = await axios.get(`${API_URL}/${id}`);
       return response.data;
   }catch(e){
       console.error(e);
@@ -28,33 +31,46 @@ export const fetchRoom = async (id) => {
 };
 
 export const postRoom = async (formData) => {
-    try {
-      const response = await axios.post("https://localhost:5286/api/room", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });      
-      return response.status;
-  } catch (error) {   
+  try {
+    const token = getToken();
+    const response = await axios.post(API_URL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.status;
+  } catch (error) {
     console.error('Error creating hotel:', error.response ? error.response.data : error.message);
   }
 };
 
 
-export const putRoom = async (id, apartment) => {
-  try{
-    const response = await axios.put("https://localhost:5286/api/room/"+ id, apartment);
+export const putRoom = async (id, number, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(`${API_URL}/${id}/${number}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.status;
-  }catch(e){
+  } catch (e) {
     console.error(e);
   }
 };
 
 export const deleteRoom = async(id) => {
-  try{
-    const response = await axios.delete("https://localhost:5286/api/room/" + id);
+  try {
+    const token = getToken();
+    const response = await axios.delete(`${API_URL}/${id}/${number}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.status;
-  }catch(e){
+  } catch (e) {
     console.error(e);
   }
 };

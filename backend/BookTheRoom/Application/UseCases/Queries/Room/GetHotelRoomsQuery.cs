@@ -1,7 +1,4 @@
-﻿using Core.Contracts;
-using MediatR;
-
-namespace Application.UseCases.Queries.Room
+﻿namespace Application.UseCases.Queries.Room
 {
     public class GetHotelRoomsQuery : IRequest<List<Core.Entities.Room>>
     {

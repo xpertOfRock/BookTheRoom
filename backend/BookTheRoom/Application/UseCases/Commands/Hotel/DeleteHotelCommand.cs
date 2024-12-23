@@ -1,7 +1,4 @@
-﻿using Core.Interfaces;
-using MediatR;
-
-namespace Application.UseCases.Commands.Hotel
+﻿namespace Application.UseCases.Commands.Hotel
 {
     public class DeleteHotelCommand : IRequest<IResult>
     {

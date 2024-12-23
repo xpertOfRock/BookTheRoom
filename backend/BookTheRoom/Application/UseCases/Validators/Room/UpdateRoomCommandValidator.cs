@@ -1,5 +1,4 @@
 ﻿using Application.UseCases.Commands.Room;
-using FluentValidation;
 
 namespace Application.UseCases.Validators.Room
 {

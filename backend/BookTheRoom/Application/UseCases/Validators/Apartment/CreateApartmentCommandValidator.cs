@@ -1,6 +1,5 @@
 ﻿using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Validators.Address;
-using FluentValidation;
 
 namespace Application.UseCases.Validators.Apartment
 {

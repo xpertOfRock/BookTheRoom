@@ -1,9 +1,4 @@
-﻿using Core.Contracts;
-using Core.Enums;
-using Core.Interfaces;
-using MediatR;
-
-namespace Application.UseCases.Commands.Room
+﻿namespace Application.UseCases.Commands.Room
 {
     public class CreateRoomCommand : IRequest<IResult>
     {

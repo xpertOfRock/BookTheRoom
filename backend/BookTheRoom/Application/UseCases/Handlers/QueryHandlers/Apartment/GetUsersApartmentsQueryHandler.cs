@@ -1,6 +1,4 @@
-﻿using Application.Interfaces;
-using Application.UseCases.Queries.Apartment;
-using MediatR;
+﻿using Application.UseCases.Queries.Apartment;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Apartment
 {

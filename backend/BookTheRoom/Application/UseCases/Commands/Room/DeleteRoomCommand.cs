@@ -1,7 +1,4 @@
-﻿using Core.Interfaces;
-using MediatR;
-
-namespace Application.UseCases.Commands.Room
+﻿namespace Application.UseCases.Commands.Room
 {
     public class DeleteRoomCommand : IRequest<IResult>
     {

@@ -1,8 +1,4 @@
-﻿using Application.Interfaces;
-using Application.UseCases.Commands.Comment;
-using Braintree;
-using Core.Interfaces;
-using MediatR;
+﻿using Application.UseCases.Commands.Comment;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Comment
 {

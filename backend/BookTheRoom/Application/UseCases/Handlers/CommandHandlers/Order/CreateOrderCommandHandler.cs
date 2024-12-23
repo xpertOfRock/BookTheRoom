@@ -1,9 +1,5 @@
-﻿using Application.Interfaces;
-using Application.UseCases.Commands.Order;
+﻿using Application.UseCases.Commands.Order;
 using Braintree;
-using Core.Interfaces;
-using Core.TasksResults;
-using MediatR;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {

@@ -3,8 +3,8 @@ import axios from "axios";
 const getToken = () => {
   return localStorage.getItem('accessToken');
 };
-
-const API_URL = "https://localhost:5286/api/hotel";
+// "https://localhost:5286/api/hotel";
+const API_URL = "https://localhost:6061/api/hotel";
 
 export const fetchHotels = async (filter) => {
   try {

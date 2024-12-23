@@ -23,18 +23,26 @@ namespace Infrastructure.Identity
 
                 var adminUser = new ApplicationUser
                 {
+                    FirstName = "Max",
+                    LastName = "Sheludchenko",
                     UserName = "xpert",
                     Email = "maxsheludchenko@gmail.com",
+                    PhoneNumber = "+380952099565",
                     Role = UserRole.Admin,
-                    RegisteredAt = DateTime.UtcNow
+                    RegisteredAt = DateTime.UtcNow,
+                    BirthDate = DateTime.UtcNow.ToString()
                 };
 
                 var normalUser = new ApplicationUser
                 {
+                    FirstName = "Maksimka",
+                    LastName = "Buster",
                     UserName = "paradice",
                     Email = "paradicelocal@gmail.com",
+                    PhoneNumber = "+380507777777",
                     Role = UserRole.User,
-                    RegisteredAt = DateTime.UtcNow
+                    RegisteredAt = DateTime.UtcNow,
+                    BirthDate = DateTime.UtcNow.ToString()
                 };
 
                 if (userManager.Users.All(u => u.UserName != adminUser.UserName))

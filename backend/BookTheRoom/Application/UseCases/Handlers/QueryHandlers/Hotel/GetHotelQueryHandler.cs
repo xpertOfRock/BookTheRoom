@@ -1,6 +1,4 @@
-﻿using Application.Interfaces;
-using Application.UseCases.Queries.Hotel;
-using MediatR;
+﻿using Application.UseCases.Queries.Hotel;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Hotel
 {

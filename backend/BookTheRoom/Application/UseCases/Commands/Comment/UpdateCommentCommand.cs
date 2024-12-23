@@ -1,7 +1,4 @@
-﻿using Core.Interfaces;
-using MediatR;
-
-namespace Application.UseCases.Commands.Comment
+﻿namespace Application.UseCases.Commands.Comment
 {
     public class UpdateCommentCommand : IRequest<IResult>
     {

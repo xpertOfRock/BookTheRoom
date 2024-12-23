@@ -1,10 +1,7 @@
 ﻿using Application.UseCases.Commands.Room;
-using FluentValidation;
 
 namespace Application.UseCases.Validators.Room
 {
-    using FluentValidation;
-
     public class CreateRoomCommandValidator : AbstractValidator<CreateRoomCommand>
     {
         public CreateRoomCommandValidator()

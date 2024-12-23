@@ -1,8 +1,4 @@
-﻿using Application.Interfaces;
-using Application.UseCases.Commands.Comment;
-using Core.Interfaces;
-using Core.TasksResults;
-using MediatR;
+﻿using Application.UseCases.Commands.Comment;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Comment
 {   
@@ -33,7 +29,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
 
                 switch (request.PropertyCategory)
                 {
-                    case Core.Enums.PropertyCategory.Hotel:
+                    case PropertyCategory.Hotel:
 
                         var hotel = await _unitOfWork.Hotels.GetById(request.HotelId);
 
@@ -48,7 +44,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
                         hotel.Comments?.Add(comment);
                         break;
 
-                    case Core.Enums.PropertyCategory.Apartment:
+                    case PropertyCategory.Apartment:
 
                         var apartment = await _unitOfWork.Apartments.GetById(request.ApartmentId);
 

@@ -1,6 +1,4 @@
-﻿using Application.Interfaces;
-using Application.UseCases.Queries.Room;
-using MediatR;
+﻿using Application.UseCases.Queries.Room;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Room
 {

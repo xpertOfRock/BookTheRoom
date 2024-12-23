@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Application.UseCases.Queries.Apartment
+﻿namespace Application.UseCases.Queries.Apartment
 {
     public class GetApartmentQuery : IRequest<Core.Entities.Apartment>
     {

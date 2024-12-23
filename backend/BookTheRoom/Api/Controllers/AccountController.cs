@@ -83,7 +83,7 @@ namespace Api.Controllers
                 LastName = request.LastName,
                 UserName = request.Username,
                 PhoneNumber = request.PhoneNumber,
-                Age = request.Age,
+                BirthDate = request.BirthDate.ToString(),
                 Role = UserRole.User,
                 Orders = new List<Order>(),
                 Apartments = new List<Apartment>()
@@ -188,13 +188,13 @@ namespace Api.Controllers
         {
             var authClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.HomePhone, user.PhoneNumber),
-                new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Surname, user.LastName)
+                new(ClaimTypes.Name, user.UserName),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new(ClaimTypes.Role, user.Role),
+                new(ClaimTypes.Email, user.Email ?? "null"),
+                new(ClaimTypes.HomePhone, user.PhoneNumber ?? "null"),
+                new(ClaimTypes.GivenName, user.FirstName),
+                new(ClaimTypes.Surname, user.LastName)
             };
 
             var jwtSettings = _configuration.GetSection("Jwt");

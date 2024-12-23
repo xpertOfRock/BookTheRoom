@@ -1,22 +1,13 @@
-﻿using Core.Contracts;
-using Core.Entities;
-using Core.Enums;
-using Core.Interfaces;
-using Core.TasksResults;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using System.Linq.Expressions;
-
-namespace Infrastructure.Data.Repositories
+﻿namespace Infrastructure.Data.Repositories
 {
     public class OrderRepository : IOrderRepository
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _memoryCache;
         private readonly ApplicationDbContext _context;
-        public OrderRepository(ApplicationDbContext context, IMemoryCache memoryCache)
+        public OrderRepository(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
-            _memoryCache = memoryCache;
+            _memoryCache = distributedCache;
         }
 
         public async Task<IResult> Add(Order order)
@@ -25,18 +16,20 @@ namespace Infrastructure.Data.Repositories
             return new Success("Entity 'Order' was created successfuly.");
         }
 
-        public async Task<List<Order>> GetActiveOrders()
+        public async Task<List<Order>?> GetActiveOrders()
         {
-            return await _context.Orders
+            var activeOrders = await _context.Orders
                      .Where(o =>
                             o.CheckIn <= DateTime.UtcNow &&
                             o.CheckOut >= DateTime.UtcNow &&
-                            o.Status == OrderStatus.Active )
+                            o.Status == OrderStatus.Active)
                      .AsNoTracking()
                      .ToListAsync();
+
+            return activeOrders;
         }
 
-        public async Task<List<Order>> GetAll(GetDataRequest request)
+        public async Task<List<Order>?> GetAll(GetDataRequest request)
         {
             var query = _context.Orders
                 .Where(o => string.IsNullOrWhiteSpace(request.Search) ||
@@ -59,7 +52,7 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<List<Order>> GetAllUserOrders(string userId, GetDataRequest request)
+        public async Task<List<Order>?> GetAllUserOrders(string userId, GetDataRequest request)
         {
             var query = _context.Orders
                 .Where(o => o.UserId == userId && (
@@ -97,14 +90,16 @@ namespace Infrastructure.Data.Repositories
                 .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
-        public async Task<List<Order>> GetExpiredOrders()
+        public async Task<List<Order>?> GetExpiredOrders()
         {
-            return await _context.Orders
+            var expiredOrders = await _context.Orders
                 .Where(o =>
                        o.CheckOut < DateTime.UtcNow &&
                        o.Status != OrderStatus.Completed)
                 .AsNoTracking()
                 .ToListAsync();
+
+            return expiredOrders;
         }
 
         public async Task Update(int id, UpdateOrderRequest request)
@@ -119,9 +114,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(o => o.Status, request.Status)
                 .SetProperty(o => o.MinibarIncluded, request.MinibarIncluded)
                 .SetProperty(o => o.MealsIncluded, request.MealsIncluded)
-                );
-
-            
+                );            
         }
     }
 }
