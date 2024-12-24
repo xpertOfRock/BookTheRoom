@@ -1,14 +1,14 @@
 ﻿namespace Core.Contracts
 {
     public record GetHotelsRequest
-    (
-        
+    (        
         string? Search,
         string? SortItem,
         string? SortOrder,
         string? Countries,
         string? Ratings,
         string? Services,
-        int page = 1
+        int ItemsCount = 15,
+        int Page = 1
     );
 }

@@ -21,8 +21,7 @@ namespace Infrastructure.Data.Repositories
             if (existingRoom is not null)
             {
                 return new Fail("Entity with this hotelId and number already exists.");
-            }
-
+            }            
             await _context.Rooms.AddAsync(room);
 
             return new Success("Entity 'Room' was created successfuly.");

@@ -26,7 +26,7 @@ namespace Infrastructure.Data.BackgroundServices
 
             var activeOrders = await mediator.Send(new GetActiveOrdersQuery());
 
-            if (activeOrders.Any()) return;
+           if (!activeOrders.Any()) return;
 
             var rooms = await mediator.Send(new GetRoomsQuery());
 

@@ -244,7 +244,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("HotelId", "Number");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Rooms", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Service", b =>
@@ -495,7 +495,7 @@ namespace Infrastructure.Migrations
                         .WithMany("Apartments")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.OwnsOne("Core.ValueObjects.Address", "Address", b1 =>
+                    b.OwnsOne("Core.Entities.Apartment.Address#Core.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<int>("ApartmentId")
                                 .HasColumnType("integer");
@@ -527,7 +527,7 @@ namespace Infrastructure.Migrations
 
                             b1.HasKey("ApartmentId");
 
-                            b1.ToTable("Apartments");
+                            b1.ToTable("Apartments", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ApartmentId");
@@ -556,7 +556,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Entities.Hotel", b =>
                 {
-                    b.OwnsOne("Core.ValueObjects.Address", "Address", b1 =>
+                    b.OwnsOne("Core.Entities.Hotel.Address#Core.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<int>("HotelId")
                                 .HasColumnType("integer");
@@ -588,7 +588,7 @@ namespace Infrastructure.Migrations
 
                             b1.HasKey("HotelId");
 
-                            b1.ToTable("Hotels");
+                            b1.ToTable("Hotels", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("HotelId");

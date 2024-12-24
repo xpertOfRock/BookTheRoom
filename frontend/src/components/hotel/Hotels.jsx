@@ -1,55 +1,73 @@
-import HotelCard from './HotelCard';
+import SortAndSearchFilter from './SortAndSearchFilter';
 import HotelFilter from './HotelFilter';
+import HotelCard from './HotelCard';
 import { fetchHotels } from '../../services/hotels';
 import { useEffect, useState } from 'react';
 
-function Hotels(){
+function Hotels() {
     const [hotels, setHotels] = useState([]);
-    const [filter, setFilter] = useState({        
-        search: "",
-        sortItem: "id",
-        sortOrder: "desc",
-        countries: [],
-        ratings: []
+    const [sortAndSearch, setSortAndSearch] = useState({
+      search: '',
+      sortItem: 'id',
+      sortOrder: 'desc',
+      itemsCount: 15,
     });
-
+  
+    const [filterBy, setFilterBy] = useState({
+      countries: [],
+      ratings: [],
+    });
+  
     useEffect(() => {
-
-        const fetchData = async () => {
-            let hotels = await fetchHotels(filter);
-            setHotels(hotels);
+      const fetchData = async () => {
+        try {
+          const combinedFilters = { ...sortAndSearch, ...filterBy };
+          console.log('Request Payload:', combinedFilters);
+          let response = await fetchHotels(combinedFilters);
+          setHotels(response || []);
+        } catch (error) {
+          console.error('Error fetching hotels:', error);
+          setHotels([]);
         }
-
-        fetchData();
-    }, [filter]);
-
-    return (        
-        <section className="p-8 flex flex-row justify-start itemx-staart gap-12">
-   
-            <div className="flex flex-col w-1/2 gap-10">
-                <h1>Filters</h1>
-                <HotelFilter filter={filter} setFilter={setFilter}/>
-                    
+      };
+  
+      fetchData();
+    }, [sortAndSearch, filterBy]);
+  
+    return (
+      <section className="p-8 flex flex-col gap-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white p-4 shadow rounded">
+          <SortAndSearchFilter filter={sortAndSearch} setFilter={setSortAndSearch} />
+        </div>
+  
+        <div className="flex flex-row gap-12">
+          <div className="w-1/3 hidden lg:block">
+            <h2 className="text-xl font-semibold mb-4">Filters</h2>
+            <HotelFilter filter={filterBy} setFilter={setFilterBy} />
+          </div>
+          <div className="w-full lg:w-2/3">
+            <h2 className="text-xl font-semibold mb-4">Hotels</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {hotels && hotels.length > 0 ? (
+                hotels.slice(0, sortAndSearch.itemsCount).map((hotel) => (
+                  <HotelCard
+                    key={hotel.id}
+                    name={hotel.name}
+                    description={hotel.description}
+                    preview={hotel.preview}
+                    rating={hotel.rating}
+                    address={hotel.address}
+                  />
+                ))
+              ) : (
+                <p className="text-gray-500">No hotels found.</p>
+              )}
             </div>
-            <div className="flex flex-col w-1/2 gap-10">
-                <h1>Hotels</h1>      
-
-                {hotels.map((h) => (
-                    <li key = {h.id}>
-                    <ul>
-                        <HotelCard
-                        name={h.name}
-                        rating={h.rating}
-                        address={h.address}
-                        preview={h.preview}
-                        />
-                    </ul>
-                    </li>
-                ))}
-                      
-            </div>
-        </section>
+          </div>
+        </div>
+      </section>
     );
-}
-
-export default Hotels;
+  }
+  
+  export default Hotels;
+  

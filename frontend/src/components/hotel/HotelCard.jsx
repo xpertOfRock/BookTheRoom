@@ -1,26 +1,25 @@
-import { Card, CardHeader, CardBody, CardFooter, Heading, Divider, Image, Text } from '@chakra-ui/react';
-
 function HotelCard({ name, description, preview, rating, address }) {
   return (
-    <Card variant={"filled"}>
-      <CardHeader>
-        <Heading size={"md"}>{name}</Heading>
-      </CardHeader>
-      <Divider borderColor={"gray"} />
-      <CardBody>
-        <Image 
-          src={preview}
-          height="45%"
-          width="45%"
-          loading="lazy"
-          placeholder={"https://media.istockphoto.com/id/1222357475/vector/image-preview-icon-picture-placeholder-for-website-or-ui-ux-design-vector-illustration.jpg?s=612x612&w=0&k=20&c=KuCo-dRBYV7nz2gbk4J9w1WtTAgpTdznHu55W9FjimE="}
-        />
-        <Text>{description}</Text>
-        <Divider borderColor={"gray"} />
-        <Text>Location: {address}</Text>
-      </CardBody>
-      <CardFooter>Rating {rating} ★</CardFooter>
-    </Card>
+    <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md">
+      <img
+        className="rounded-t-lg w-full h-48 object-cover"
+        src={preview}
+        alt="Hotel preview"
+      />
+      <div className="p-4">
+        <h5 className="text-lg font-semibold text-gray-800">{name}</h5>
+        <p className="text-gray-600 mt-2">{description}</p>
+        <p className="text-gray-500 mt-2 text-sm">Location: {address}</p>
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex gap-2">
+            <button className="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600">
+              View
+            </button>
+          </div>
+          <small className="text-gray-400">Rating: {rating} ★</small>
+        </div>
+      </div>
+    </div>
   );
 }
 

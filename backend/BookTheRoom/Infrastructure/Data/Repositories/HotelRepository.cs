@@ -15,8 +15,6 @@ namespace Infrastructure.Data.Repositories
             _photoService = photoService;
         }
 
-        private const int maxItemsOnPage = 15;
-
         public async Task<IResult> Add(Hotel hotel)
         {
             Hotel? existingHotel = await _context.Hotels.AsNoTracking().FirstOrDefaultAsync(h => h.Name == hotel.Name);
@@ -94,7 +92,7 @@ namespace Infrastructure.Data.Repositories
                 ? query.OrderByDescending(selectorKey)
                 : query.OrderBy(selectorKey);
 
-            query = query.Skip((request.page - 1) * maxItemsOnPage).Take(maxItemsOnPage);
+            query = query.Skip((request.Page - 1) * request.ItemsCount).Take(request.ItemsCount);
 
             return await query.ToListAsync();
         }
