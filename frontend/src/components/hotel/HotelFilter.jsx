@@ -1,7 +1,8 @@
-import { Checkbox, CheckboxGroup, Stack } from "@chakra-ui/react";
+import { Checkbox, CheckboxGroup } from "@chakra-ui/react";
 
 function HotelFilter({ filter, setFilter }) {
   const ratings = [1, 2, 3, 4, 5];
+
   const countries = [
     "United States", "Norway", "France", "Germany",
     "Japan", "Canada", "Ukraine", "Denmark",
@@ -9,45 +10,61 @@ function HotelFilter({ filter, setFilter }) {
     "Egypt", "Netherlands", "United Kingdom", "Poland"
   ];
 
-  const handleCountryChange = (selectedCountries) => {
-    setFilter({ ...filter, countries: selectedCountries });
+  const handleCountriesChange = (selectedCountries) => {
+    setFilter({
+      ...filter,
+      countries: selectedCountries,
+    });
   };
 
-  const handleRatingChange = (selectedRatings) => {
+  const handleRatingsChange = (selectedRatings) => {
     const numericRatings = selectedRatings.map(Number);
-    setFilter({ ...filter, ratings: numericRatings });
+    setFilter({
+      ...filter,
+      ratings: numericRatings,
+    });
   };
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Countries:</label>
+        <h3 className="text-lg font-semibold mb-2">Countries:</h3>
         <CheckboxGroup
           value={filter.countries}
-          onChange={handleCountryChange}
+          onChange={handleCountriesChange}
         >
-          <Stack>
+          <div className="flex flex-col gap-2">
             {countries.map((country) => (
-              <Checkbox key={country} value={country}>
-                {country}
-              </Checkbox>
+              <label key={country} className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  value={country}
+                  className="border border-gray-400 rounded-md accent-blue-600 hover:accent-blue-700"
+                />
+                <span className="text-gray-800">{country}</span>
+              </label>
             ))}
-          </Stack>
+          </div>
         </CheckboxGroup>
       </div>
+
+      {/* Рейтинг */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Ratings:</label>
+        <h3 className="text-lg font-semibold mb-2">Ratings:</h3>
         <CheckboxGroup
           value={filter.ratings.map(String)}
-          onChange={handleRatingChange}
+          onChange={handleRatingsChange}
         >
-          <Stack>
+          <div className="flex flex-col gap-2">
             {ratings.map((rating) => (
-              <Checkbox key={rating} value={rating.toString()}>
-                {rating} Stars
-              </Checkbox>
+              <label key={rating} className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  value={rating.toString()}
+                  className="border border-gray-400 rounded-md accent-blue-600 hover:accent-blue-700"
+                />
+                <span className="text-gray-800">{rating} Stars</span>
+              </label>
             ))}
-          </Stack>
+          </div>
         </CheckboxGroup>
       </div>
     </div>

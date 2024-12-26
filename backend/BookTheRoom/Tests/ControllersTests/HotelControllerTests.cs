@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Api.Controllers;
 using Api.Contracts.Hotel;
 using Core.TasksResults;
+using Core.ValueObjects;
 
 namespace Tests.ControllersTests
 {  
@@ -32,6 +33,11 @@ namespace Tests.ControllersTests
                 "Updated Description",
                 -4,
                 true,
+                "Country",
+                "State",
+                "City",
+                "Street",
+                "PostalCode",           
                 new List<IFormFile>
                 {
                     CreateMockFormFile("test1.jpg", "image/jpeg"),
@@ -132,6 +138,11 @@ namespace Tests.ControllersTests
                 "Updated Description",
                 4,
                 true,
+                "Country",
+                "State",
+                "City",
+                "Street",
+                "PostalCode",
                 new List<IFormFile>
                 {
                     CreateMockFormFile("test1.jpg", "image/jpeg"),

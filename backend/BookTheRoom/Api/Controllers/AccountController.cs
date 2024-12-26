@@ -57,8 +57,7 @@ namespace Api.Controllers
 
             var token = GenerateJwtToken(user);
             var refreshToken = await GenerateAndStoreRefreshToken(user);
-            var userJson = JsonConvert.SerializeObject(user);
-            return Ok(new { token, refreshToken, user, userJson });
+            return Ok(new { token, refreshToken, user });
         }
 
         [HttpPost("Register")]
@@ -105,9 +104,8 @@ namespace Api.Controllers
 
             var token = GenerateJwtToken(newUser);
             var refreshToken = await GenerateAndStoreRefreshToken(newUser);
-            var userJson = JsonConvert.SerializeObject(newUser);
 
-            return Ok(new { token, refreshToken, newUser, userJson });
+            return Ok(new { token, refreshToken, newUser });
 
         }
 
@@ -188,13 +186,13 @@ namespace Api.Controllers
         {
             var authClaims = new List<Claim>
             {
-                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Name, user.UserName ?? "null"),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.Role, user.Role),
                 new(ClaimTypes.Email, user.Email ?? "null"),
                 new(ClaimTypes.HomePhone, user.PhoneNumber ?? "null"),
-                new(ClaimTypes.GivenName, user.FirstName),
-                new(ClaimTypes.Surname, user.LastName)
+                new(ClaimTypes.GivenName, user.FirstName ?? "null"),
+                new(ClaimTypes.Surname, user.LastName ?? "null")
             };
 
             var jwtSettings = _configuration.GetSection("Jwt");

@@ -14,7 +14,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-const CreateHotelForm = ({ filter, setHotels }) => {
+function CreateHotelForm() {
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -67,6 +67,7 @@ const CreateHotelForm = ({ filter, setHotels }) => {
         postalCode: '',
         images: [],
       });
+      
       toast({
         title: 'Hotel Created!',
         description: 'The hotel was successfully created.',
@@ -207,7 +208,7 @@ const CreateHotelForm = ({ filter, setHotels }) => {
             />
           </FormControl>
 
-          <Button type="submit" colorScheme="teal" size="lg" width="full">
+          <Button type="submit" colorScheme="purple" size="lg" width="full">
             Create Hotel
           </Button>
         </VStack>

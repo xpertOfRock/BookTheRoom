@@ -77,8 +77,7 @@ namespace Api.Controllers
                 h.Id,
                 h.Title,
                 h.PriceForNight,
-                h.Address.ToString(),
-
+                h.Address.ToString(true),
                 h.Images != null &&
                     h.Images.Any()
                     ? h.Images.First()

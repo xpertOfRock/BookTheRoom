@@ -1,4 +1,4 @@
-// src/components/Navbar.js
+
 import { Box, Flex, HStack, Link, IconButton, useDisclosure, Stack, Button, Text } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'; 
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -43,6 +43,7 @@ function Navbar() {
       setIsAuthenticated(false);
       setUser(null);
       navigate('/');
+      window.location.reload();
     } catch (error) {
       console.error('Logout failed', error);
     }

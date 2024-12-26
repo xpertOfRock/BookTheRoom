@@ -22,7 +22,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 
                 if (!validationResult.IsValid)
                 {
-                    return new Fail("Validation is failed.", Core.Enums.ErrorStatuses.ValidationError);
+                    return new Fail("Validation is failed.", ErrorStatuses.ValidationError);
                 }
 
                 var result = await _unitOfWork.Hotels.Update(command.Id, command.Request);

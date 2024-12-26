@@ -169,6 +169,11 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Name, request.Name)
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.Rating, request.Rating)
+                .SetProperty(h => h.Address.Country, request.Address.Country)
+                .SetProperty(h => h.Address.State, request.Address.State)
+                .SetProperty(h => h.Address.City, request.Address.City)
+                .SetProperty(h => h.Address.Street, request.Address.Street)
+                .SetProperty(h => h.Address.PostalCode, request.Address.PostalCode)
                 .SetProperty(h => h.HasPool, request.HasPool));
 
             return new Success("Entity 'Hotel' was updated successfuly.");

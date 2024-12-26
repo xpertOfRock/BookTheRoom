@@ -8,6 +8,8 @@ namespace Api.DTOs
         string Name,
         string Description,
         string Address,
+        string jsonAddress,
+        bool HasPool,
         int Rating, 
         List<string>? Images,
         List<Room>? Rooms,

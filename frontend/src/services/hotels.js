@@ -1,8 +1,5 @@
 import axios from "axios";
-
-const getToken = () => {
-  return localStorage.getItem('accessToken');
-};
+import { getCurrentToken } from "./auth";
 // "https://localhost:5286/api/hotel";
 const API_URL = "https://localhost:6061/api/hotel";
 
@@ -14,6 +11,7 @@ export const fetchHotels = async (filter) => {
       sortOrder: filter?.sortOrder,
       countries: filter?.countries.length > 0 ? filter.countries.join(",") : undefined,
       ratings: filter?.ratings.length > 0 ? filter.ratings.join(",") : undefined,
+      itemsCount: filter?.itemsCount
     };
 
     let result = await axios.get(API_URL, { params });
@@ -34,7 +32,7 @@ export const fetchHotel = async (id) => {
 
 export const postHotel = async (formData) => {
   try {
-    const token = getToken();
+    const token = getCurrentToken();
     const response = await axios.post(API_URL, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -47,10 +45,11 @@ export const postHotel = async (formData) => {
   }
 };
 
-export const putHotel = async (id, hotel) => {
+export const putHotel = async (id, formData) => {
   try {
-    const token = getToken();
-    const response = await axios.put(`${API_URL}/${id}`, hotel, {
+    const token = getCurrentToken();
+    console.log(token);
+    const response = await axios.put(`${API_URL}/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${token}`,
@@ -64,7 +63,7 @@ export const putHotel = async (id, hotel) => {
 
 export const deleteHotel = async (id) => {
   try {
-    const token = getToken();
+    const token = getCurrentToken();
     const response = await axios.delete(`${API_URL}/${id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,

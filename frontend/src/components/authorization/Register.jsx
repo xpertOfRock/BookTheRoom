@@ -11,7 +11,7 @@ function Register() {
     email: '',
     username: '',
     phoneNumber: '',
-    birthdate: '', // Используем birthdate вместо age
+    birthdate: '',
     password: '',
   });
   const [error, setError] = useState('');
@@ -29,6 +29,7 @@ function Register() {
     try {
       await register(userData);
       navigate('/');
+      window.location.reload();
     } catch (error) {
       setError(error.response?.data?.message || 'Registration failed. Please try again.');
     }

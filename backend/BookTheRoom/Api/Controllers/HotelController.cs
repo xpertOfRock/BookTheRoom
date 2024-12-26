@@ -32,15 +32,17 @@ namespace Api.Controllers
         {
             var hotels = await _mediator.Send(new GetHotelsQuery(request));
 
-            var hotelsDTO = hotels.Select(h => new HotelsDTO(
-                h.Id,
-                h.Name,
-                h.Images != null &&
-                    h.Images.Any()
-                    ? h.Images.First()
-                    : "No Image",
-                h.Rating,
-                h.Address.ToString()
+            var hotelsDTO = hotels.Select(h => 
+                new HotelsDTO
+                (
+                    h.Id,
+                    h.Name,
+                    h.Images != null &&
+                        h.Images.Any()
+                        ? h.Images.First()
+                        : "No Image",
+                    h.Rating,
+                    h.Address.ToString(true)
                 )
             ).ToList();
 
@@ -63,6 +65,8 @@ namespace Api.Controllers
                 hotel.Name,
                 hotel.Description,
                 hotel.Address.ToString(),
+                Address.AsJson(hotel.Address),
+                hotel.HasPool,
                 hotel.Rating,
 
                 hotel.Images != null &&
@@ -146,7 +150,14 @@ namespace Api.Controllers
                 form.Description,
                 form.Rating,
                 form.Pool,
-
+                new Address
+                (
+                    form.Country,
+                    form.State,
+                    form.City,
+                    form.Street,
+                    form.PostalCode
+                ),
                 images.Any() 
                     ? images 
                     : null

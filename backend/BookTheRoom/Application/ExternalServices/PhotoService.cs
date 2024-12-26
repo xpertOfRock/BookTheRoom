@@ -1,5 +1,4 @@
-﻿using Application.Interfaces;
-using Application.Settings;
+﻿using Application.Settings;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Options;

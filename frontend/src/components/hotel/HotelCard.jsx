@@ -1,6 +1,6 @@
 function HotelCard({ name, description, preview, rating, address }) {
   return (
-    <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md">
+    <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md m-4">
       <img
         className="rounded-t-lg w-full h-48 object-cover"
         src={preview}

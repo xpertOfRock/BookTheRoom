@@ -1,6 +1,4 @@
-﻿using Core.Enums;
-
-namespace Api.Contracts.Hotel
+﻿namespace Api.Contracts.Hotel
 {
     public record UpdateHotelForm
     (
@@ -8,6 +6,11 @@ namespace Api.Contracts.Hotel
         string Description,
         int Rating,
         bool Pool,
+        string Country,
+        string State,
+        string City,
+        string Street,
+        string PostalCode,
         List<IFormFile>? Images
     );
 }

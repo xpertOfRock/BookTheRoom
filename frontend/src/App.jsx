@@ -12,7 +12,6 @@ import Login from './components/authorization/Login';
 import Register from './components/authorization/Register';
 
 function App() { 
- 
   return (
     <Router>
       <>

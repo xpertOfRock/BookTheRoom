@@ -13,6 +13,7 @@ function Login() {
     try {
       await login(emailOrUsername, password);
       navigate('/');
+      window.location.reload();
     } catch (error) {
       setError('Login failed. Please check your credentials.');
     }

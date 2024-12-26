@@ -1,6 +1,4 @@
-﻿using Core.ValueObjects;
-
-namespace Api.DTOs
+﻿namespace Api.DTOs
 {
     public record HotelsDTO
     (

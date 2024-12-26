@@ -1,137 +1,115 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; 
-import { fetchHotel, putHotel } from '../../services/hotels';
 import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  NumberInput,
-  NumberInputField,
-  Switch,
-  VStack,
-  useToast,
-} from '@chakra-ui/react';
-import HotelCard from './HotelCard';
-
-const UpdateHotelForm = () => {
-  const { id } = useParams(); 
-  const [hotel, setHotel] = useState(null);
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    rating: 0,
-    pool: false,
-    address: '',
-    images: [],
-  });
-
-  const toast = useToast();
-
-  const getHotel = async () => {
-    try {
-      const hotelData = await fetchHotel(id); 
-      setHotel(hotelData);
-      setForm({
-        name: hotelData.name || '',
-        description: hotelData.description || '',
-        rating: hotelData.rating || 0,
-        pool: hotelData.pool || false,
-        address: hotelData.address || '',
-        images: hotelData.images || [],
-      });
-    } catch (error) {
-      toast({
-        title: 'Error!',
-        description: 'Failed to load hotel data.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  useEffect(() => {
-    getHotel();
-  }, [id]);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      images: Array.from(e.target.files),
-    }));
-  };
-
-  const handleRatingChange = (value) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      rating: value,
-    }));
-  };
-
-  const onUpdate = async (hotelForm) => {
-    try {
-      await putHotel(id, hotelForm);
-      toast({
-        title: 'Hotel Updated!',
-        description: 'The hotel was successfully updated.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error!',
-        description: 'An error occurred while updating the hotel.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    Object.keys(form).forEach((key) => {
-      if (key === 'images') {
-        form.images.forEach((file) => {
-          formData.append('Images', file);
-        });
-      } else {
-        formData.append(key.charAt(0).toUpperCase() + key.slice(1), form[key]);
-      }
+    Box,
+    VStack,
+    FormControl,
+    FormLabel,
+    Input,
+    Textarea,
+    NumberInput,
+    NumberInputField,
+    Switch,
+    Button,
+  } from "@chakra-ui/react";
+  import { useEffect, useState } from "react";
+  import { useParams, useNavigate } from "react-router-dom";
+  import { fetchHotel, putHotel } from "../../services/hotels";
+  
+  function UpdateHotelForm() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+  
+    const [hotelData, setHotelData] = useState({
+      name: "",
+      description: "",
+      rating: 1,
+      pool: false,
+      country: "",
+      state: "",
+      city: "",
+      street: "",
+      postalCode: "",
+      images: [],
     });
-
-    await onUpdate(formData);
-  };
-
-  if (!hotel) {
-    return <p>Loading...</p>;
-  }
-
-  return (
-    <section className="p-8 flex flex-row justify-start gap-12">
-      <div className="flex flex-col w-1/2 gap-10">
-      <HotelCard
-        name={hotel.name}
-        description={hotel.description}
-        preview={hotel.images[0]}
-        rating={hotel.rating}
-        address={hotel.address}
-      />
-      </div>
-      <div className="flex flex-col w-1/2 gap-10">
+  
+    const [selectedFiles, setSelectedFiles] = useState([]);
+  
+    useEffect(() => {
+      const getHotel = async () => {
+        try {
+          const data = await fetchHotel(id);
+          let parsedAddress = {};
+          if (data.jsonAddress) {
+            try {
+              parsedAddress = JSON.parse(data.jsonAddress.trim());
+            } catch (error) {
+              console.error("Error parsing jsonAddress:", error);
+            }
+          }
+  
+          setHotelData({
+            name: data.name || "",
+            description: data.description || "",
+            rating: data.rating || 1,
+            pool: data.hasPool || false,
+            country: parsedAddress?.Country || "",
+            state: parsedAddress?.State || "",
+            city: parsedAddress?.City || "",
+            street: parsedAddress?.Street || "",
+            postalCode: parsedAddress?.PostalCode || "",
+            images: data.images || [],
+          });
+        } catch (e) {
+          console.error("Failed to fetch hotel data", e);
+        }
+      };
+  
+      getHotel();
+    }, [id]);
+  
+    const handleChange = (e) => {
+      const { name, value, type, checked } = e.target;
+      setHotelData({
+        ...hotelData,
+        [name]: type === "checkbox" ? checked : value,
+      });
+    };
+  
+    const handleFileChange = (e) => {
+      setSelectedFiles(e.target.files);
+    };
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+  
+      const formData = new FormData();
+      formData.append("Name", hotelData.name);
+      formData.append("Description", hotelData.description);
+      formData.append("Rating", hotelData.rating);
+      formData.append("Pool", hotelData.pool);
+      formData.append("Country", hotelData.country);
+      formData.append("State", hotelData.state);
+      formData.append("City", hotelData.city);
+      formData.append("Street", hotelData.street);
+      formData.append("PostalCode", hotelData.postalCode);
+  
+      for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append("Images", selectedFiles[i]);
+      }
+  
+      try {
+        const status = await putHotel(id, formData);
+        if (status === 200) {
+          alert("Hotel updated successfully!");
+          navigate(`/hotels`);
+        } else {
+          alert("Failed to update hotel");
+        }
+      } catch (e) {
+        console.error("Error updating hotel", e);
+      }
+    };
+  
+    return (
       <Box p={8} maxWidth="600px" mx="auto">
         <form onSubmit={handleSubmit}>
           <VStack spacing={4}>
@@ -140,63 +118,114 @@ const UpdateHotelForm = () => {
               <Input
                 type="text"
                 name="name"
-                value={form.name}
+                value={hotelData.name}
                 onChange={handleChange}
               />
             </FormControl>
-
+  
             <FormControl id="description" isRequired>
               <FormLabel>Description</FormLabel>
               <Textarea
                 name="description"
-                value={form.description}
+                value={hotelData.description}
                 onChange={handleChange}
               />
             </FormControl>
-
+  
             <FormControl id="rating" isRequired>
               <FormLabel>Rating</FormLabel>
               <NumberInput
                 name="rating"
-                value={form.rating}
-                min={0}
+                value={hotelData.rating}
+                min={1}
                 max={5}
-                onChange={handleRatingChange}
+                onChange={(value) =>
+                  setHotelData({ ...hotelData, rating: parseInt(value, 10) })
+                }
               >
                 <NumberInputField />
               </NumberInput>
             </FormControl>
-
+  
             <FormControl id="pool">
               <FormLabel>Has Pool</FormLabel>
               <Switch
                 name="pool"
-                isChecked={form.pool}
+                isChecked={hotelData.pool}
+                onChange={(e) =>
+                  setHotelData({ ...hotelData, pool: e.target.checked })
+                }
+              />
+            </FormControl>
+  
+            <FormControl id="country" isRequired>
+              <FormLabel>Country</FormLabel>
+              <Input
+                type="text"
+                name="country"
+                value={hotelData.country}
                 onChange={handleChange}
               />
             </FormControl>
-
-            <FormControl id="images">
-              <FormLabel>Images</FormLabel>
+  
+            <FormControl id="state" isRequired>
+              <FormLabel>State</FormLabel>
               <Input
-                type="file"
-                name="images"
-                multiple
-                accept="image/*"
-                onChange={handleFileChange}
+                type="text"
+                name="state"
+                value={hotelData.state}
+                onChange={handleChange}
               />
             </FormControl>
-
-            <Button type="submit" colorScheme="teal" size="lg" width="full">
+  
+            <FormControl id="city" isRequired>
+              <FormLabel>City</FormLabel>
+              <Input
+                type="text"
+                name="city"
+                value={hotelData.city}
+                onChange={handleChange}
+              />
+            </FormControl>
+  
+            <FormControl id="street" isRequired>
+              <FormLabel>Street</FormLabel>
+              <Input
+                type="text"
+                name="street"
+                value={hotelData.street}
+                onChange={handleChange}
+              />
+            </FormControl>
+  
+            <FormControl id="postalCode" isRequired>
+              <FormLabel>Postal Code</FormLabel>
+              <Input
+                type="text"
+                name="postalCode"
+                value={hotelData.postalCode}
+                onChange={handleChange}
+              />
+            </FormControl>
+  
+            <FormControl id="images">
+              <FormLabel>Upload Images</FormLabel>
+              <Input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                className="border border-gray-300 rounded p-2 w-full"
+              />
+            </FormControl>
+  
+            <Button type="submit" colorScheme="blue" size="lg" width="full">
               Update Hotel
             </Button>
           </VStack>
         </form>
       </Box>
-      </div>
-      
-    </section>
-  );
-};
-
-export default UpdateHotelForm;
+    );
+  }
+  
+  export default UpdateHotelForm;
+  

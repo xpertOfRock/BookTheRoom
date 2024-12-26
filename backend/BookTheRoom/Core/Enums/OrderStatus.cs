@@ -4,7 +4,6 @@
     {
         Active,
         Completed,
-        Closed,
-        Error
+        Closed
     }
 }

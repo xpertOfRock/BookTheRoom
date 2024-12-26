@@ -1,10 +1,12 @@
-﻿namespace Core.ValueObjects
+﻿using System.Text.Json;
+
+namespace Core.ValueObjects
 {
     public class Address
     {
         public string Country { get; }
-        public string City { get; }
         public string State { get; }
+        public string City { get; }      
         public string Street { get; }            
         public string PostalCode { get; }
 
@@ -18,9 +20,15 @@
             PostalCode = postalCode;          
         }
 
-        public override string ToString()
+        public string ToString(bool shortForm = false)
         {
-            return $"{Country}, {State}, {City}, {Street}, {PostalCode}";
+            var result = shortForm == true ? $"{Country}, {City}" : $"{Country}, {State}, {City}, {Street}, {PostalCode}";
+            return result;
+        }
+        public static string AsJson(Address address) 
+        {
+            var result = JsonSerializer.Serialize(address);
+            return result;
         }
     }
 }

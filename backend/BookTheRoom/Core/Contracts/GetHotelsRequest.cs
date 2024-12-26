@@ -1,4 +1,6 @@
-﻿namespace Core.Contracts
+﻿using Newtonsoft.Json;
+
+namespace Core.Contracts
 {
     public record GetHotelsRequest
     (        
@@ -8,7 +10,7 @@
         string? Countries,
         string? Ratings,
         string? Services,
-        int ItemsCount = 15,
+        int ItemsCount = 9,
         int Page = 1
     );
 }

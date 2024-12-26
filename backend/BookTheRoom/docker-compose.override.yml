@@ -1,4 +1,5 @@
 services:
+
   booktheroomdb:
     container_name: booktheroomdb
     environment:
@@ -12,7 +13,7 @@ services:
       - postgres_booktheroom:/var/lib/postgresql/data/
  
   distributedcache:
-    container_name: distributedcahce
+    container_name: distributedcache
     restart: always
     ports:
       - "6379:6379"
@@ -22,6 +23,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
+    depends_on:
+      - booktheroomdb
+      - distributedcache
     ports:
       - "6001:8080"
       - "6061:8081"
