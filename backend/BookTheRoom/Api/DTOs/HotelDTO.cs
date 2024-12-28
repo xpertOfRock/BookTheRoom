@@ -12,7 +12,6 @@ namespace Api.DTOs
         bool HasPool,
         int Rating, 
         List<string>? Images,
-        List<Room>? Rooms,
         List<Comment>? Comments
     );
 }

@@ -1,4 +1,12 @@
-function HotelCard({ name, description, preview, rating, address }) {
+import { useNavigate } from 'react-router-dom';
+
+function Card({ id, name, description, preview, rating, address }) {
+  const navigate = useNavigate(); 
+
+  const handleViewClick = () => {
+    navigate(`/hotels/${id}`);
+  };
+
   return (
     <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md m-4">
       <img
@@ -12,7 +20,10 @@ function HotelCard({ name, description, preview, rating, address }) {
         <p className="text-gray-500 mt-2 text-sm">Location: {address}</p>
         <div className="flex items-center justify-between mt-4">
           <div className="flex gap-2">
-            <button className="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600">
+            <button 
+              onClick={handleViewClick}
+              className="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600"
+            >
               View
             </button>
           </div>
@@ -23,4 +34,4 @@ function HotelCard({ name, description, preview, rating, address }) {
   );
 }
 
-export default HotelCard;
+export default Card;

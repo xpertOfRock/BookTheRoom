@@ -1,6 +1,6 @@
-import SortAndSearchFilter from './SortAndSearchFilter';
-import HotelFilter from './HotelFilter';
-import HotelCard from './HotelCard';
+import SortAndSearch from './SortAndSearch';
+import Filters from './Filters';
+import Card from './Card';
 import { fetchHotels } from '../../services/hotels';
 import { useEffect, useState } from 'react';
 
@@ -24,6 +24,7 @@ function Hotels() {
           const combinedFilters = { ...sortAndSearch, ...filterBy };
           console.log('Request Payload:', combinedFilters);
           let response = await fetchHotels(combinedFilters);
+          console.log(response);
           setHotels(response || []);
         } catch (error) {
           console.error('Error fetching hotels:', error);
@@ -41,12 +42,12 @@ function Hotels() {
 
           <div className="w-1/3 hidden lg:block bg-indigo-100 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">Filters</h2>
-            <HotelFilter filter={filterBy} setFilter={setFilterBy} />
+            <Filters filter={filterBy} setFilter={setFilterBy} />
           </div>
 
           <div className="w-full lg:w-2/3">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 bg-indigo-100 p-6 rounded-lg shadow-md">
-              <SortAndSearchFilter filter={sortAndSearch} setFilter={setSortAndSearch} />
+              <SortAndSearch filter={sortAndSearch} setFilter={setSortAndSearch} />
             </div>
 
             <h2 className="text-xl font-semibold mb-4 my-4">Hotels</h2>
@@ -54,8 +55,9 @@ function Hotels() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-indigo-100 p-6 rounded-lg shadow-md">
               {hotels && hotels.length > 0 ? (
                 hotels.slice(0, sortAndSearch.itemsCount).map((hotel) => (
-                  <HotelCard
+                  <Card
                     key={hotel.id}
+                    id={hotel.id}
                     name={hotel.name}
                     description={hotel.description}
                     preview={hotel.preview}

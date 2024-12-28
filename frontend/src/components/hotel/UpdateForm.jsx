@@ -14,7 +14,7 @@ import {
   import { useParams, useNavigate } from "react-router-dom";
   import { fetchHotel, putHotel } from "../../services/hotels";
   
-  function UpdateHotelForm() {
+  function UpdateForm() {
     const { id } = useParams();
     const navigate = useNavigate();
   
@@ -218,7 +218,7 @@ import {
               />
             </FormControl>
   
-            <Button type="submit" colorScheme="blue" size="lg" width="full">
+            <Button type="submit" colorScheme="purpule" size="lg" width="full">
               Update Hotel
             </Button>
           </VStack>
@@ -227,5 +227,5 @@ import {
     );
   }
   
-  export default UpdateHotelForm;
+  export default UpdateForm;
   

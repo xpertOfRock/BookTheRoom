@@ -72,12 +72,7 @@ namespace Api.Controllers
                 hotel.Images != null &&
                     hotel.Images.Any()
                     ? hotel.Images
-                    : new List<string> { "" },
-
-                hotel.Rooms != null &&
-                    hotel.Rooms.Any()
-                    ? hotel.Rooms
-                    : new List<Room> { },
+                    : new List<string> { "" },               
 
                 hotel.Comments != null &&
                     hotel.Comments.Any()

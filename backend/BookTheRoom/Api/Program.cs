@@ -36,9 +36,7 @@ builder.Services.Configure<HostOptions>(options =>
     options.ServicesStopConcurrently = false;
 });
 
-builder.Services.AddApplicationMediatr();
-
-builder.Services.AddApplicationValidators();
+builder.Services.AddApplication();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

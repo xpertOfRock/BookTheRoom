@@ -1,8 +1,9 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import CreateHotelForm from './components/hotel/CreateHotelForm';
-import UpdateHotelForm from './components/hotel/UpdateHotelForm';
+import CreateForm from './components/hotel/CreateForm';
+import UpdateForm from './components/hotel/UpdateForm';
 import Hotels from './components/hotel/Hotels';
+import HotelDetails from './components/hotel/HotelDetails';
 import Navbar from './components/Navbar'; 
 import Home from './components/Home'; 
 import Apartments from './components/apartment/Apartments';
@@ -22,8 +23,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/hotels" element={<Hotels />} />
-          <Route path="/hotels/create" element={<CreateHotelForm/> } />
-          <Route path="/hotels/update/:id" element={<UpdateHotelForm /> } />
+          <Route path="/hotels/:id" element={<HotelDetails />} />
+          <Route path="/hotels/create" element={<CreateForm/> } />
+          <Route path="/hotels/update/:id" element={<UpdateForm /> } />
           <Route path="/apartments" element={<Apartments />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/support" element={<Support />} />

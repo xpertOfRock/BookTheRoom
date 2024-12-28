@@ -1,4 +1,5 @@
-function SortAndSearchFilter({ filter, setFilter }) {
+
+function SortAndSearch({ filter, setFilter }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,6 +64,4 @@ function SortAndSearchFilter({ filter, setFilter }) {
     );
   }
   
-  export default SortAndSearchFilter;
-  
-  
+export default SortAndSearch;
