@@ -17,7 +17,7 @@ function SortAndSearch({ filter, setFilter }) {
             name="search"
             value={filter.search}
             onChange={handleChange}
-            placeholder="Search hotels..."
+            placeholder="Search..."
             className="border border-gray-300 rounded p-2 w-full lg:w-60"
           />
         </div>

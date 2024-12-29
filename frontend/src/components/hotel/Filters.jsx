@@ -47,7 +47,6 @@ function Filters({ filter, setFilter }) {
         </CheckboxGroup>
       </div>
 
-      {/* Рейтинг */}
       <div>
         <h3 className="text-lg font-semibold mb-2">Ratings:</h3>
         <CheckboxGroup

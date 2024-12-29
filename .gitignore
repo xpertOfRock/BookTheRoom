@@ -364,6 +364,7 @@ FodyWeavers.xsd
 
 # Certificates for frontend
 
-frontend/src/certs/localhost-key.pem
-frontend/src/certs/localhost.pem
-frontend/.env
+localhost-key.pem
+localhost.pem
+.env
+appsettings.json

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-function Card({ id, name, description, preview, rating, address }) {
+function Card({ id, name,  preview, rating, address }) {
   const navigate = useNavigate(); 
 
   const handleViewClick = () => {
@@ -14,9 +14,8 @@ function Card({ id, name, description, preview, rating, address }) {
         src={preview}
         alt="Hotel preview"
       />
-      <div className="p-4">
+      <div className="p-3">
         <h5 className="text-lg font-semibold text-gray-800">{name}</h5>
-        <p className="text-gray-600 mt-2">{description}</p>
         <p className="text-gray-500 mt-2 text-sm">Location: {address}</p>
         <div className="flex items-center justify-between mt-4">
           <div className="flex gap-2">
