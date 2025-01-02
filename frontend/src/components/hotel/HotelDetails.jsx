@@ -4,9 +4,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { fetchHotel } from "../../services/hotels";
+import { getCurrentUserId } from "../../services/auth";
+import Comment from "../comment/Comment";
+import CreateCommentForm from "../comment/CreateCommentForm";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
 
 function HotelDetails() {
   const { id } = useParams();
@@ -15,6 +19,15 @@ function HotelDetails() {
   const [loading, setLoading] = useState(true);
 
   const sliderRef = useRef(null);
+
+  const currentUserId = getCurrentUserId();
+
+  // const handleNewComment = (newComment) => {
+  //   setHotel((prevHotel) => ({
+  //     ...prevHotel,
+  //     comments: [...(prevHotel.comments || []), newComment],
+  //   }));
+  // };
 
   useEffect(() => {
     const loadHotel = async () => {
@@ -30,6 +43,9 @@ function HotelDetails() {
 
     loadHotel();
   }, [id]);
+  //, hotel.comments
+
+  
 
   if (loading) {
     return <div>Loading...</div>;
@@ -38,8 +54,6 @@ function HotelDetails() {
   if (!hotel) {
     return <div>Hotel not found.</div>;
   }
-
-  const address = JSON.parse(hotel.jsonAddress || "{}");
 
   const settings = {
     dots: true,
@@ -50,8 +64,9 @@ function HotelDetails() {
     arrows: false
   };
 
-  return (
-    <div className="container mx-auto px-4 w-10/12">
+  return (   
+    <section>
+      <div className="container mx-auto px-4 w-10/12">
       <h1 className="text-4xl font-bold my-6 text-gray-800">{hotel.name}</h1>     
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all"
@@ -115,8 +130,54 @@ function HotelDetails() {
           />
         ))}
       </div>
+
+      <div className="mt-10">
+        <h3 className="text-2xl font-semibold text-gray-700 mb-4">Comments</h3>
+        {hotel.comments && hotel.comments.length > 0 ? (
+          <div className="bg-white p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Comments</h2>
+          <div className="space-y-4">
+            {hotel.comments.map((comment) => (
+              <Comment
+                key={comment.id}
+                username={comment.username}
+                description={comment.description}
+                createdAt={comment.createdAt}
+                isCurrentUser={currentUserId === comment.userId}
+              />
+            ))}
+          </div>
+        </div>
+        ) : (
+          <p className="text-gray-500">No comments yet. Be the first to leave a comment!</p>
+        )}
+        <CreateCommentForm hotelId={hotel.id} />
+      </div>
       
+      {/* <div className="mt-10">  onCommentAdded={handleNewComment}
+        <h3 className="text-2xl font-semibold text-gray-700 mb-4">Comments</h3>
+        {hotel.comments && hotel.comments.length > 0 ? (
+          <div className="bg-white p-6 rounded-lg shadow-lg mt-8">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Comments</h2>
+            <div className="space-y-4">
+              {hotel.comments.map((comment) => (
+                <Comment
+                  key={comment.id}
+                  username={comment.username || "Anonymous"} // Значение по умолчанию
+                  description={comment.description || "No description provided"}
+                  createdAt={comment.createdAt || new Date().toISOString()} // Если дата отсутствует
+                  isCurrentUser={getCurrentUser()?.id === comment.userId} // Убедитесь, что getCurrentUser() возвращает объект
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-500">No comments yet. Be the first to leave a comment!</p>
+        )}
+        <CreateCommentForm hotelId={hotel.id} onCommentAdded={handleNewComment} />
+      </div> */}
     </div>
+    </section>  
   );
 }
 

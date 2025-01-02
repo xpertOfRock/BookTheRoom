@@ -9,7 +9,7 @@ namespace Infrastructure.Identity
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public string BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; }
         public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
         public List<Order>? Orders { get; set; }
         public List<Apartment>? Apartments { get; set; }

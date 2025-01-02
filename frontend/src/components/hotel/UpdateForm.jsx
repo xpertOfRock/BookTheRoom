@@ -100,7 +100,7 @@ import {
         const status = await putHotel(id, formData);
         if (status === 200) {
           alert("Hotel updated successfully!");
-          navigate(`/hotels`);
+          navigate(`/`);
         } else {
           alert("Failed to update hotel");
         }
@@ -218,7 +218,7 @@ import {
               />
             </FormControl>
   
-            <Button type="submit" colorScheme="purpule" size="lg" width="full">
+            <Button type="submit" colorScheme="purple" size="lg" width="full">
               Update Hotel
             </Button>
           </VStack>

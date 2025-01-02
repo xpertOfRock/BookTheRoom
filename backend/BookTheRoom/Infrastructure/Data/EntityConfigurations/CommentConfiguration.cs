@@ -1,7 +1,4 @@
-﻿using Core.Entities;
-using Core.Enums;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.EntityConfigurations
 {
@@ -25,15 +22,15 @@ namespace Infrastructure.Data.EntityConfigurations
    
             builder
                 .Property(c => c.HotelId)
-                .IsRequired(false);     
+                .IsRequired(false);
+
+            builder
+                .Property(c => c.Username)
+                .IsRequired();
 
             builder
                 .Property(c => c.ApartmentId)
                 .IsRequired(false);               
-
-            builder
-                .Property(c => c.PropetyCategory)
-                .IsRequired();
 
             builder
                 .Property(c => c.CreatedAt)

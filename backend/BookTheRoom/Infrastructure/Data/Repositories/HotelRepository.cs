@@ -112,7 +112,7 @@ namespace Infrastructure.Data.Repositories
                 hotel = await _context.Hotels
                     .Include(h => h.Address)
                     .Include(h => h.Rooms)
-                    .Include(h => h.Comments)
+                    .Include(h => h.Comments/*.Where(x => x.HotelId == h.Id).ToList()*/)                    
                     .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);

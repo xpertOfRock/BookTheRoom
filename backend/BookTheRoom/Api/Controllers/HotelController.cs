@@ -1,6 +1,9 @@
-﻿using Api.Contracts.Hotel;
+﻿using Api.Contracts.Comment;
+using Api.Contracts.Hotel;
 using Api.DTOs;
+using Api.Extensions;
 using Application.Interfaces;
+using Application.UseCases.Commands.Comment;
 using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Queries.Hotel;
 using Core.Contracts;
@@ -10,6 +13,7 @@ using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace Api.Controllers
@@ -20,10 +24,12 @@ namespace Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IPhotoService _photoService;
-        public HotelController(IMediator mediator, IPhotoService photoService)
+        private readonly IHttpContextAccessor _contextAccessor;
+        public HotelController(IMediator mediator, IPhotoService photoService, IHttpContextAccessor contextAccessor)
         {
             _mediator = mediator;
             _photoService = photoService;
+            _contextAccessor = contextAccessor;
         }
 
         [HttpGet]
@@ -32,7 +38,7 @@ namespace Api.Controllers
         {
             var hotels = await _mediator.Send(new GetHotelsQuery(request));
 
-            var hotelsDTO = hotels.Select(h => 
+            var hotelsDTO = hotels.Select(h =>
                 new HotelsDTO
                 (
                     h.Id,
@@ -72,13 +78,14 @@ namespace Api.Controllers
                 hotel.Images != null &&
                     hotel.Images.Any()
                     ? hotel.Images
-                    : new List<string> { "" },               
+                    : new List<string> { "" },
 
                 hotel.Comments != null &&
                     hotel.Comments.Any()
                     ? hotel.Comments
                     : new List<Comment> { }
                 );
+            Console.WriteLine(hotel);
 
             return Ok(hotelDTO);
         }
@@ -97,8 +104,8 @@ namespace Api.Controllers
                     var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
                     imagesUrl.Add(resultForList.Url.ToString());
                 }
-            }            
-            
+            }
+
             var request = new CreateHotelRequest
             (
                 form.Name,
@@ -120,6 +127,29 @@ namespace Api.Controllers
 
             return result.IsSuccess ? Created() : BadRequest(result);
         }
+        //[HttpPost("{id}/services")]
+        //[Authorize(Roles = UserRole.Admin)]
+        //public async Task<IActionResult> PostService(int hotelId, [FromBody] )
+        //{
+        //    return Ok();
+        //}
+
+        [HttpPost("{id}/comments")]
+        [Authorize]
+        public async Task<IActionResult> PostComment(int id, [FromBody] CreateCommentForm form)
+        {
+            var userId = _contextAccessor.HttpContext?.User.GetUserId();
+            var username = _contextAccessor.HttpContext?.User.GetUsername();
+
+            if(userId is null || username.IsNullOrEmpty())
+            {
+                return Unauthorized();
+            }
+
+            var result = await _mediator.Send(new CreateCommentCommand(userId, username, form.Description, id));
+
+            return result.IsSuccess ? Created() : BadRequest(result);
+        }
 
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin)]
@@ -131,11 +161,9 @@ namespace Api.Controllers
             {               
                 foreach (var file in form.Images)
                 {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        images.Add(resultForList.Url.ToString());
-                    }
+                    using var stream = file.OpenReadStream();
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                    images.Add(resultForList.Url.ToString());                
                 }
             }
 

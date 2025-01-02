@@ -82,7 +82,7 @@ namespace Api.Controllers
                 LastName = request.LastName,
                 UserName = request.Username,
                 PhoneNumber = request.PhoneNumber,
-                BirthDate = request.BirthDate.ToString(),
+                BirthDate = request.BirthDate,
                 Role = UserRole.User,
                 Orders = new List<Order>(),
                 Apartments = new List<Apartment>()
@@ -127,6 +127,7 @@ namespace Api.Controllers
         {
             var principal = GetPrincipalFromExpiredToken(request.Token);
             if (principal == null)
+
             {
                 return BadRequest("Invalid access token or refresh token.");
             }
@@ -186,6 +187,7 @@ namespace Api.Controllers
         {
             var authClaims = new List<Claim>
             {
+                new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Name, user.UserName ?? "null"),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.Role, user.Role),
@@ -198,10 +200,11 @@ namespace Api.Controllers
             var jwtSettings = _configuration.GetSection("Jwt");
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
 
-            var token = new JwtSecurityToken(
+            var token = new JwtSecurityToken
+            (
                 issuer: jwtSettings["Issuer"],
                 audience: jwtSettings["Audience"],
-                expires: DateTime.Now.AddMinutes(15),
+                expires: DateTime.Now.AddMinutes(45),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
@@ -212,11 +215,13 @@ namespace Api.Controllers
         private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
+
+            using var rng = RandomNumberGenerator.Create();
+
+            rng.GetBytes(randomNumber);
+
+            return Convert.ToBase64String(randomNumber);
+            
         }
 
         private async Task<string> GenerateAndStoreRefreshToken(ApplicationUser user)
@@ -229,7 +234,7 @@ namespace Api.Controllers
                 throw new Exception("Failed to save refresh token.");
             }
 
-            await _userManager.SetAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime", DateTime.UtcNow.AddDays(7).ToString());
+            await _userManager.SetAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime", DateTime.UtcNow.AddMonths(1).ToString());
 
             return refreshToken;
         }

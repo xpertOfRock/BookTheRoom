@@ -20,7 +20,7 @@ function Login() {
   };
 
   return (
-    <Box p={4}>
+    <Box p={4} className="w-1/3 items-center">
       <Heading mb={6}>Login</Heading>
       {error && <Text color="red.500">{error}</Text>}
       <Stack spacing={4}>

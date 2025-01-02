@@ -127,10 +127,6 @@ namespace Api.Controllers
         [Authorize]
         public async Task<IActionResult> Post([FromForm] CreateApartmentForm form)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return BadRequest("You have to sign in to add an apartment for rent.");
-            }
             var thisUserId = _contextAccessor.HttpContext?.User.GetUserId();
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
 

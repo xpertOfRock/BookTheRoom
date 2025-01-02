@@ -30,7 +30,7 @@ namespace Infrastructure.Identity
                     PhoneNumber = "+380952099565",
                     Role = UserRole.Admin,
                     RegisteredAt = DateTime.UtcNow,
-                    BirthDate = DateTime.UtcNow.ToString()
+                    BirthDate = new DateOnly(2004, 2, 3)
                 };
 
                 var normalUser = new ApplicationUser
@@ -42,7 +42,7 @@ namespace Infrastructure.Identity
                     PhoneNumber = "+380507777777",
                     Role = UserRole.User,
                     RegisteredAt = DateTime.UtcNow,
-                    BirthDate = DateTime.UtcNow.ToString()
+                    BirthDate = new DateOnly(2001, 12, 15)
                 };
 
                 if (userManager.Users.All(u => u.UserName != adminUser.UserName))

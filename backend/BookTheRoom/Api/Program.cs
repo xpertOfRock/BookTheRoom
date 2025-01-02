@@ -1,11 +1,7 @@
 using Application.DependencyInjection;
-using Application.ExternalServices;
-using Application.Interfaces;
 using Application.Settings;
-using Core.Interfaces;
 using Infrastructure;
-using Infrastructure.Data.BackgroundServices;
-using Infrastructure.Data.Repositories;
+using Infrastructure.DependencyInjection;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -17,26 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IApartmentRepository, ApartmentRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<IHotelRepository, HotelRepository>();
-builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IPhotoService, PhotoService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 
-//builder.Services.AddHostedService<OrderStatusUpdater>();
-builder.Services.AddHostedService<RoomStatusUpdater>();
+builder.Services.AddApplication();
+
+builder.Services.AddInfrastructure();
 
 builder.Services.Configure<HostOptions>(options =>
 {
     options.ServicesStartConcurrently = true;
-    options.ServicesStopConcurrently = false;
+    options.ServicesStopConcurrently = true;
 });
-
-builder.Services.AddApplication();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

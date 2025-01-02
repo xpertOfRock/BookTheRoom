@@ -191,7 +191,7 @@ namespace Infrastructure.Data.Repositories
            
             _distributedCache.Remove(key);
 
-            var comments = request.Comments == null ? apartment.Comments : new List<Comment>();
+            //var comments = request.Comments == null ? apartment.Comments : new List<Comment>();
 
             if (request.Images is not null)
             {

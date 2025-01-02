@@ -23,12 +23,37 @@ export const fetchHotels = async (filter) => {
 
 export const fetchHotel = async (id) => {  
   try {
-    let response = await axios.get(`${API_URL}/${id}`);
+    let response = await axios.get(`${API_URL}/${id}`);  
+    console.log(response.data);
     return response.data;
   } catch (e) {
     console.error(e);
   }
 };
+
+export const postComment = async (id, comment) => {
+  try {
+    const token = getCurrentToken();
+
+    const response = await axios.post(
+      `${API_URL}/${id}/comments`,
+      { description: comment },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.status;
+  } catch (error) {
+    console.error(
+      'Error adding a new comment to the current hotel:',
+      error.response ? error.response.data : error.message
+    );
+  }
+};
+
 
 export const postHotel = async (formData) => {
   try {

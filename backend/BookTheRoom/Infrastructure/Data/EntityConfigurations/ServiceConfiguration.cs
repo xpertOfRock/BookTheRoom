@@ -16,6 +16,11 @@ namespace Infrastructure.Data.EntityConfigurations
                 .IsRequired();
 
             builder
+                .Property(x => x.Description)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            builder
                 .Property(x => x.Price)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");

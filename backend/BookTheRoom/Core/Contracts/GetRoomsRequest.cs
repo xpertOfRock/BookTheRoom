@@ -7,6 +7,7 @@
         string? SortOrder,
         string? Categories,
         string? Prices,
+        int itemsCount = 9,
         int page = 1
     );
 }

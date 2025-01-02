@@ -8,6 +8,6 @@
         string Email,
         string Username,
         string PhoneNumber,
-        DateTime BirthDate
+        DateOnly BirthDate
     );   
 }

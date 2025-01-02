@@ -15,51 +15,42 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
 
             try
             {
-                IResult result = new Fail("Variable that represents property type for the eentity 'Comment' was not passed as the parameter in method.");
+    //            public record UpdateHotelRequest
+    //            (
+    //               string Name,
+    //               string Description,
+    //               int Rating,
+    //               bool HasPool,
+    //               Address Address,
+    //               List<string>? Images
+    //            );
+                var hotel = await _unitOfWork.Hotels.GetById(request.HotelId);
+                var apartment = await _unitOfWork.Apartments.GetById(request.ApartmentId);
 
                 var comment = new Core.Entities.Comment
                 {
+                    UserId = request.UserId,
+                    Username = request.Username,
                     Description = request.Description,
                     HotelId = request.HotelId,
                     ApartmentId = request.ApartmentId,
-                    PropetyCategory = request.PropertyCategory,
                     CreatedAt = request.CreatedAt,
                     UpdatedAt = request.UpdatedAt
                 };
 
-                switch (request.PropertyCategory)
+                                   
+
+                var result = await _unitOfWork.Comments.Add(comment);
+
+                if (hotel is not null)
                 {
-                    case PropertyCategory.Hotel:
-
-                        var hotel = await _unitOfWork.Hotels.GetById(request.HotelId);
-
-                        if (hotel is null)
-                        {
-                            await _unitOfWork.RollbackAsync();
-                            return new Fail("Impossible to add comment to a non-existent hotel.");
-                        }
-
-                        result = await _unitOfWork.Comments.Add(comment);
-
-                        hotel.Comments?.Add(comment);
-                        break;
-
-                    case PropertyCategory.Apartment:
-
-                        var apartment = await _unitOfWork.Apartments.GetById(request.ApartmentId);
-
-                        if (apartment is null)
-                        {
-                            await _unitOfWork.RollbackAsync();
-                            return new Fail("Impossible to add comment to a non-existent apartments.");
-                        }
-
-                        result = await _unitOfWork.Comments.Add(comment);
-
-                        apartment.Comments?.Add(comment);
-                        break;
+                    await _unitOfWork.Hotels.Update(hotel.Id, new UpdateHotelRequest(hotel.Name, hotel.Description, hotel.Rating, hotel.HasPool, hotel.Address, hotel.Images)); //to clear cache value
                 }
-               
+                else if (apartment is not null)
+                {
+                    await _unitOfWork.Apartments.Update(apartment.Id, new UpdateApartmentRequest(apartment.Title, apartment.Description, apartment.PriceForNight, apartment.Images)); //to clear cache value
+                }
+
                 await _unitOfWork.SaveChangesAsync();
 
                 await _unitOfWork.CommitAsync();
