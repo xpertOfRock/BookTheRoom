@@ -1,7 +1,6 @@
 ﻿using Application.UseCases.Commands.Room;
 using Application.UseCases.Queries.Order;
 using Application.UseCases.Queries.Room;
-using Core.Contracts;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

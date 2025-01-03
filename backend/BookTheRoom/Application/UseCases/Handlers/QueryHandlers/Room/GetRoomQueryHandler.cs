@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Queries.Room;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Queries.Room;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Room
 {
-    public class GetRoomQueryHandler : IRequestHandler<GetRoomQuery, Core.Entities.Room>
+    public class GetRoomQueryHandler : IQueryHandler<GetRoomQuery, Core.Entities.Room>
     {
         private readonly IUnitOfWork _unitOfWork;
         public GetRoomQueryHandler(IUnitOfWork unitOfWork)

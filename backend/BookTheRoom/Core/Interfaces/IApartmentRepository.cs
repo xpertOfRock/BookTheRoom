@@ -11,5 +11,6 @@ namespace Core.Interfaces
         Task<IResult> Add(Apartment apartment);
         Task<IResult> Update(int? id, UpdateApartmentRequest request);
         Task<IResult> Delete(int id);
+        Task UpdateCache(Apartment apartment, CancellationToken cancellationToken = default);
     }
 }

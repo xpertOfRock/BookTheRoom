@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Queries.Room;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Queries.Room;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Room
 {
-    public class GetHotelRoomsQueryHandler : IRequestHandler<GetHotelRoomsQuery, List<Core.Entities.Room>>
+    public class GetHotelRoomsQueryHandler : IQueryHandler<GetHotelRoomsQuery, List<Core.Entities.Room>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public GetHotelRoomsQueryHandler(IUnitOfWork unitOfWork)

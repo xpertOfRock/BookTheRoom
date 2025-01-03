@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Commands.Hotel;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Hotel;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 {
-    public class CreateHotelCommandHandler : IRequestHandler<CreateHotelCommand, IResult>
+    public class CreateHotelCommandHandler : ICommandHandler<CreateHotelCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<CreateHotelCommand> _validator;

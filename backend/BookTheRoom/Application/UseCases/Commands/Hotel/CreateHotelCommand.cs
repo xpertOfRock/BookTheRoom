@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Commands.Hotel
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Commands.Hotel
 {
-    public class CreateHotelCommand : IRequest<IResult>
+    public class CreateHotelCommand : ICommand<IResult>
     {
         public string Name { get; set; }
         public string Description { get; set; }

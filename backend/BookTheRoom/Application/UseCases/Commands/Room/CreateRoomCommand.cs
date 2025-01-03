@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Commands.Room
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Commands.Room
 {
-    public class CreateRoomCommand : IRequest<IResult>
+    public class CreateRoomCommand : ICommand<IResult>
     {
         public string Name { get; set; }
         public string Description { get; set; }

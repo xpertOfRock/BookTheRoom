@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Commands.Hotel
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Commands.Hotel
 {
-    public class UpdateHotelCommand : IRequest<IResult>
+    public class UpdateHotelCommand : ICommand<IResult>
     {
         public int Id { get; set; }
         public UpdateHotelRequest Request { get; set; }

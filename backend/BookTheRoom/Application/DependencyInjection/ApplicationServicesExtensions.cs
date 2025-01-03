@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Application.Behaviors;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace Application.DependencyInjection
@@ -11,7 +12,11 @@ namespace Application.DependencyInjection
 
             services.AddMediatR
             (
-                cfg => cfg.RegisterServicesFromAssembly(assembly)
+                config =>
+                {
+                    config.RegisterServicesFromAssembly(assembly);
+                    config.AddOpenBehavior(typeof(LoggingBehavior<,>));
+                }
             );
 
             services.AddValidatorsFromAssembly(assembly);

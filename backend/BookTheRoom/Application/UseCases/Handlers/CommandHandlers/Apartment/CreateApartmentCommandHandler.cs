@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Commands.Apartment;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Apartment;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 {
-    public class CreateApartmentCommandHandler : IRequestHandler<CreateApartmentCommand, IResult>
+    public class CreateApartmentCommandHandler : ICommandHandler<CreateApartmentCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<CreateApartmentCommand> _validator;

@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Commands.Order
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Commands.Order
 {
-    public class CreateOrderCommand : IRequest<IResult>
+    public class CreateOrderCommand : ICommand<IResult>
     {
         public int HotelId { get; set; }
         public int Number { get; set; }

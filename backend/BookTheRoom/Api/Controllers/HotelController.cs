@@ -84,8 +84,7 @@ namespace Api.Controllers
                     hotel.Comments.Any()
                     ? hotel.Comments
                     : new List<Comment> { }
-                );
-            Console.WriteLine(hotel);
+                );            
 
             return Ok(hotelDTO);
         }

@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Queries.Apartment;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Queries.Apartment;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Apartment
 {
-    public class GetUsersApartmentsQueryHandler : IRequestHandler<GetUsersApartmentsQuery, List<Core.Entities.Apartment>>
+    public class GetUsersApartmentsQueryHandler : IQueryHandler<GetUsersApartmentsQuery, List<Core.Entities.Apartment>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public GetUsersApartmentsQueryHandler(IUnitOfWork unitOfWork)

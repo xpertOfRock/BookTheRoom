@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Commands.Comment;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Comment;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Comment
 {
-    public class UpdateCommentCommandHandler : IRequestHandler<UpdateCommentCommand, IResult>
+    public class UpdateCommentCommandHandler : ICommandHandler<UpdateCommentCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         public UpdateCommentCommandHandler(IUnitOfWork unitOfWork)

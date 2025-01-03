@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Commands.Hotel;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Hotel;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 {
-    public class DeleteHotelCommandHandler : IRequestHandler<DeleteHotelCommand, IResult>
+    public class DeleteHotelCommandHandler : ICommandHandler<DeleteHotelCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         public DeleteHotelCommandHandler(IUnitOfWork unitOfWork)

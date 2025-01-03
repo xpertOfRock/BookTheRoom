@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Queries.Apartment
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Queries.Apartment
 {
-    public class GetUsersApartmentsQuery : IRequest<List<Core.Entities.Apartment>>
+    public class GetUsersApartmentsQuery : IQuery<List<Core.Entities.Apartment>>
     {
         public string UserId { get; set; }
         public GetApartmentsRequest Filter { get; set; }

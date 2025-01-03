@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Queries.Order;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Queries.Order;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Order
 {
-    public class GetActiveOrdersQueryHandler : IRequestHandler<GetActiveOrdersQuery, List<Core.Entities.Order>?>
+    public class GetActiveOrdersQueryHandler : IQueryHandler<GetActiveOrdersQuery, List<Core.Entities.Order>?>
     {
         private readonly IUnitOfWork _unitOfWork;
         public GetActiveOrdersQueryHandler(IUnitOfWork unitOfWork)

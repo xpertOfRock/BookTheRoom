@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Commands.Room;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Room;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Room
 {
-    public class CreateRoomCommandHandler : IRequestHandler<CreateRoomCommand, IResult>
+    public class CreateRoomCommandHandler : ICommandHandler<CreateRoomCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<CreateRoomCommand> _validator;

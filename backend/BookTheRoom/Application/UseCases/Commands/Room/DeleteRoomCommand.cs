@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Commands.Room
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Commands.Room
 {
-    public class DeleteRoomCommand : IRequest<IResult>
+    public class DeleteRoomCommand : ICommand<IResult>
     {
         public int HotelId { get; set; }
         public int Number { get; set; }

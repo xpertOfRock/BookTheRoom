@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Queries.Room
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Queries.Room
 {
-    public class GetRoomsQuery : IRequest<List<Core.Entities.Room>>
+    public class GetRoomsQuery : IQuery<List<Core.Entities.Room>>
     {
 
     }

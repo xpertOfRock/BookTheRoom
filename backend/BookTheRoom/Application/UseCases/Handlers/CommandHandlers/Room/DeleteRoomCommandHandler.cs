@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Commands.Room;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Room;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Room
 {
-    public class DeleteRoomCommandHandler : IRequestHandler<DeleteRoomCommand, IResult>
+    public class DeleteRoomCommandHandler : ICommandHandler<DeleteRoomCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         public DeleteRoomCommandHandler(IUnitOfWork unitOfWork)

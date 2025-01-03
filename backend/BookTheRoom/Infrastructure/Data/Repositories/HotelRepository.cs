@@ -106,7 +106,7 @@ namespace Infrastructure.Data.Repositories
             string? cachedHotel = await _distributedCache.GetStringAsync(key, cancellationToken);
 
             Hotel? hotel;
-
+            
             if (string.IsNullOrEmpty(cachedHotel))
             {
                 hotel = await _context.Hotels
@@ -122,11 +122,12 @@ namespace Infrastructure.Data.Repositories
                     return hotel;
                 }
 
-                await _distributedCache.SetStringAsync(
+                await _distributedCache.SetStringAsync
+                (
                     key,
                     JsonConvert.SerializeObject(hotel),
                     cancellationToken
-                    );
+                );
 
                 return hotel;
             }
@@ -134,7 +135,22 @@ namespace Infrastructure.Data.Repositories
             hotel = JsonConvert.DeserializeObject<Hotel>(cachedHotel);
             return hotel;
         }
+        public async Task UpdateCache(Hotel hotel, CancellationToken cancellationToken = default)
+        {
+            string key  = $"hotel-{hotel.Id}";
 
+            string? cachedHotel = await _distributedCache.GetStringAsync(key, cancellationToken);
+
+
+            if (string.IsNullOrEmpty(cachedHotel)) return;
+
+            await _distributedCache.SetStringAsync
+            (
+                key,
+                JsonConvert.SerializeObject(hotel),
+                cancellationToken
+            );
+        }
         public async Task<IResult> Update(int id, UpdateHotelRequest request)
         {
             var hotel = await GetById(id);

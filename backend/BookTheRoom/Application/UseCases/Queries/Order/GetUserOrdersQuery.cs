@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Queries.Order
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Queries.Order
 {
-    public class GetUserOrdersQuery : IRequest<List<Core.Entities.Order>?>
+    public class GetUserOrdersQuery : IQuery<List<Core.Entities.Order>?>
     {
     }
 }

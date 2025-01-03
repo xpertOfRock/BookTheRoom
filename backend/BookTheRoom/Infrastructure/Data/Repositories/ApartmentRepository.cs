@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Core.Entities;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Data.Repositories
 {
@@ -172,6 +173,21 @@ namespace Infrastructure.Data.Repositories
 
             apartment = JsonConvert.DeserializeObject<Apartment>(cachedApartment);
             return apartment;
+        }
+        public async Task UpdateCache(Apartment apartment, CancellationToken cancellationToken = default)
+        {
+            string key = $"apartment-{apartment.Id}";
+
+            string? cachedApartment = await _distributedCache.GetStringAsync(key, cancellationToken);
+
+            if (string.IsNullOrEmpty(cachedApartment)) return;
+
+            await _distributedCache.SetStringAsync
+            (
+                key,
+                JsonConvert.SerializeObject(apartment),
+                cancellationToken
+            );
         }
         public async Task<IResult> Update(int? id, UpdateApartmentRequest request)
         {           

@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Queries.Apartment;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Queries.Apartment;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Apartment
 {
-    internal class GetApartmentQueryHandler : IRequestHandler<GetApartmentQuery, Core.Entities.Apartment>
+    internal class GetApartmentQueryHandler : IQueryHandler<GetApartmentQuery, Core.Entities.Apartment>
     {
         private readonly IUnitOfWork _unitOfWork;
         public GetApartmentQueryHandler(IUnitOfWork unitOfWork)

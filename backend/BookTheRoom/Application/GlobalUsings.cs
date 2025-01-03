@@ -1,4 +1,5 @@
 ﻿global using Application.Interfaces;
+global using Application.UseCases.Abstractions;
 global using Core.Contracts;
 global using Core.Enums;
 global using Core.Interfaces;

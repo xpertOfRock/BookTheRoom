@@ -1,9 +1,10 @@
-﻿using Application.UseCases.Commands.Order;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Order;
 using Braintree;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {
-    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, IResult>
+    public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;

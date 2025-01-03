@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Commands.Comment
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Commands.Comment
 {
-    public class UpdateCommentCommand : IRequest<IResult>
+    public class UpdateCommentCommand : ICommand<IResult>
     {
         public int Id { get; set; }
         public string Description { get; set; }

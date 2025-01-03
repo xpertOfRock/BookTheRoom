@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Commands.Apartment
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Commands.Apartment
 {
-    public class CreateApartmentCommand : IRequest<IResult>
+    public class CreateApartmentCommand : ICommand<IResult>
     {
         public string Title { get; set; }
         public string Description { get; set; }

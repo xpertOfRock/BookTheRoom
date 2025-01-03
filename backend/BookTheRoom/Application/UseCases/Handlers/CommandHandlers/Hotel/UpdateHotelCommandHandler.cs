@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Commands.Hotel;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Hotel;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 {
-    public class UpdateHotelCommandHandler : IRequestHandler<UpdateHotelCommand, IResult>
+    public class UpdateHotelCommandHandler : ICommandHandler<UpdateHotelCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<UpdateHotelCommand> _validator;

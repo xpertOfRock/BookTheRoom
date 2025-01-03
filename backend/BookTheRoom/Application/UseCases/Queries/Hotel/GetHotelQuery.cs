@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Queries.Hotel
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Queries.Hotel
 {
-    public class GetHotelQuery : IRequest<Core.Entities.Hotel>
+    public class GetHotelQuery : IQuery<Core.Entities.Hotel>
     {
         public int Id { get; set; }
         public GetHotelQuery(int id)

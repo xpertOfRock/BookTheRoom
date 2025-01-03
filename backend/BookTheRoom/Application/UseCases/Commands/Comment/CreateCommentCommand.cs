@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Commands.Comment
+﻿using Application.UseCases.Abstractions;
+
+namespace Application.UseCases.Commands.Comment
 {
-    public class CreateCommentCommand : IRequest<IResult>
+    public class CreateCommentCommand : ICommand<IResult>
     {
         public string UserId { get; set; }
         public string Username { get; set; }

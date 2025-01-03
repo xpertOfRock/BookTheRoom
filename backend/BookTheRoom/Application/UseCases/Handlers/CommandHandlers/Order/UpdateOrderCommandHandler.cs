@@ -1,8 +1,9 @@
-﻿using Application.UseCases.Commands.Order;
+﻿using Application.UseCases.Abstractions;
+using Application.UseCases.Commands.Order;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {
-    public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Unit>
+    public class UpdateOrderCommandHandler : ICommandHandler<UpdateOrderCommand, Unit>
     {
         private readonly IUnitOfWork _unitOfWork;
         public UpdateOrderCommandHandler(IUnitOfWork unitOfWork)
