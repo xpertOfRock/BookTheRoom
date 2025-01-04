@@ -10,7 +10,9 @@ namespace Core.Contracts
         string? Countries,
         string? Ratings,
         string? Services,
+        float? UserScore,
         int ItemsCount = 9,
         int Page = 1
+        
     );
 }

@@ -1,15 +1,26 @@
 import React from "react";
 
-function Comment({ username, description, createdAt, isCurrentUser }) {
+function Comment({ username, description, createdAt, isCurrentUser, userScore }) {
   return (
     <div
       className={`p-4 rounded-lg ${
-        isCurrentUser ? "bg-blue-100" : "bg-purple-100"
+        isCurrentUser ? "bg-indigo-100" : "bg-white border-2 border-indigo-300"
       } shadow-md`}
     >
       <div className="flex justify-between items-center mb-2">
-        <h4 className="font-bold text-gray-800">{username}</h4>
-        <span className="text-sm text-gray-500">{new Date(createdAt).toLocaleDateString()}</span>
+        <h4 className="font-bold text-gray-800">
+          {`${username} ${userScore} ★`} 
+        </h4>
+        <span className="text-sm text-gray-500">
+          {
+            new Date(createdAt).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          }</span>
       </div>
       <p className="text-gray-700">{description}</p>
     </div>

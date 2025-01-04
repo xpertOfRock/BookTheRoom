@@ -18,8 +18,12 @@ namespace Infrastructure.Data.EntityConfigurations
             builder
                 .Property(c => c.UserId)
                 .IsRequired()           
-                .HasMaxLength(50);      
-   
+                .HasMaxLength(50);
+
+            builder
+                .Property(c => c.UserScore)
+                .IsRequired();
+
             builder
                 .Property(c => c.HotelId)
                 .IsRequired(false);

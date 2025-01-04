@@ -1,5 +1,5 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Commands.Comment;
+﻿using Application.UseCases.Commands.Comment;
+using Newtonsoft.Json;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Comment
 {   
@@ -24,6 +24,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
                     UserId = request.UserId,
                     Username = request.Username,
                     Description = request.Description,
+                    UserScore = request.UserScore,
                     HotelId = request.HotelId,
                     ApartmentId = request.ApartmentId,
                     CreatedAt = request.CreatedAt,
@@ -32,6 +33,16 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
                                    
 
                 var result = await _unitOfWork.Comments.Add(comment);
+
+                if (result is null) 
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return new Fail("Failed to add a new entity 'Comment' to the entity 'Hotel'.");
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                await _unitOfWork.CommitAsync();
 
                 if (hotel is not null)
                 {
@@ -43,11 +54,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
                     apartment.Comments?.Add(comment);
                     await _unitOfWork.Apartments.UpdateCache(apartment);
                 }
-
-                await _unitOfWork.SaveChangesAsync();
-
-                await _unitOfWork.CommitAsync();
-
+               
                 return result;
             }
             catch (Exception ex)

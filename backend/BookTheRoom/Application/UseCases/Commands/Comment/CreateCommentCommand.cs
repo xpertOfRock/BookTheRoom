@@ -9,6 +9,7 @@ namespace Application.UseCases.Commands.Comment
         public int? HotelId { get; set; }
         public int? ApartmentId { get; set; }
         public string Description { get; set; }
+        public float UserScore { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public CreateCommentCommand
@@ -16,6 +17,7 @@ namespace Application.UseCases.Commands.Comment
             string userId,
             string username,
             string description,
+            float userScore,
             int? hotelId = null,
             int? apartmentId = null            
         )
@@ -25,6 +27,7 @@ namespace Application.UseCases.Commands.Comment
             HotelId = hotelId;
             ApartmentId = apartmentId;
             Description = description;
+            UserScore = userScore;
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = null;
         }

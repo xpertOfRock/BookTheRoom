@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Linq;
 
 namespace Infrastructure.Data.Repositories
 {
@@ -56,12 +57,21 @@ namespace Infrastructure.Data.Repositories
         {
             var query = _context.Hotels
                 .Include(h => h.Address)
+                .Include(h => h.Comments)
+                .AsSplitQuery()
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
                             h.Name.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
-                            h.Address.City.ToLower().Contains(request.Search.ToLower()))
+                            h.Address.City.ToLower().Contains(request.Search.ToLower())
+                            )
+
                 .AsNoTracking();
+
+            if(query.Select(h => h.Comments).Any() && query.Select(h => h.Comments) is not null && request.UserScore is not null)
+            {
+                query = query.Where(h => h.Comments.Average(c => c.UserScore) >= request.UserScore);                       
+            }                
 
             if (!string.IsNullOrWhiteSpace(request.Countries))
             {
@@ -112,7 +122,7 @@ namespace Infrastructure.Data.Repositories
                 hotel = await _context.Hotels
                     .Include(h => h.Address)
                     .Include(h => h.Rooms)
-                    .Include(h => h.Comments/*.Where(x => x.HotelId == h.Id).ToList()*/)                    
+                    .Include(h => h.Comments)                    
                     .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);

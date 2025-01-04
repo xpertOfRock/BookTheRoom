@@ -3,8 +3,13 @@ import { postComment } from "../../services/hotels";
 
 function CreateCommentForm({ hotelId }) {
   const [commentText, setCommentText] = useState("");
+  const [rating, setRating] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleRatingClick = (value) => {
+    setRating(value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,9 +23,12 @@ function CreateCommentForm({ hotelId }) {
     setLoading(true);
 
     try {
-      console.log(commentText);
-      const newComment = await postComment(hotelId, commentText);
+      await postComment(hotelId, {
+        description: commentText,
+        userScore: rating,
+      });
       setCommentText("");
+      setRating(0);
       window.location.reload();
     } catch (err) {
       console.error("Error posting comment:", err);
@@ -45,11 +53,31 @@ function CreateCommentForm({ hotelId }) {
           placeholder="Write your comment here..."
         ></textarea>
       </div>
+
+      <div className="mb-4">
+        <label className="block text-gray-700 font-medium">Your Rating:</label>
+        <div className="flex items-center space-x-2">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => (
+            <button
+              type="button"
+              key={value}
+              onClick={() => handleRatingClick(value)}
+              className={`text-xl ${
+                value <= rating ? "text-yellow-400" : "text-gray-300"
+              } hover:text-yellow-500`}
+            >
+              ★
+            </button>
+          ))}
+        </div>
+      </div>
+
       {error && <p className="text-red-500 mb-2">{error}</p>}
+
       <div className="flex justify-end">
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-all disabled:opacity-50"
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 hover:text-white transition-all disabled:opacity-50"
           disabled={loading}
         >
           {loading ? "Posting..." : "Post Comment"}

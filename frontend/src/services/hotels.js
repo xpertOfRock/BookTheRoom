@@ -30,30 +30,28 @@ export const fetchHotel = async (id) => {
     console.error(e);
   }
 };
-
-export const postComment = async (id, comment) => {
+export const postComment = async (id, { description, userScore }) => {
   try {
     const token = getCurrentToken();
 
     const response = await axios.post(
       `${API_URL}/${id}/comments`,
-      { description: comment },
+      { description, userScore },
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       }
     );
-    return response.status;
+    return response.data;
   } catch (error) {
     console.error(
-      'Error adding a new comment to the current hotel:',
+      "Error adding a new comment to the current hotel:",
       error.response ? error.response.data : error.message
     );
   }
 };
-
 
 export const postHotel = async (formData) => {
   try {

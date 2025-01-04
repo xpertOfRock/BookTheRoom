@@ -60,6 +60,7 @@ function Hotels() {
                     preview={hotel.preview}
                     rating={hotel.rating}
                     address={hotel.address}
+                    userScore={hotel.userScore}
                   />
                 ))
               ) : (

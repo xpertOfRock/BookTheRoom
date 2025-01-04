@@ -10,7 +10,8 @@ namespace Api.DTOs
         string Address,
         string jsonAddress,
         bool HasPool,
-        int Rating, 
+        int Rating,      
+        float UserScore,
         List<string>? Images,
         List<Comment>? Comments
     );

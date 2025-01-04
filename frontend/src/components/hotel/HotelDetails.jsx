@@ -22,13 +22,6 @@ function HotelDetails() {
 
   const currentUserId = getCurrentUserId();
 
-  // const handleNewComment = (newComment) => {
-  //   setHotel((prevHotel) => ({
-  //     ...prevHotel,
-  //     comments: [...(prevHotel.comments || []), newComment],
-  //   }));
-  // };
-
   useEffect(() => {
     const loadHotel = async () => {
       try {
@@ -42,10 +35,7 @@ function HotelDetails() {
     };
 
     loadHotel();
-  }, [id]);
-  //, hotel.comments
-
-  
+  }, [id]); 
 
   if (loading) {
     return <div>Loading...</div>;
@@ -66,22 +56,22 @@ function HotelDetails() {
 
   return (   
     <section>
-      <div className="container mx-auto px-4 w-10/12">
+      <div className="container mx-auto px-4 w-5/6">
       <h1 className="text-4xl font-bold my-6 text-gray-800">{hotel.name}</h1>     
       <button
-        className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all"
+        className="bg-indigo-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all"
         onClick={() => navigate("/hotels")}
       >
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" /> Back
       </button>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="xl:w-7/12 lg:w-7/12 relative group sm:h-80 md:h-[432px]">
+      <div className="p-6 grid-cols-1 sm:grid-cols-2 flex flex-col lg:flex-row gap-8">
+        <div className="xl:w-2/5 lg:w-2/5 relative group sm:h-80 md:h-[432px]">
           <Slider {...settings} ref={sliderRef}>
                 {hotel.images.map((image, index) => (
                  <div key={index} className="w-full h-full">
                  <img
-                     className="w-auto object-center mx-auto md:h-[424px] sm:h-80"
+                     className="rounded-lg shadow-md w-auto object-center mx-auto md:h-[424px] sm:h-80"
                      src={image}
                      alt={`Hotel Image ${index + 1}`}
                    />
@@ -106,8 +96,13 @@ function HotelDetails() {
           </button>
         </div>
 
-        <div className="lg:w-1/3 flex flex-col gap-4 bg-indigo-100 p-6 rounded-lg shadow-md">
+        <div className="lg:w-3/5 flex flex-col gap-4 bg-indigo-100 p-6 rounded-lg shadow-md">
           <h3 className="text-2xl font-semibold text-gray-700">{hotel.name}</h3>
+          <h4>
+            {hotel.userScore !== undefined && hotel.userScore !== null && hotel.userScore >= 0
+              ? `User score  ${hotel.userScore.toFixed(1)} ★`
+              : "Has not been rated by users yet"}
+          </h4>
           <h4>{hotel.address}</h4>
           <p className="text-gray-600">{hotel.description}</p>        
           <button
@@ -120,7 +115,7 @@ function HotelDetails() {
       </div>
 
       <h3 className="text-2xl font-semibold mt-8 text-gray-700 ">More Images</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 mb-6 ">
+      <div className="bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 my-6 p-2">
         {hotel.images.map((image, index) => (
           <img
             key={index}
@@ -131,51 +126,34 @@ function HotelDetails() {
         ))}
       </div>
 
-      <div className="mt-10">
-        <h3 className="text-2xl font-semibold text-gray-700 mb-4">Comments</h3>
-        {hotel.comments && hotel.comments.length > 0 ? (
-          <div className="bg-white p-6 rounded-lg shadow-lg mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Comments</h2>
-          <div className="space-y-4">
-            {hotel.comments.map((comment) => (
-              <Comment
-                key={comment.id}
-                username={comment.username}
-                description={comment.description}
-                createdAt={comment.createdAt}
-                isCurrentUser={currentUserId === comment.userId}
-              />
-            ))}
-          </div>
-        </div>
-        ) : (
-          <p className="text-gray-500">No comments yet. Be the first to leave a comment!</p>
-        )}
-        <CreateCommentForm hotelId={hotel.id} />
-      </div>
-      
-      {/* <div className="mt-10">  onCommentAdded={handleNewComment}
-        <h3 className="text-2xl font-semibold text-gray-700 mb-4">Comments</h3>
-        {hotel.comments && hotel.comments.length > 0 ? (
-          <div className="bg-white p-6 rounded-lg shadow-lg mt-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Comments</h2>
-            <div className="space-y-4">
-              {hotel.comments.map((comment) => (
-                <Comment
-                  key={comment.id}
-                  username={comment.username || "Anonymous"} // Значение по умолчанию
-                  description={comment.description || "No description provided"}
-                  createdAt={comment.createdAt || new Date().toISOString()} // Если дата отсутствует
-                  isCurrentUser={getCurrentUser()?.id === comment.userId} // Убедитесь, что getCurrentUser() возвращает объект
-                />
-              ))}
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <h3 className="text-2xl font-semibold text-gray-700 mb-4">Comments</h3>
+          {hotel.comments && hotel.comments.length > 0 ? (
+            <div className="bg-white border-2 border-indigo-300 p-6 rounded-lg shadow-lg">
+              <div className="space-y-4">
+                {hotel.comments.map((comment) => (
+                  <Comment
+                    key={comment.id}
+                    username={comment.username}
+                    description={comment.description}
+                    createdAt={comment.createdAt}
+                    isCurrentUser={currentUserId === comment.userId}
+                    userScore={comment.userScore}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        ) : (
-          <p className="text-gray-500">No comments yet. Be the first to leave a comment!</p>
-        )}
-        <CreateCommentForm hotelId={hotel.id} onCommentAdded={handleNewComment} />
-      </div> */}
+          ) : (
+            <p className="text-gray-500">No comments yet. Be the first to leave a comment!</p>
+          )}
+        </div>
+
+        <div>
+          <h3 className="text-2xl font-semibold text-gray-700 mb-4">Add Your Comment</h3>
+          <CreateCommentForm hotelId={hotel.id} />
+        </div>
+      </div>       
     </div>
     </section>  
   );

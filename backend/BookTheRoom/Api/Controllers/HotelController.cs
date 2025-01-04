@@ -14,6 +14,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Xml.Linq;
 
 
 namespace Api.Controllers
@@ -43,12 +44,18 @@ namespace Api.Controllers
                 (
                     h.Id,
                     h.Name,
+
                     h.Images != null &&
                         h.Images.Any()
                         ? h.Images.First()
                         : "No Image",
+
                     h.Rating,
-                    h.Address.ToString(true)
+                    h.Address.ToString(true),
+
+                    h.Comments != null && h.Comments.Any()
+                        ? h.Comments.Average(c => c.UserScore)
+                        : -1f
                 )
             ).ToList();
 
@@ -75,6 +82,10 @@ namespace Api.Controllers
                 hotel.HasPool,
                 hotel.Rating,
 
+                hotel.Comments != null && hotel.Comments.Any()
+                        ? hotel.Comments.Average(c => c.UserScore)
+                        : -1f,
+
                 hotel.Images != null &&
                     hotel.Images.Any()
                     ? hotel.Images
@@ -83,7 +94,7 @@ namespace Api.Controllers
                 hotel.Comments != null &&
                     hotel.Comments.Any()
                     ? hotel.Comments
-                    : new List<Comment> { }
+                    : new List<Comment> { }                    
                 );            
 
             return Ok(hotelDTO);
@@ -145,7 +156,7 @@ namespace Api.Controllers
                 return Unauthorized();
             }
 
-            var result = await _mediator.Send(new CreateCommentCommand(userId, username, form.Description, id));
+            var result = await _mediator.Send(new CreateCommentCommand(userId, username!, form.Description, form.UserScore, id));
 
             return result.IsSuccess ? Created() : BadRequest(result);
         }

@@ -6,6 +6,7 @@
         string Name,
         string? Preview,
         int Rating,
-        string Address
+        string Address,
+        float UserScore
     );
 }
