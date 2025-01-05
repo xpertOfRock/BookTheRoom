@@ -34,6 +34,11 @@ namespace Infrastructure.Data.EntityConfigurations
                 .IsRequired()
                 .HasConversion<string>();
 
+            builder.HasOne(o => o.Hotel)
+                .WithMany()
+                .HasForeignKey(o => o.HotelId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasOne(o => o.Room)
                 .WithMany()
                 .HasForeignKey(o => new { o.HotelId, o.RoomNumber })

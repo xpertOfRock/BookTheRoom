@@ -7,6 +7,8 @@
         string? SortOrder,
         string? Categories,
         string? Prices,
+        DateTime CheckIn,
+        DateTime CheckOut,
         int itemsCount = 9,
         int page = 1
     );

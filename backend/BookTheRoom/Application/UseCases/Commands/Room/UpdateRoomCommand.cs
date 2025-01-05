@@ -1,6 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-
-namespace Application.UseCases.Commands.Room
+﻿namespace Application.UseCases.Commands.Room
 {
     public class UpdateRoomCommand : ICommand<IResult>
     {

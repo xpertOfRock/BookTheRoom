@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { fetchHotel } from "../../services/hotels";
-import { getCurrentUserId } from "../../services/auth";
+import { getCurrentUserId, isAuthorized } from "../../services/auth";
 import Comment from "../comment/Comment";
 import CreateCommentForm from "../comment/CreateCommentForm";
 
@@ -20,9 +20,8 @@ function HotelDetails() {
 
   const sliderRef = useRef(null);
   
+  
   const currentUserId = getCurrentUserId();
-
-
   
   useEffect(() => {
     const loadHotel = async () => {
@@ -56,11 +55,9 @@ function HotelDetails() {
     slidesToScroll: 1,
     arrows: false
   };
-
+  
   const hasRatedComments = Array.isArray(hotel.comments) &&
     hotel.comments.some(c => c.userId === currentUserId && c.userScore !== undefined && c.userScore !== null && c.userScore > 0);
-  
-  console.log(hasRatedComments);
 
   return (   
     <section>

@@ -75,7 +75,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("{hotelId}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post(int hotelId, [FromForm] CreateRoomForm form)
         {
             var images = new List<string>();

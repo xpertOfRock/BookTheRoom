@@ -30,10 +30,10 @@ export const fetchRoom = async (id) => {
   }
 };
 
-export const postRoom = async (formData) => {
+export const postRoom = async (hotelId, formData) => {
   try {
     const token = getToken();
-    const response = await axios.post(API_URL, formData, {
+    const response = await axios.post(`${API_URL}/${hotelId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${token}`,
