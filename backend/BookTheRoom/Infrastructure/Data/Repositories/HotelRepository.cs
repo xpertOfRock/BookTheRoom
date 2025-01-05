@@ -70,7 +70,10 @@ namespace Infrastructure.Data.Repositories
 
             if(query.Select(h => h.Comments).Any() && query.Select(h => h.Comments) is not null && request.UserScore is not null)
             {
-                query = query.Where(h => h.Comments.Average(c => c.UserScore) >= request.UserScore);                       
+                query = query.Where(h => 
+                    h.Comments!
+                        .Where(c => c.UserScore != null && c.UserScore > 0)
+                        .Average(c => c.UserScore) >= request.UserScore);                       
             }                
 
             if (!string.IsNullOrWhiteSpace(request.Countries))

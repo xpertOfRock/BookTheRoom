@@ -1,14 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { isAuthorized } from "../../services/auth";
 import { postComment } from "../../services/hotels";
 
-function CreateCommentForm({ hotelId }) {
+function CreateCommentForm({ hotelId, hasRatedComments }) {
   const [commentText, setCommentText] = useState("");
   const [rating, setRating] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const handleRatingClick = (value) => {
-    setRating(value);
+    if (!hasRatedComments) {
+      setRating(value);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -16,6 +20,11 @@ function CreateCommentForm({ hotelId }) {
 
     if (!commentText.trim()) {
       setError("Comment cannot be empty.");
+      return;
+    }
+
+    if (!hasRatedComments && rating === 0) {
+      setError("Please provide a rating.");
       return;
     }
 
@@ -54,34 +63,50 @@ function CreateCommentForm({ hotelId }) {
         ></textarea>
       </div>
 
-      <div className="mb-4">
-        <label className="block text-gray-700 font-medium">Your Rating:</label>
-        <div className="flex items-center space-x-2">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => (
-            <button
-              type="button"
-              key={value}
-              onClick={() => handleRatingClick(value)}
-              className={`text-xl ${
-                value <= rating ? "text-yellow-400" : "text-gray-300"
-              } hover:text-yellow-500`}
-            >
-              ★
-            </button>
-          ))}
+      {!hasRatedComments ? (
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium">Your Rating:</label>
+          <div className="flex items-center space-x-2">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => (
+              <button
+                type="button"
+                key={value}
+                onClick={() => handleRatingClick(value)}
+                className={`text-xl ${
+                  value <= rating ? "text-yellow-400" : "text-gray-300"
+                } hover:text-yellow-500`}
+              >
+                ★
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <p className="text-gray-500 text-sm">You have already rated this hotel</p>
+      )}
 
       {error && <p className="text-red-500 mb-2">{error}</p>}
-
+      
       <div className="flex justify-end">
-        <button
-          type="submit"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 hover:text-white transition-all disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? "Posting..." : "Post Comment"}
-        </button>
+        {isAuthorized() ? (
+          <button
+            type="submit"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 hover:text-white transition-all disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? "Posting..." : "Post Comment"}
+          </button>
+        ) : (
+          <p className="text-gray-700">
+            You need to be logged in to leave a comment.{" "}
+            <span
+              onClick={() => navigate("/login")}
+              className="text-blue-500 cursor-pointer underline"
+            >
+              Log in here
+            </span>
+          </p>
+        )}
       </div>
     </form>
   );

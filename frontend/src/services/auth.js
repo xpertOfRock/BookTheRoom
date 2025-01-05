@@ -108,6 +108,23 @@ export const getCurrentUser = () => {
   return user ? JSON.parse(user) : null;
 };
 
+export const getCurrentUsername = () => {
+  const userCookie = Cookies.get('user');
+
+    if (!userCookie) {
+        console.error("Cookie was not found.");
+        return null;
+    }
+
+    try {
+        const userData = JSON.parse(decodeURIComponent(userCookie));
+        return userData.username;
+    } catch (error) {
+        console.error("Error:", error);
+        return null;
+    }
+};
+
 export const getCurrentUserId = () => {
   const userCookie = Cookies.get('user');
 

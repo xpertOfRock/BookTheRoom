@@ -24,7 +24,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
                     UserId = request.UserId,
                     Username = request.Username,
                     Description = request.Description,
-                    UserScore = request.UserScore,
+                    UserScore = request.UserScore ?? null,
                     HotelId = request.HotelId,
                     ApartmentId = request.ApartmentId,
                     CreatedAt = request.CreatedAt,

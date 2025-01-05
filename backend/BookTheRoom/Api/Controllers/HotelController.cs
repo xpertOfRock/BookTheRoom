@@ -54,7 +54,9 @@ namespace Api.Controllers
                     h.Address.ToString(true),
 
                     h.Comments != null && h.Comments.Any()
-                        ? h.Comments.Average(c => c.UserScore)
+                        ? h.Comments
+                            .Where(c => c.UserScore != null && c.UserScore > 0)
+                            .Average(c => c.UserScore)
                         : -1f
                 )
             ).ToList();
@@ -83,18 +85,16 @@ namespace Api.Controllers
                 hotel.Rating,
 
                 hotel.Comments != null && hotel.Comments.Any()
-                        ? hotel.Comments.Average(c => c.UserScore)
+                        ? hotel.Comments
+                            .Where(c => c.UserScore != null && c.UserScore > 0)
+                            .Average(c => c.UserScore)
                         : -1f,
 
-                hotel.Images != null &&
-                    hotel.Images.Any()
+                hotel.Images != null && hotel.Images.Any()
                     ? hotel.Images
                     : new List<string> { "" },
 
-                hotel.Comments != null &&
-                    hotel.Comments.Any()
-                    ? hotel.Comments
-                    : new List<Comment> { }                    
+                hotel.Comments ?? new List<Comment>()
                 );            
 
             return Ok(hotelDTO);

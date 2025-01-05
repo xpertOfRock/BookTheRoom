@@ -19,9 +19,11 @@ function HotelDetails() {
   const [loading, setLoading] = useState(true);
 
   const sliderRef = useRef(null);
-
+  
   const currentUserId = getCurrentUserId();
 
+
+  
   useEffect(() => {
     const loadHotel = async () => {
       try {
@@ -36,6 +38,7 @@ function HotelDetails() {
 
     loadHotel();
   }, [id]); 
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -53,6 +56,11 @@ function HotelDetails() {
     slidesToScroll: 1,
     arrows: false
   };
+
+  const hasRatedComments = Array.isArray(hotel.comments) &&
+    hotel.comments.some(c => c.userId === currentUserId && c.userScore !== undefined && c.userScore !== null && c.userScore > 0);
+  
+  console.log(hasRatedComments);
 
   return (   
     <section>
@@ -151,7 +159,7 @@ function HotelDetails() {
 
         <div>
           <h3 className="text-2xl font-semibold text-gray-700 mb-4">Add Your Comment</h3>
-          <CreateCommentForm hotelId={hotel.id} />
+          <CreateCommentForm hotelId={hotel.id} hasRatedComments={hasRatedComments}/>
         </div>
       </div>       
     </div>

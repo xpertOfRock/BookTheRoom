@@ -9,18 +9,20 @@ function Comment({ username, description, createdAt, isCurrentUser, userScore })
     >
       <div className="flex justify-between items-center mb-2">
         <h4 className="font-bold text-gray-800">
-          {`${username} ${userScore} ★`} 
+          {username}
+          {userScore !== undefined && userScore !== null && userScore > 1 && (
+            <span className="text-yellow-500 ml-2">{`${userScore.toFixed(1)} ★`}</span>
+          )}
         </h4>
         <span className="text-sm text-gray-500">
-          {
-            new Date(createdAt).toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })
-          }</span>
+          {new Date(createdAt).toLocaleString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </span>
       </div>
       <p className="text-gray-700">{description}</p>
     </div>

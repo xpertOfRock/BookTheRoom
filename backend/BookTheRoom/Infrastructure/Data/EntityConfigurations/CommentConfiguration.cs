@@ -22,7 +22,7 @@ namespace Infrastructure.Data.EntityConfigurations
 
             builder
                 .Property(c => c.UserScore)
-                .IsRequired();
+                .IsRequired(false);
 
             builder
                 .Property(c => c.HotelId)
