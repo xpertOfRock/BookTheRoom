@@ -2,9 +2,9 @@
 {
     public enum RoomCategory
     {
-        OneBedApartments,
-        TwoBedApartments,
-        ThreeBedApartments,
-        Luxury
+        OneBedApartments = 1,
+        TwoBedApartments = 2,
+        ThreeBedApartments = 3,
+        Luxury = 4
     }
 }

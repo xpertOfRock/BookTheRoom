@@ -4,8 +4,7 @@ import CreateForm from './components/hotel/CreateForm';
 import UpdateForm from './components/hotel/UpdateForm';
 import Hotels from './components/hotel/Hotels';
 import HotelDetails from './components/hotel/HotelDetails';
-import CreateRoomForm from './components/room/CreateRoomForm';
-import Rooms from './components/room/Rooms';
+import CreateRoomForm from './components/hotel/rooms/CreateRoomForm';
 import Navbar from './components/Navbar'; 
 import Home from './components/Home'; 
 import Apartments from './components/apartment/Apartments';
@@ -26,10 +25,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/hotels/:id" element={<HotelDetails />} />
-          <Route path="/hotels/:id/rooms" element={<Rooms />} />
           <Route path="/admin/hotels/create" element={<CreateForm/> } />
           <Route path="/admin/hotels/update/:id" element={<UpdateForm /> } />
-          <Route path="/admin/hotels/:id/rooms/add" element={<CreateRoomForm /> } />
+          <Route path="/admin/hotels/:id/rooms/create" element={<CreateRoomForm /> } />
           <Route path="/apartments" element={<Apartments />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/support" element={<Support />} />

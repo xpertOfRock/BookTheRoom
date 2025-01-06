@@ -22,9 +22,7 @@ function Hotels() {
       const fetchData = async () => {
         try {
           const combinedFilters = { ...sortAndSearch, ...filterBy };
-          console.log('Request Payload:', combinedFilters);
           let response = await fetchHotels(combinedFilters);
-          console.log(response);
           setHotels(response || []);
         } catch (error) {
           console.error('Error fetching hotels:', error);

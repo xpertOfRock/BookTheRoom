@@ -4,25 +4,38 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { fetchHotel } from "../../services/hotels";
-import { getCurrentUserId, isAuthorized } from "../../services/auth";
+import { fetchRooms } from "../../services/rooms";
+import { getCurrentUserId } from "../../services/auth";
+import RoomsFilter from "./rooms/RoomsFilter";
+import Rooms from "./rooms/Rooms";
 import Comment from "../comment/Comment";
 import CreateCommentForm from "../comment/CreateCommentForm";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-
 function HotelDetails() {
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [hotel, setHotel] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [rooms, setRooms] = useState([]);
+  const [filter, setFilter] = useState({
+    search: "",
+    sortItem: "name",
+    sortOrder: "asc",
+    categories: [],
+    minPrice: null,
+    maxPrice: null,
+    checkIn: null,
+    checkOut: null,
+  });
 
   const sliderRef = useRef(null);
-  
-  
+
   const currentUserId = getCurrentUserId();
-  
+
   useEffect(() => {
     const loadHotel = async () => {
       try {
@@ -36,8 +49,16 @@ function HotelDetails() {
     };
 
     loadHotel();
-  }, [id]); 
+  }, [id]);
 
+  const handleFilterApply = async () => {
+    try {
+      const roomsData = await fetchRooms(id, filter);
+      setRooms(roomsData);
+    } catch (e) {
+      console.error("Error fetching rooms:", e);
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -53,91 +74,101 @@ function HotelDetails() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    arrows: false
+    arrows: false,
   };
-  
-  const hasRatedComments = Array.isArray(hotel.comments) &&
-    hotel.comments.some(c => c.userId === currentUserId && c.userScore !== undefined && c.userScore !== null && c.userScore > 0);
 
-  return (   
+  const hasRatedComments =
+    Array.isArray(hotel.comments) &&
+    hotel.comments.some(
+      (c) =>
+        c.userId === currentUserId &&
+        c.userScore !== undefined &&
+        c.userScore !== null &&
+        c.userScore > 0
+    );
+
+  return (
     <section>
       <div className="container mx-auto px-4 w-5/6">
-      <h1 className="text-4xl font-bold my-6 text-gray-800">{hotel.name}</h1>     
-      <button
-        className="bg-indigo-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all"
-        onClick={() => navigate("/hotels")}
-      >
-        <FontAwesomeIcon icon={faChevronLeft} className="mr-2" /> Back
-      </button>
+        <h1 className="text-4xl font-bold my-6 text-gray-800">{hotel.name}</h1>
+        <button
+          className="bg-indigo-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-indigo-700 transition-all"
+          onClick={() => navigate("/hotels")}
+        >
+          <FontAwesomeIcon icon={faChevronLeft} className="mr-2" /> Back
+        </button>
 
-      <div className="p-6 grid-cols-1 sm:grid-cols-2 flex flex-col lg:flex-row gap-8">
-        <div className="xl:w-2/5 lg:w-2/5 relative group sm:h-80 md:h-[432px]">
-          <Slider {...settings} ref={sliderRef}>
-                {hotel.images.map((image, index) => (
-                 <div key={index} className="w-full h-full">
-                 <img
-                     className="rounded-lg shadow-md w-auto object-center mx-auto md:h-[424px] sm:h-80"
-                     src={image}
-                     alt={`Hotel Image ${index + 1}`}
-                   />
+        <div className="p-6 grid-cols-1 sm:grid-cols-2 flex flex-col lg:flex-row gap-8">
+          <div className="xl:w-2/5 lg:w-2/5 relative group sm:h-80 md:h-[432px]">
+            <Slider {...settings} ref={sliderRef}>
+              {hotel.images.map((image, index) => (
+                <div key={index} className="w-full h-full">
+                  <img
+                    className="rounded-lg shadow-md w-auto object-center mx-auto md:h-[424px] sm:h-80"
+                    src={image}
+                    alt={`Hotel Image ${index + 1}`}
+                  />
                 </div>
               ))}
-          </Slider> 
+            </Slider>
 
-          <button
-            className="absolute left-2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-            style={{ top: "50%", transform: "translateY(-50%)" }} 
-            onClick={() => sliderRef.current.slickPrev()}
-          >
-            <FontAwesomeIcon icon={faChevronLeft} />
-          </button>
+            <button
+              className="absolute left-2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              style={{ top: "50%", transform: "translateY(-50%)" }}
+              onClick={() => sliderRef.current.slickPrev()}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </button>
 
-          <button
-            className="absolute right-2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-            onClick={() => sliderRef.current.slickNext()}
-          >
-            <FontAwesomeIcon icon={faChevronRight} />
-          </button>
+            <button
+              className="absolute right-2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              style={{ top: "50%", transform: "translateY(-50%)" }}
+              onClick={() => sliderRef.current.slickNext()}
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
+            </button>
+          </div>
+
+          <div className="lg:w-3/5 flex flex-col gap-4 bg-indigo-100 p-6 rounded-lg shadow-md">
+            <h3 className="text-2xl font-semibold text-gray-700">{hotel.name}</h3>
+            <h4>
+              {hotel.userScore !== undefined &&
+              hotel.userScore !== null &&
+              hotel.userScore >= 0
+                ? `User score  ${hotel.userScore.toFixed(1)} ★`
+                : "Has not been rated by users yet"}
+            </h4>
+            <h4>{hotel.address}</h4>
+            <p className="text-gray-600">{hotel.description}</p>
+          </div>
         </div>
 
-        <div className="lg:w-3/5 flex flex-col gap-4 bg-indigo-100 p-6 rounded-lg shadow-md">
-          <h3 className="text-2xl font-semibold text-gray-700">{hotel.name}</h3>
-          <h4>
-            {hotel.userScore !== undefined && hotel.userScore !== null && hotel.userScore >= 0
-              ? `User score  ${hotel.userScore.toFixed(1)} ★`
-              : "Has not been rated by users yet"}
-          </h4>
-          <h4>{hotel.address}</h4>
-          <p className="text-gray-600">{hotel.description}</p>        
-          <button
-            className="bg-green-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-green-600 transition-all"
-            onClick={() => navigate(`/rooms/${hotel.id}`)}
-          >
-            View Rooms
-          </button>
+        <h3 className="text-2xl font-semibold mt-6 text-gray-700">More Images</h3>
+        <div className="bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 my-4 p-2">
+          {hotel.images.map((image, index) => (
+            <img
+              key={index}
+              className="rounded-lg shadow-md w-full h-[200px] object-cover"
+              src={image}
+              alt={`Image ${index + 1}`}
+            />
+          ))}
         </div>
-      </div>
 
-      <h3 className="text-2xl font-semibold mt-8 text-gray-700 ">More Images</h3>
-      <div className="bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 my-6 p-2">
-        {hotel.images.map((image, index) => (
-          <img
-            key={index}
-            className="rounded-lg shadow-md w-full h-[200px] object-cover"
-            src={image}
-            alt={`Image ${index + 1}`}
-          />
-        ))}
-      </div>
-
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div>
-          <h3 className="text-2xl font-semibold text-gray-700 mb-4">Comments</h3>
-          {hotel.comments && hotel.comments.length > 0 ? (
-            <div className="bg-white border-2 border-indigo-300 p-6 rounded-lg shadow-lg">
-              <div className="space-y-4">
-                {hotel.comments.map((comment) => (
+        <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4 my-6 p-2">
+        <div className="w-full mt-10 bg-indigo-200 p-6 rounded-lg shadow-md">
+          <h3 className="text-2xl font-bold text-gray-800 mb-4">Available Rooms</h3>
+          <RoomsFilter filter={filter} setFilter={setFilter} onApplyFilters={handleFilterApply} />
+          <Rooms rooms={rooms} />
+          
+        </div>
+          <div className="w-full">
+            <h3 className="text-2xl font-semibold text-gray-700 mb-2">Comments</h3>
+            <CreateCommentForm hotelId={hotel.id} hasRatedComments={hasRatedComments} />
+            {hotel.comments && hotel.comments.length > 0 ? (
+              <div className="bg-white border-2 border-indigo-300 mt-6 p-6 rounded-lg shadow-lg">
+                <div className="space-y-4">
+                  {hotel.comments.map((comment) => (
                   <Comment
                     key={comment.id}
                     username={comment.username}
@@ -146,21 +177,16 @@ function HotelDetails() {
                     isCurrentUser={currentUserId === comment.userId}
                     userScore={comment.userScore}
                   />
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ) : (
-            <p className="text-gray-500">No comments yet. Be the first to leave a comment!</p>
-          )}
-        </div>
-
-        <div>
-          <h3 className="text-2xl font-semibold text-gray-700 mb-4">Add Your Comment</h3>
-          <CreateCommentForm hotelId={hotel.id} hasRatedComments={hasRatedComments}/>
-        </div>
-      </div>       
-    </div>
-    </section>  
+            ) : (
+              <p className="text-gray-500">No comments yet. Be the first to leave a comment!</p>
+            )}
+          </div>
+        </div>        
+      </div>
+    </section>
   );
 }
 

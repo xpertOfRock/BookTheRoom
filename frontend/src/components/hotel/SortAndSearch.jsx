@@ -3,7 +3,6 @@ function SortAndSearch({ filter, setFilter }) {
     const { name, value } = e.target;
     const parsedValue = name === "itemsCount" ? parseInt(value, 10) : value;
     setFilter({ ...filter, [name]: parsedValue });
-    console.log(`Updated ${name}:`, parsedValue);
   };
 
   return (

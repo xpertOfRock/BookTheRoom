@@ -48,7 +48,7 @@ function CreateCommentForm({ hotelId, hasRatedComments }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 bg-indigo-100 p-4 rounded-lg shadow-md">
+    <form onSubmit={handleSubmit} className="mt-2 bg-indigo-100 p-4 rounded-lg shadow-md border-2 border-indigo-300">
       <div className="mb-4">
         <label htmlFor="comment" className="block text-gray-700 font-medium">
           Your Comment:
@@ -91,10 +91,10 @@ function CreateCommentForm({ hotelId, hasRatedComments }) {
         {isAuthorized() ? (
           <button
             type="submit"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 hover:text-white transition-all disabled:opacity-50"
+            className="bg-indigo-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 hover:text-white transition-all disabled:opacity-50"
             disabled={loading}
           >
-            {loading ? "Posting..." : "Post Comment"}
+            {loading ? "Posting..." : "Comment"}
           </button>
         ) : (
           <p className="text-gray-700">

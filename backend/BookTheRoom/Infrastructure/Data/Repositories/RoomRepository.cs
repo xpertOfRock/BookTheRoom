@@ -63,25 +63,32 @@ namespace Infrastructure.Data.Repositories
             var query = _context.Rooms
                 .Where(r => r.HotelId == hotelId && 
                             (string.IsNullOrWhiteSpace(request.Search) ||
-                            r.Name.ToLower().Contains(request.Search.ToLower()) ) 
+                            r.Name.ToLower().Contains(request.Search.ToLower()) ||
+                            r.Description.ToLower().Contains(request.Search.ToLower())) 
                             )
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(request.Categories))
             {
                 var categories = request.Categories.Split(',');
-                query = query.Where(r => categories.Contains(Enum.GetName(r.Category)));
+                query = query.Where(r => categories.Contains(((int)r.Category).ToString()));
             }
 
-            if (!string.IsNullOrWhiteSpace(request.Prices))
+            if (request.MinPrice is not null && request.MinPrice >= 0)
             {
-                var prices = request.Prices.Split(',').Select(decimal.Parse).ToList();
-                query = query.Where(r => prices.Contains(r.Price));
+                query = query.Where(r => r.Price >= request.MinPrice);
+            }
+
+            if (request.MaxPrice is not null && request.MinPrice >= 1m)
+            {
+                query = query.Where(r => r.Price <= request.MaxPrice);
             }
 
             Expression<Func<Room, object>> selectorKey = request.SortItem?.ToLower() switch
             {
                 "price" => room => room.Price,
+                "category" => room => (int)room.Category,
+                "number" => room => room.Number,
                 _ => room => room.Name
             };
 

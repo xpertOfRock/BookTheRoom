@@ -16,13 +16,6 @@ namespace Infrastructure.Data.EntityConfigurations
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
 
-            builder.Property(r => r.Category)
-                .IsRequired()
-                .HasConversion(
-                    v => v.ToString(),
-                    v => (RoomCategory)Enum.Parse(typeof(RoomCategory), v)
-                );
-
             builder.Property(r => r.Images)
                 .HasConversion(
                     v => string.Join(';', v),

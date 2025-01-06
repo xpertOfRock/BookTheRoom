@@ -1,6 +1,4 @@
-﻿using Core.Enums;
-
-namespace Api.Contracts.Room
+﻿namespace Api.Contracts.Room
 {
     public record CreateRoomForm
     (
@@ -8,8 +6,7 @@ namespace Api.Contracts.Room
         string Description,
         int Number,
         decimal PricePerNight,
-        RoomCategory Category,
+        int Category,
         List<IFormFile> Images
     );
-
 }

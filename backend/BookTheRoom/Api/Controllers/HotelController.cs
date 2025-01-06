@@ -14,7 +14,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Xml.Linq;
 
 
 namespace Api.Controllers
@@ -135,7 +134,7 @@ namespace Api.Controllers
 
             var result = await _mediator.Send(new CreateHotelCommand(request));
 
-            return result.IsSuccess ? Created() : BadRequest(result);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         //[HttpPost("{id}/services")]
         //[Authorize(Roles = UserRole.Admin)]
@@ -158,7 +157,7 @@ namespace Api.Controllers
 
             var result = await _mediator.Send(new CreateCommentCommand(userId, username!, form.Description, form.UserScore, id));
 
-            return result.IsSuccess ? Created() : BadRequest(result);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("{id}")]
