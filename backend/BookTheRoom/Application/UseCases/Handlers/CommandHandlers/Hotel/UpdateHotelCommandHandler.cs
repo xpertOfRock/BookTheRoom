@@ -19,7 +19,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 
             try
             {
-                var validationResult = _validator.Validate(command);
+                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
                 if (!validationResult.IsValid)
                 {

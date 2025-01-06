@@ -75,7 +75,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("{hotelId}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post(int hotelId, [FromForm] CreateRoomForm form)
         {
             var images = new List<string>();
@@ -96,13 +96,13 @@ namespace Api.Controllers
                 form.Description,
                 form.Number,
                 form.PricePerNight,
-                form.Category,
+                (Core.Enums.RoomCategory)form.Category,
                 images
             );
 
             var result = await _mediator.Send(new CreateRoomCommand(hotelId, request));
 
-            return result.IsSuccess ? Created() : BadRequest(result);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("{hotelId}/{number}")]
@@ -111,7 +111,7 @@ namespace Api.Controllers
         {
             var images = new List<string>();
 
-            if (form.Images.Any())
+            if (form.Images.Any() || form.Images is not null)
             {
                 foreach (var file in form.Images)
                 {
@@ -126,7 +126,7 @@ namespace Api.Controllers
                 form.Name,
                 form.Description,
                 form.Price,
-                form.RoomCategory,
+                (Core.Enums.RoomCategory)form.RoomCategory,
                 images
             );
 

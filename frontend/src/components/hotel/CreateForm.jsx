@@ -54,7 +54,7 @@ function CreateForm() {
 
   const onCreate = async (hotelForm) => {
     try {
-      await postHotel(hotelForm);
+      const response = await postHotel(hotelForm);
       setForm({
         name: '',
         description: '',
@@ -67,14 +67,23 @@ function CreateForm() {
         postalCode: '',
         images: [],
       });
-      
-      toast({
-        title: 'Hotel Created!',
-        description: 'The hotel was successfully created.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
+      if(response.status !== 200){
+        toast({
+          title: 'Error!',
+          description: 'An error occurred while creating the hotel.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }else{
+        toast({
+          title: 'Hotel Created!',
+          description: 'The hotel was successfully created.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
       toast({
         title: 'Error!',

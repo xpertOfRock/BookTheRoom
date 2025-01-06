@@ -1,5 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Commands.Room;
+﻿using Application.UseCases.Commands.Room;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Room
 {
@@ -18,7 +17,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
 
             try
             {
-                var validationResult = _validator.Validate(command);
+                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
                 if (!validationResult.IsValid)
                 {
@@ -34,6 +33,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
                         Price = command.Price,
                         Category = command.Category,
                         HotelId = command.HotelId,
+                        Images = command.Images
                     }
                 );
 

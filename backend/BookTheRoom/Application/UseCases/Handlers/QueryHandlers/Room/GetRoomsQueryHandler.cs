@@ -1,5 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Queries.Room;
+﻿using Application.UseCases.Queries.Room;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Room
 {

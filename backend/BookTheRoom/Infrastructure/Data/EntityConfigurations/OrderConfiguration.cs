@@ -1,6 +1,4 @@
-﻿using Core.Entities;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.EntityConfigurations
 {
@@ -33,6 +31,11 @@ namespace Infrastructure.Data.EntityConfigurations
             builder.Property(o => o.Status)
                 .IsRequired()
                 .HasConversion<string>();
+
+            builder.HasOne(o => o.Hotel)
+                .WithMany()
+                .HasForeignKey(o => o.HotelId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(o => o.Room)
                 .WithMany()
