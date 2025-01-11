@@ -19,6 +19,7 @@ function Card({ id, name,  preview, rating, address, userScore }) {
         className="rounded-t-lg w-full h-48 object-cover"
         src={preview}
         alt="Hotel preview"
+        loading="lazy"
       />
       <div className="p-3 flex flex-col flex-grow">
         <h5 className="text-lg font-semibold text-gray-800">{name}</h5>

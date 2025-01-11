@@ -1,6 +1,6 @@
-import SortAndSearch from './SortAndSearch';
-import Filters from './Filters';
-import Card from './Card';
+import SortAndSearch from './subcomponents/Hotels/SortAndSearch';
+import Filters from './subcomponents/Hotels/Filters';
+import Card from './subcomponents/Hotels/Card';
 import { fetchHotels } from '../../services/hotels';
 import { useEffect, useState } from 'react';
 
