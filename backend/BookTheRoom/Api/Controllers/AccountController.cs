@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -20,9 +19,9 @@ namespace Api.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IConfiguration _configuration;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                  SignInManager<ApplicationUser> signInManager,
@@ -53,7 +52,7 @@ namespace Api.Controllers
                 return BadRequest(new { message = "Invalid login attempt." });
             }
 
-            await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
+            //await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
 
             var token = GenerateJwtToken(user);
             var refreshToken = await GenerateAndStoreRefreshToken(user);
@@ -64,12 +63,14 @@ namespace Api.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             var existingUserByEmail = await _userManager.FindByEmailAsync(request.Email);
+
             if (existingUserByEmail != null)
             {
                 return BadRequest(new { message = "Email is already registered." });
             }
 
             var existingUserByUsername = await _userManager.FindByNameAsync(request.Username);
+
             if (existingUserByUsername != null)
             {
                 return BadRequest(new { message = "Username is already taken." });
@@ -96,7 +97,7 @@ namespace Api.Controllers
             }
 
             await _userManager.AddToRoleAsync(newUser, UserRole.User);
-            await _signInManager.PasswordSignInAsync(newUser, request.Password, false, false);
+            //await _signInManager.PasswordSignInAsync(newUser, request.Password, false, false);
 
             const string subject = "Registration";
             const string body = "Thanks for choosing Book The Room! Hope you will be satisfied with our service!";
@@ -118,39 +119,41 @@ namespace Api.Controllers
             {
                 await RemoveRefreshToken(user);
             }
-            await _signInManager.SignOutAsync();
+            //await _signInManager.SignOutAsync();
             return Ok(new { message = "Successfully logged out." });
         }
 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
-            var principal = GetPrincipalFromExpiredToken(request.Token);
-            if (principal == null)
+            var principal = GetPrincipalFromExpiredToken(request.Token); //recieving expired access token
 
+            if (principal == null)
             {
-                return BadRequest("Invalid access token or refresh token.");
+                return BadRequest("Invalid access token or refresh token."); // if token does not contain any claims return code 400
             }
 
-            var username = principal.Identity.Name;
-            var user = await _userManager.FindByNameAsync(username);
+            var username = principal.Identity!.Name;
+
+            var user = await _userManager.FindByNameAsync(username!); // finding user by the 'username' contained in the claims in jwt
 
             if (user == null)
             {
-                return BadRequest("User not found.");
+                return BadRequest("User not found."); // if user not found return code 400
             }
 
-            var storedRefreshToken = await _userManager.GetAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken");
+            var storedRefreshToken = await GetStoredRefreshToken(user);
+
+            if (storedRefreshToken != request.RefreshToken || storedRefreshToken.IsNullOrEmpty())
+            {
+                return BadRequest("Invalid refresh token."); // if user's refresh token was not found in DB or is not equal to the one that contains in DB return code 400 
+            }
+
             var refreshTokenExpiryTimeString = await _userManager.GetAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime");
 
             if (refreshTokenExpiryTimeString != null && DateTime.Parse(refreshTokenExpiryTimeString) < DateTime.UtcNow)
             {
                 return BadRequest("Refresh token has expired.");
-            }
-
-            if (storedRefreshToken != request.RefreshToken)
-            {
-                return BadRequest("Invalid refresh token.");
             }
 
             var newToken = GenerateJwtToken(user);
@@ -204,7 +207,7 @@ namespace Api.Controllers
             (
                 issuer: jwtSettings["Issuer"],
                 audience: jwtSettings["Audience"],
-                expires: DateTime.Now.AddMinutes(45),
+                expires: DateTime.UtcNow.AddMinutes(5),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
@@ -216,12 +219,11 @@ namespace Api.Controllers
         {
             var randomNumber = new byte[32];
 
-            using var rng = RandomNumberGenerator.Create();
+            using var generator = RandomNumberGenerator.Create();
 
-            rng.GetBytes(randomNumber);
+            generator.GetBytes(randomNumber);
 
-            return Convert.ToBase64String(randomNumber);
-            
+            return Convert.ToBase64String(randomNumber);      
         }
 
         private async Task<string> GenerateAndStoreRefreshToken(ApplicationUser user)

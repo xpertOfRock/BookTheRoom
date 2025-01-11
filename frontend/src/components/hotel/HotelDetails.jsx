@@ -99,7 +99,7 @@ function HotelDetails() {
         </button>
 
         <div className="p-6 grid-cols-1 sm:grid-cols-2 flex flex-col lg:flex-row gap-8">
-          <div className="xl:w-2/5 lg:w-2/5 relative group sm:h-80 md:h-[432px]">
+          <div className="h-[432px] xl:w-2/5 lg:w-2/5 relative group sm:h-80 md:h-[432px]">
             <Slider {...settings} ref={sliderRef}>
               {hotel.images.map((image, index) => (
                 <div key={index} className="w-full h-full">
@@ -166,7 +166,7 @@ function HotelDetails() {
             <h3 className="text-2xl font-semibold text-gray-700 mb-2">Comments</h3>
             <CreateCommentForm hotelId={hotel.id} hasRatedComments={hasRatedComments} />
             {hotel.comments && hotel.comments.length > 0 ? (
-              <div className="bg-white border-2 border-indigo-300 mt-6 p-6 rounded-lg shadow-lg">
+              <div className="border-2 border-indigo-300 mt-6 p-6 rounded-lg shadow-lg">
                 <div className="space-y-4">
                   {hotel.comments.map((comment) => (
                   <Comment

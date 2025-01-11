@@ -5,7 +5,9 @@ using Infrastructure.DependencyInjection;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -26,7 +28,12 @@ builder.Services.Configure<HostOptions>(options =>
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"))
+        .ConfigureWarnings(warnings =>
+        {
+            warnings.Ignore(RelationalEventId.CommandExecuting);
+            warnings.Ignore(RelationalEventId.CommandExecuted);
+        });
 });
 
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -44,9 +51,24 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddAuthorization();
-
 builder.Services.AddHttpClient();
+
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<GzipCompressionProvider>();
+    options.Providers.Add<BrotliCompressionProvider>();
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
 
 builder.Services.AddAuthentication(options =>
 {
@@ -66,6 +88,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 
