@@ -26,9 +26,11 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
 
                 var duration = command.Request.CheckOut.Subtract(command.Request.CheckIn);
                 int days = (int)Math.Ceiling(duration.TotalDays);
-                var price = room.Price;
+
+                decimal price = room.Price;
 
                 decimal multiplier = 1.0m;
+
                 if (command.Request.MealsIncluded) multiplier += 0.1m;
                 if (command.Request.MinibarIncluded) multiplier += 0.1m;
 

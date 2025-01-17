@@ -5,11 +5,9 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
     public class UpdateHotelCommandHandler : ICommandHandler<UpdateHotelCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<UpdateHotelCommand> _validator;
-        public UpdateHotelCommandHandler(IUnitOfWork unitOfWork, IValidator<UpdateHotelCommand> validator)
+        public UpdateHotelCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
         }
 
         public async Task<IResult> Handle(UpdateHotelCommand command, CancellationToken cancellationToken)
@@ -18,13 +16,6 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 
             try
             {
-                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-
-                if (!validationResult.IsValid)
-                {
-                    return new Fail("Validation is failed.", ErrorStatuses.ValidationError);
-                }
-
                 var result = await _unitOfWork.Hotels.Update(command.Id, command.Request);
 
                 if (!result.IsSuccess)
