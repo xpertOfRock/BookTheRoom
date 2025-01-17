@@ -31,7 +31,7 @@ namespace Application.UseCases.Validators.Hotel
             RuleFor(x => x.Images)
                 .NotNull()
                     .WithMessage("Images are required.")
-                .Must(images => images!.Count <= 20)
+                .Must(images => images!.Count <= 20)               
                     .WithMessage("You can upload up to 20 images.")
                 .ForEach(image => image.Must(img => Uri.IsWellFormedUriString(img, UriKind.Absolute))
                     .WithMessage("Each image URL must be a valid URL."));

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Controllers
 {
@@ -126,10 +127,10 @@ namespace Api.Controllers
         [Authorize]
         public async Task<IActionResult> Post([FromForm] CreateApartmentForm form)
         {
-            var thisUserId = _contextAccessor.HttpContext?.User.GetUserId();
+            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
-
-            var imagesUrl = new List<string>();
+            
+            var images = new List<string>();
 
             if (form.Images is not null && form.Images.Any())
             {
@@ -137,7 +138,7 @@ namespace Api.Controllers
                 {
                     using var stream = file.OpenReadStream();                    
                     var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                    imagesUrl.Add(resultForList.Url.ToString());
+                    images.Add(resultForList.Url.ToString());
                     
                 }
             }
@@ -157,12 +158,21 @@ namespace Api.Controllers
                     form.Street,
                     form.PostalCode
                 ),
-                imagesUrl
+                images
             );
 
             var result = await _mediator.Send(new CreateApartmentCommand(request));
 
-            return result.IsSuccess ? Created() : BadRequest(result);
+            if (!result.IsSuccess)
+            {
+                foreach (var image in images)
+                {
+                    await _photoService.DeletePhotoAsync(image);
+                }
+                return BadRequest(result);
+            }
+
+            return Ok(result);
 
         }
 
