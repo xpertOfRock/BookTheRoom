@@ -1,5 +1,4 @@
-﻿using Application.Interfaces;
-using Application.Settings;
+﻿using Application.Settings;
 using Braintree;
 using Microsoft.Extensions.Options;
 

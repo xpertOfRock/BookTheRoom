@@ -6,6 +6,7 @@ using Application.Interfaces;
 using Application.UseCases.Commands.Comment;
 using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Queries.Hotel;
+using Application.UseCases.Validators.Hotel;
 using Core.Contracts;
 using Core.Entities;
 using Core.ValueObjects;

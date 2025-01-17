@@ -5,11 +5,9 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
     public class CreateHotelCommandHandler : ICommandHandler<CreateHotelCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<CreateHotelCommand> _validator;
-        public CreateHotelCommandHandler(IUnitOfWork unitOfWork, IValidator<CreateHotelCommand> validator)
+        public CreateHotelCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
         }
         public async Task<IResult> Handle(CreateHotelCommand command, CancellationToken cancellationToken)
         {
@@ -17,13 +15,6 @@ namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 
             try
             {
-                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-
-                if (!validationResult.IsValid)
-                {
-                    return new Fail("Validation is failed.", Core.Enums.ErrorStatuses.ValidationError);
-                }
-
                 var result = await _unitOfWork.Hotels.Add
                 (
                     new Core.Entities.Hotel

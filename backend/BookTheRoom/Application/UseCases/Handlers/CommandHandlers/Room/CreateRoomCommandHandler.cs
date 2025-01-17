@@ -5,11 +5,11 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
     public class CreateRoomCommandHandler : ICommandHandler<CreateRoomCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<CreateRoomCommand> _validator;
+        //private readonly IValidator<CreateRoomCommand> _validator;
         public CreateRoomCommandHandler(IUnitOfWork unitOfWork, IValidator<CreateRoomCommand> validator)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
+            //_validator = validator;
         }
         public async Task<IResult> Handle(CreateRoomCommand command, CancellationToken cancellationToken)
         {
@@ -17,12 +17,12 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
 
             try
             {
-                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+                //var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
-                if (!validationResult.IsValid)
-                {
-                    return new Fail("Validation is failed.", ErrorStatuses.ValidationError);
-                }
+                //if (!validationResult.IsValid)
+                //{
+                //    return new Fail("Validation is failed.", ErrorStatuses.ValidationError);
+                //}
 
                 var addResult = await _unitOfWork.Rooms.Add(
                     new Core.Entities.Room

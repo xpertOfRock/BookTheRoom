@@ -18,7 +18,6 @@ namespace Application.ExternalServices
                 );
             _cloudinary = new Cloudinary(acc);
         }
-
         public async Task<ImageUploadResult> AddPhotoAsync(string fileName, Stream stream)
         {
             var uploadParams = new ImageUploadParams
@@ -30,8 +29,6 @@ namespace Application.ExternalServices
 
             return uploadResult;
         }
-
-
         public async Task<DeletionResult> DeletePhotoAsync(string publicUrl)
         {
             var publicId = publicUrl

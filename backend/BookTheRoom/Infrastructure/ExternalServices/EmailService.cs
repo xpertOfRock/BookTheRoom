@@ -1,5 +1,4 @@
-﻿using Application.Interfaces;
-using Application.Settings;
+﻿using Application.Settings;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit.Text;
