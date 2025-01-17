@@ -6,7 +6,6 @@ using Application.Interfaces;
 using Application.UseCases.Commands.Comment;
 using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Queries.Hotel;
-using Application.UseCases.Validators.Hotel;
 using Core.Contracts;
 using Core.Entities;
 using Core.ValueObjects;
@@ -104,15 +103,15 @@ namespace Api.Controllers
         [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
-            var imagesUrl = new List<string>();
+            var images = new List<string>();
 
-            if (form.Images is not null && form.Images.Any())
+            if (form.Images.Any())
             {
                 foreach (var file in form.Images)
                 {
                     using var stream = file.OpenReadStream();
                     var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                    imagesUrl.Add(resultForList.Url.ToString());
+                    images.Add(resultForList.Url.ToString());
                 }
             }
 
@@ -130,12 +129,21 @@ namespace Api.Controllers
                     form.Street,
                     form.PostalCode
                 ),
-                imagesUrl
+                images
             );
 
             var result = await _mediator.Send(new CreateHotelCommand(request));
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            if (!result.IsSuccess)
+            {
+                foreach (var image in images)
+                {
+                    await _photoService.DeletePhotoAsync(image);
+                }
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
         //[HttpPost("{id}/services")]
         //[Authorize(Roles = UserRole.Admin)]
@@ -198,7 +206,16 @@ namespace Api.Controllers
 
             var result = await _mediator.Send(new UpdateHotelCommand(id, request));
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            if (!result.IsSuccess)
+            {
+                foreach (var image in images)
+                {
+                    await _photoService.DeletePhotoAsync(image);
+                }
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]

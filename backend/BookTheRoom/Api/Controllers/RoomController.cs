@@ -102,7 +102,16 @@ namespace Api.Controllers
 
             var result = await _mediator.Send(new CreateRoomCommand(hotelId, request));
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            if (!result.IsSuccess)
+            {
+                foreach (var image in images)
+                {
+                    await _photoService.DeletePhotoAsync(image);
+                }
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
 
         [HttpPut("{hotelId}/{number}")]
@@ -111,7 +120,7 @@ namespace Api.Controllers
         {
             var images = new List<string>();
 
-            if (form.Images.Any() || form.Images is not null)
+            if (form.Images.Any())
             {
                 foreach (var file in form.Images)
                 {
@@ -132,7 +141,16 @@ namespace Api.Controllers
 
             var result = await _mediator.Send(new UpdateRoomCommand(hotelId, number, request));
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            if (!result.IsSuccess)
+            {
+                foreach (var image in images)
+                {
+                    await _photoService.DeletePhotoAsync(image);
+                }
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
 
         [HttpDelete("{hotelId}/{number}")]
