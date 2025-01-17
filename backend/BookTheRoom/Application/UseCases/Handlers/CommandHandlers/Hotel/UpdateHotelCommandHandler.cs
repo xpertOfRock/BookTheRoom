@@ -1,5 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Commands.Hotel;
+﻿using Application.UseCases.Commands.Hotel;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Hotel
 {

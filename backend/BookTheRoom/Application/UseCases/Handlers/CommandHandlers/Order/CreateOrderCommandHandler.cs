@@ -1,5 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Commands.Order;
+﻿using Application.UseCases.Commands.Order;
 using Braintree;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order

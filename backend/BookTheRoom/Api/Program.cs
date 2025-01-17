@@ -1,3 +1,4 @@
+using Api.Extensions;
 using Application.DependencyInjection;
 using Application.Settings;
 using Infrastructure;
@@ -6,13 +7,13 @@ using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
 
 builder.Services.AddApplication();
 
@@ -26,7 +27,12 @@ builder.Services.Configure<HostOptions>(options =>
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"))
+        .ConfigureWarnings(warnings =>
+        {
+            warnings.Ignore(RelationalEventId.CommandExecuting);
+            warnings.Ignore(RelationalEventId.CommandExecuted);
+        });
 });
 
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -44,28 +50,30 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddAuthorization();
-
 builder.Services.AddHttpClient();
+
+builder.Services.AddResponseCompressionServices();
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!))
-    };
-});
+    .AddJwtBearer(options =>
+    { 
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,      
+            ValidateLifetime = true,       
+            ValidateIssuerSigningKey = true,      
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],       
+            ValidAudience = builder.Configuration["Jwt:Audience"],       
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!))  
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 
@@ -117,6 +125,8 @@ if (app.Environment.IsDevelopment())
 //}
 
 app.UseHttpsRedirection();
+
+app.UseResponseCompression();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

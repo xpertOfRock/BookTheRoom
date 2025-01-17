@@ -23,11 +23,13 @@ namespace Application.Behaviors
             timer.Stop();
 
             var timeTaken = timer.Elapsed;
+
             if (timeTaken.Seconds > 3)
                 logger.LogWarning("[PERFORMANCE] The request {Request} took {TimeTaken} seconds.",
                     typeof(TRequest).Name, timeTaken.Seconds);
 
-            logger.LogInformation("[END] Handled {Request} with {Response}", typeof(TRequest).Name, typeof(TResponse).Name);
+            logger.LogInformation("[END] Handled {Request} with {Response} in {TimeTaken} seconds.", typeof(TRequest).Name, typeof(TResponse).Name, timeTaken);
+
             return response;
         }
     }

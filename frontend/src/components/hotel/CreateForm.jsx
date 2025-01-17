@@ -55,10 +55,11 @@ function CreateForm() {
   const onCreate = async (hotelForm) => {
     try {
       const response = await postHotel(hotelForm);
+      console.log(response.status);
       setForm({
         name: '',
         description: '',
-        rating: 0,
+        rating: 1,
         pool: false,
         country: '',
         state: '',
@@ -67,23 +68,23 @@ function CreateForm() {
         postalCode: '',
         images: [],
       });
-      if(response.status !== 200){
-        toast({
-          title: 'Error!',
-          description: 'An error occurred while creating the hotel.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      }else{
-        toast({
-          title: 'Hotel Created!',
-          description: 'The hotel was successfully created.',
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-        });
-      }
+      // if(response.status == 200){
+      //   toast({
+      //     title: 'Hotel Created!',
+      //     description: 'The hotel was successfully created.',
+      //     status: 'success',
+      //     duration: 5000,
+      //     isClosable: true,
+      //   });
+      // }else{
+      //   toast({
+      //     title: 'Error!',
+      //     description: 'An error occurred while creating the hotel.',
+      //     status: 'error',
+      //     duration: 5000,
+      //     isClosable: true,
+      //   });
+      // }
     } catch (error) {
       toast({
         title: 'Error!',
@@ -139,7 +140,7 @@ function CreateForm() {
             <NumberInput
               name="rating"
               value={form.rating}
-              min={0}
+              min={1}
               max={5}
               onChange={handleRatingChange}
             >

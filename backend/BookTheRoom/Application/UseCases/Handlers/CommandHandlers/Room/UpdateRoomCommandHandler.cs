@@ -1,5 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Commands.Room;
+﻿using Application.UseCases.Commands.Room;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Room
 {
