@@ -1,5 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Queries.Apartment;
+﻿using Application.UseCases.Queries.Apartment;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Apartment
 {

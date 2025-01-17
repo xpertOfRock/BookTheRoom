@@ -1,5 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Queries.Order;
+﻿using Application.UseCases.Queries.Order;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Order
 {

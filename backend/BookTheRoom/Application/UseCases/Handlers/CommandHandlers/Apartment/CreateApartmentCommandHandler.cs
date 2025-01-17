@@ -1,5 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Commands.Apartment;
+﻿using Application.UseCases.Commands.Apartment;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 {
@@ -18,12 +17,12 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 
             try
             {
-                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+                //var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
-                if (!validationResult.IsValid)
-                {
-                    return new Fail("Validation is failed.", Core.Enums.ErrorStatuses.ValidationError);
-                }
+                //if (!validationResult.IsValid)
+                //{
+                //    return new Fail("Validation is failed.", Core.Enums.ErrorStatuses.ValidationError);
+                //}
 
                 var result =  await _unitOfWork.Apartments.Add
                 (

@@ -1,6 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-
-namespace Application.UseCases.Commands.Apartment
+﻿namespace Application.UseCases.Commands.Apartment
 {
     public class CreateApartmentCommand : ICommand<IResult>
     {

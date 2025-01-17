@@ -1,9 +1,8 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Queries.Order;
+﻿using Application.UseCases.Queries.Order;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Order
 {
-    public class GetExpiredOrdersQueryHandler : IQueryHandler<GetExpiredOrdersQuery, List<Core.Entities.Order>?>
+    public class GetExpiredOrdersQueryHandler : IQueryHandler<GetExpiredOrdersQuery, List<Core.Entities.Order>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public GetExpiredOrdersQueryHandler(IUnitOfWork unitOfWork)
