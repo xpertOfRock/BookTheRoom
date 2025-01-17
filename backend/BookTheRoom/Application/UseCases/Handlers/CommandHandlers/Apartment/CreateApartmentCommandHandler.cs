@@ -5,11 +5,9 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
     public class CreateApartmentCommandHandler : ICommandHandler<CreateApartmentCommand, IResult>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<CreateApartmentCommand> _validator;
-        public CreateApartmentCommandHandler(IUnitOfWork unitOfWork, IValidator<CreateApartmentCommand> validator)
+        public CreateApartmentCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
         }
         public async Task<IResult> Handle(CreateApartmentCommand command, CancellationToken cancellationToken)
         {
@@ -17,13 +15,6 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 
             try
             {
-                //var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-
-                //if (!validationResult.IsValid)
-                //{
-                //    return new Fail("Validation is failed.", Core.Enums.ErrorStatuses.ValidationError);
-                //}
-
                 var result =  await _unitOfWork.Apartments.Add
                 (
                     new Core.Entities.Apartment
