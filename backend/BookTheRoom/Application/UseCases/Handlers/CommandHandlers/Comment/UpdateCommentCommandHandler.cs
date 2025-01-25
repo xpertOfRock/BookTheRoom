@@ -1,37 +1,32 @@
-﻿using Application.UseCases.Abstractions;
-using Application.UseCases.Commands.Comment;
+﻿using Application.UseCases.Commands.Comment;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Comment
 {
-    public class UpdateCommentCommandHandler : ICommandHandler<UpdateCommentCommand, IResult>
+    public class UpdateCommentCommandHandler(IUnitOfWork unitOfWork) : ICommandHandler<UpdateCommentCommand, IResult>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public UpdateCommentCommandHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+
         public async Task<IResult> Handle(UpdateCommentCommand request, CancellationToken cancellationToken)
         {
-            await _unitOfWork.BeginTransactionAsync();
+            await unitOfWork.BeginTransactionAsync();
             try
             {
-                var result = await _unitOfWork.Comments.Update(request.Id, request.Description);
+                var result = await unitOfWork.Comments.Update(request.Id, request.Description);
 
                 if (!result.IsSuccess)
                 {
-                    await _unitOfWork.RollbackAsync();
+                    await unitOfWork.RollbackAsync();
                     return result;
                 }
 
-                await _unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync();
 
-                await _unitOfWork.CommitAsync();
+                await unitOfWork.CommitAsync();
 
                 return result;
             }
             catch (Exception ex)
             {
-                await _unitOfWork.RollbackAsync();
+                await unitOfWork.RollbackAsync();
                 throw new InvalidOperationException("An error occurred while processing the comment.", ex);
             }
         }

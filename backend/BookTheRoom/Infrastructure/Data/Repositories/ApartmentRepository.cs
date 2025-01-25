@@ -1,41 +1,29 @@
-﻿using Core.Entities;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Infrastructure.Data.Repositories
 {
-    public class ApartmentRepository : IApartmentRepository
+    public class ApartmentRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService) : IApartmentRepository
     {
-        private readonly IDistributedCache _distributedCache;
-        private readonly IPhotoService _photoService;
-        private readonly ApplicationDbContext _context;
-
-        public ApartmentRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService)
-        {
-            _context = context;
-            _distributedCache = distributedCache;
-            _photoService = photoService;
-        }
-
         private const int maxItemsOnPage = 15;
 
         public async Task<IResult> Add(Apartment apartment)
         {
             
-            var existingApartment = _context.Apartments.AsNoTracking().FirstOrDefaultAsync(a => a.Address == apartment.Address);
+            var existingApartment = context.Apartments.AsNoTracking().FirstOrDefaultAsync(a => a.Address == apartment.Address);
 
             if (existingApartment is not null) 
             { 
                 return new Fail("Entity with this address already exists.");
             }
 
-            await _context.Apartments.AddAsync(apartment);
+            await context.Apartments.AddAsync(apartment);
 
             return new Success("New entity 'Apartment' created successfuly.");
         }
 
         public async Task<IResult> Delete(int id)
         {
-            var apartment = await _context.Apartments.FirstOrDefaultAsync(a => a.Id == id);
+            var apartment = await context.Apartments.FirstOrDefaultAsync(a => a.Id == id);
 
             if (apartment == null)
             {
@@ -43,23 +31,23 @@ namespace Infrastructure.Data.Repositories
             }
 
             var key = $"apartment-{id}";
-            _distributedCache.Remove(key);
+            distributedCache.Remove(key);
 
             if (apartment.Images != null && apartment.Images.Count > 0)
             {
                 foreach (var image in apartment.Images)
                 {
-                    await _photoService.DeletePhotoAsync(image);
+                    await photoService.DeletePhotoAsync(image);
                 }
             }
 
-            _context.Apartments.Remove(apartment);
+            context.Apartments.Remove(apartment);
 
             return new Success("Entity 'Apartment' was deleted successfuly.");
         }
         public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request)
         {
-            var query = _context.Apartments
+            var query = context.Apartments
                 .Include(h => h.Address)
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
                             h.Title.ToLower().Contains(request.Search.ToLower()) ||
@@ -97,7 +85,7 @@ namespace Infrastructure.Data.Repositories
         }
         public async Task<List<Apartment>> GetAll(GetApartmentsRequest request)
         {
-            var query = _context.Apartments
+            var query = context.Apartments
                 .Include(h => h.Address)                
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||                            
                             h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
@@ -144,13 +132,13 @@ namespace Infrastructure.Data.Repositories
         public async Task<Apartment?> GetById(int? id, CancellationToken cancellationToken = default)
         {
             string key = $"apartment-{id}";
-            string? cachedApartment = await _distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedApartment = await distributedCache.GetStringAsync(key, cancellationToken);
 
             Apartment? apartment;
 
             if (string.IsNullOrEmpty(cachedApartment))
             {
-                apartment = await _context.Apartments
+                apartment = await context.Apartments
                     .Include(h => h.Address)
                     .Include(h => h.Comments)
                     .AsSplitQuery()
@@ -162,7 +150,7 @@ namespace Infrastructure.Data.Repositories
                     return apartment;
                 }
 
-                await _distributedCache.SetStringAsync(
+                await distributedCache.SetStringAsync(
                     key,
                     JsonConvert.SerializeObject(apartment),
                     cancellationToken
@@ -178,11 +166,11 @@ namespace Infrastructure.Data.Repositories
         {
             string key = $"apartment-{apartment.Id}";
 
-            string? cachedApartment = await _distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedApartment = await distributedCache.GetStringAsync(key, cancellationToken);
 
             if (string.IsNullOrEmpty(cachedApartment)) return;
 
-            await _distributedCache.SetStringAsync
+            await distributedCache.SetStringAsync
             (
                 key,
                 JsonConvert.SerializeObject(apartment),
@@ -205,7 +193,7 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"apartment-{id}";
            
-            _distributedCache.Remove(key);
+            distributedCache.Remove(key);
 
             //var comments = request.Comments == null ? apartment.Comments : new List<Comment>();
 
@@ -215,18 +203,18 @@ namespace Infrastructure.Data.Repositories
                 {
                     foreach (var image in apartment.Images)
                     {
-                        await _photoService.DeletePhotoAsync(image);
+                        await photoService.DeletePhotoAsync(image);
                     }
                 }
 
-                await _context.Apartments
+                await context.Apartments
                         .Where(h => h.Id == id)
                         .ExecuteUpdateAsync(e => e
                         .SetProperty(h => h.Images, request.Images));
             }
 
 
-            await _context.Apartments
+            await context.Apartments
                 .Where(h => h.Id == id)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(h => h.Title, request.Title)

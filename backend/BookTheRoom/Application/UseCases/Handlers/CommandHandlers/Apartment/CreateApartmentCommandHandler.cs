@@ -2,20 +2,16 @@
 
 namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 {
-    public class CreateApartmentCommandHandler : ICommandHandler<CreateApartmentCommand, IResult>
+    public class CreateApartmentCommandHandler(IUnitOfWork unitOfWork) : ICommandHandler<CreateApartmentCommand, IResult>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public CreateApartmentCommandHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+
         public async Task<IResult> Handle(CreateApartmentCommand command, CancellationToken cancellationToken)
         {
-            await _unitOfWork.BeginTransactionAsync();
+            await unitOfWork.BeginTransactionAsync();
 
             try
             {
-                var result =  await _unitOfWork.Apartments.Add
+                var result =  await unitOfWork.Apartments.Add
                 (
                     new Core.Entities.Apartment
                     {
@@ -31,19 +27,19 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 
                 if (!result.IsSuccess)
                 {
-                    await _unitOfWork.RollbackAsync();
+                    await unitOfWork.RollbackAsync();
                     return result;
                 }
 
-                await _unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync();
 
-                await _unitOfWork.CommitAsync();
+                await unitOfWork.CommitAsync();
 
                 return result;
             }
             catch (Exception ex)
             {
-                await _unitOfWork.RollbackAsync();
+                await unitOfWork.RollbackAsync();
                 throw new InvalidOperationException("An error occurred while processing the apartment.", ex);
             }
         }

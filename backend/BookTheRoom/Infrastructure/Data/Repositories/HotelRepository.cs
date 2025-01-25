@@ -3,59 +3,48 @@ using System.Linq;
 
 namespace Infrastructure.Data.Repositories
 {
-    public class HotelRepository : IHotelRepository
+    public class HotelRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService) : IHotelRepository
     {
-        private readonly IDistributedCache _distributedCache;
-        private readonly IPhotoService _photoService;
-        private readonly ApplicationDbContext _context;
-        
-        public HotelRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService)
-        {
-            _context = context;
-            _distributedCache = distributedCache;
-            _photoService = photoService;
-        }
-
         public async Task<IResult> Add(Hotel hotel)
         {
-            Hotel? existingHotel = await _context.Hotels.AsNoTracking().FirstOrDefaultAsync(h => h.Name == hotel.Name);
+            Hotel? existingHotel = await context.Hotels.AsNoTracking().FirstOrDefaultAsync(h => h.Name == hotel.Name);
 
             if(existingHotel is not null)
             {
                 return new Fail("Entity with this address and name already exists.");
             }
 
-            await _context.Hotels.AddAsync(hotel);
+            await context.Hotels.AddAsync(hotel);
 
             return new Success("Entity 'Hotel' was created successfuly.");
         }
         
         public async Task<IResult> Delete(int id)
         {            
-            var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+            var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
 
             if(hotel == null)
             {
                 return new Fail("Impossible to delete a non-existent entity.");
             }
 
-            _distributedCache.Remove($"hotel-{id}");
+            distributedCache.Remove($"hotel-{id}");
 
             if (hotel.Images != null && hotel.Images.Count > 0)
             {
                 foreach (var image in hotel.Images)
                 {
-                    await _photoService.DeletePhotoAsync(image);
+                    await photoService.DeletePhotoAsync(image);
                 }
             }
             
-            _context.Hotels.Remove(hotel);
+            context.Hotels.Remove(hotel);
             return new Success("Entity 'Hotel' was deleted successfuly.");
         }
         
         public async Task<List<Hotel>> GetAll(GetHotelsRequest request)
         {
-            var query = _context.Hotels
+            var query = context.Hotels
                 .Include(h => h.Address)
                 .Include(h => h.Comments)
                 .AsSplitQuery()
@@ -116,13 +105,13 @@ namespace Infrastructure.Data.Repositories
             if (id == null) throw new ArgumentNullException("Cannot get entity 'Hotel' when 'id' is null.");
 
             string key = $"hotel-{id}";
-            string? cachedHotel = await _distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedHotel = await distributedCache.GetStringAsync(key, cancellationToken);
 
             Hotel? hotel;
             
             if (string.IsNullOrEmpty(cachedHotel))
             {
-                hotel = await _context.Hotels
+                hotel = await context.Hotels
                     .Include(h => h.Address)
                     .Include(h => h.Rooms)
                     .Include(h => h.Comments)                    
@@ -135,7 +124,7 @@ namespace Infrastructure.Data.Repositories
                     return hotel;
                 }
 
-                await _distributedCache.SetStringAsync
+                await distributedCache.SetStringAsync
                 (
                     key,
                     JsonConvert.SerializeObject(hotel),
@@ -152,12 +141,12 @@ namespace Infrastructure.Data.Repositories
         {
             string key  = $"hotel-{hotel.Id}";
 
-            string? cachedHotel = await _distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedHotel = await distributedCache.GetStringAsync(key, cancellationToken);
 
 
             if (string.IsNullOrEmpty(cachedHotel)) return;
 
-            await _distributedCache.SetStringAsync
+            await distributedCache.SetStringAsync
             (
                 key,
                 JsonConvert.SerializeObject(hotel),
@@ -175,7 +164,7 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{id}";
 
-            _distributedCache.Remove(key);
+            distributedCache.Remove(key);
 
             if (request.Images is not null)
             {
@@ -183,16 +172,16 @@ namespace Infrastructure.Data.Repositories
                 {
                     foreach (var image in hotel.Images)
                     {
-                        await _photoService.DeletePhotoAsync(image);
+                        await photoService.DeletePhotoAsync(image);
                     }
                 }
-                await _context.Hotels
+                await context.Hotels
                         .Where(h => h.Id == id)
                         .ExecuteUpdateAsync(e => e
                         .SetProperty(h => h.Images, request.Images));
             }
 
-            await _context.Hotels
+            await context.Hotels
                 .Where(h => h.Id == id)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(h => h.Name, request.Name)

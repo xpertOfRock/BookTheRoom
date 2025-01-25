@@ -2,27 +2,17 @@
 
 namespace Infrastructure.Data.Repositories
 {
-    public class RoomRepository : IRoomRepository
+    public class RoomRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService) : IRoomRepository
     {
-        private readonly IDistributedCache _distributedCache;
-        private readonly IPhotoService _photoService;
-        private readonly ApplicationDbContext _context;
-        public RoomRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService)
-        {
-            _context = context;
-            _distributedCache = distributedCache;
-            _photoService = photoService;
-        }
-
         public async Task<IResult> Add(Room room)
         {
-            Room? existingRoom = _context.Rooms.AsNoTracking().FirstOrDefault(r => r.HotelId == room.HotelId && r.Number == room.Number);
+            Room? existingRoom = context.Rooms.AsNoTracking().FirstOrDefault(r => r.HotelId == room.HotelId && r.Number == room.Number);
 
             if (existingRoom is not null)
             {
                 return new Fail("Entity with this hotelId and number already exists.");
             }            
-            await _context.Rooms.AddAsync(room);
+            await context.Rooms.AddAsync(room);
 
             return new Success("Entity 'Room' was created successfuly.");
         }
@@ -38,29 +28,29 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            _distributedCache.Remove(key);
+            distributedCache.Remove(key);
 
             if (room.Images != null && room.Images.Count > 0)
             {
                 foreach (var image in room.Images)
                 {
-                    await _photoService.DeletePhotoAsync(image);
+                    await photoService.DeletePhotoAsync(image);
                 }
             }
 
-            _context.Rooms.Remove(room);
+            context.Rooms.Remove(room);
 
             return new Success("Entity 'Room' was deleted successfuly.");
         }
         public async Task<List<Room>> GetAllRooms()
         {
-            return await _context.Rooms
+            return await context.Rooms
                 .AsNoTracking()
                 .ToListAsync();
         }
         public async Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request)
         {
-            var query = _context.Rooms
+            var query = context.Rooms
                 .Where(r => r.HotelId == hotelId && 
                             (string.IsNullOrWhiteSpace(request.Search) ||
                             r.Name.ToLower().Contains(request.Search.ToLower()) ||
@@ -105,13 +95,13 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            string? cachedHotel = await _distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedHotel = await distributedCache.GetStringAsync(key, cancellationToken);
 
             Room? room;
 
             if (string.IsNullOrEmpty(cachedHotel))
             {
-                room = await _context.Rooms
+                room = await context.Rooms
                     .AsNoTracking()
                     .FirstOrDefaultAsync(
                         r => r.HotelId == hotelId &&
@@ -122,7 +112,7 @@ namespace Infrastructure.Data.Repositories
                     return room;
                 }
 
-                await _distributedCache.SetStringAsync(
+                await distributedCache.SetStringAsync(
                     key,
                     JsonConvert.SerializeObject(room),
                     cancellationToken
@@ -146,7 +136,7 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            _distributedCache.Remove(key);
+            distributedCache.Remove(key);
 
             if (request.Images is not null)
             {
@@ -154,16 +144,16 @@ namespace Infrastructure.Data.Repositories
                 {
                     foreach (var image in room.Images)
                     {
-                        await _photoService.DeletePhotoAsync(image);
+                        await photoService.DeletePhotoAsync(image);
                     }
                 }
-                await _context.Rooms
+                await context.Rooms
                         .Where(h => h.HotelId == hotelId && h.Number == number)
                         .ExecuteUpdateAsync(e => e
                         .SetProperty(h => h.Images, request.Images));
             }
 
-            await _context.Rooms
+            await context.Rooms
                 .Where(r => r.HotelId == hotelId && r.Number == number)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(r => r.Name, request.Name)

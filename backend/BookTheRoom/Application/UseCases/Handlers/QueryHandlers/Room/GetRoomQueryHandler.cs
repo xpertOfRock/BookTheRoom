@@ -2,16 +2,11 @@
 
 namespace Application.UseCases.Handlers.QueryHandlers.Room
 {
-    public class GetRoomQueryHandler : IQueryHandler<GetRoomQuery, Core.Entities.Room>
+    public class GetRoomQueryHandler(IUnitOfWork unitOfWork) : IQueryHandler<GetRoomQuery, Core.Entities.Room>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public GetRoomQueryHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
         public async Task<Core.Entities.Room> Handle(GetRoomQuery request, CancellationToken cancellationToken)
         {
-            var room = await _unitOfWork.Rooms.GetById(request.HotelId, request.Number);
+            var room = await unitOfWork.Rooms.GetById(request.HotelId, request.Number);
 
             if (room == null)
             {

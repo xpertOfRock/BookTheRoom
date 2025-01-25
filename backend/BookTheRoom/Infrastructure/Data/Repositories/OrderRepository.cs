@@ -1,24 +1,16 @@
 ﻿namespace Infrastructure.Data.Repositories
 {
-    public class OrderRepository : IOrderRepository
+    public class OrderRepository(ApplicationDbContext context, IDistributedCache distributedCache) : IOrderRepository
     {
-        private readonly IDistributedCache _memoryCache;
-        private readonly ApplicationDbContext _context;
-        public OrderRepository(ApplicationDbContext context, IDistributedCache distributedCache)
-        {
-            _context = context;
-            _memoryCache = distributedCache;
-        }
-
         public async Task<IResult> Add(Order order)
         {
-            await _context.Orders.AddAsync(order);
+            await context.Orders.AddAsync(order);
             return new Success("Entity 'Order' was created successfuly.");
         }
 
         public async Task<List<Order>?> GetActiveOrders()
         {
-            var activeOrders = await _context.Orders
+            var activeOrders = await context.Orders
                      .Where(o =>
                             o.CheckIn <= DateTime.UtcNow &&
                             o.CheckOut >= DateTime.UtcNow &&
@@ -31,7 +23,7 @@
 
         public async Task<List<Order>?> GetAll(GetDataRequest request)
         {
-            var query = _context.Orders
+            var query = context.Orders
                 .Where(o => string.IsNullOrWhiteSpace(request.Search) ||
                             o.Status.ToString().ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();
@@ -54,7 +46,7 @@
 
         public async Task<List<Order>?> GetAllUserOrders(string userId, GetDataRequest request)
         {
-            var query = _context.Orders
+            var query = context.Orders
                 .Where(o => o.UserId == userId && (
                             string.IsNullOrWhiteSpace(request.Search) ||                            
                             o.Status.ToString().ToLower().Contains(request.Search.ToLower())
@@ -85,14 +77,14 @@
 
         public async Task<Order> GetById(int orderId)
         {
-            return await _context.Orders
+            return await context.Orders
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
         public async Task<List<Order>?> GetExpiredOrders()
         {
-            var expiredOrders = await _context.Orders
+            var expiredOrders = await context.Orders
                 .Where(o =>
                        o.CheckOut < DateTime.UtcNow &&
                        o.Status != OrderStatus.Completed)
@@ -106,9 +98,9 @@
         {
             string key = $"order-{id}";
 
-            _memoryCache.Remove(key);
+            distributedCache.Remove(key);
 
-            await _context.Orders
+            await context.Orders
                 .Where(o => o.Id == id)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(o => o.Status, request.Status)

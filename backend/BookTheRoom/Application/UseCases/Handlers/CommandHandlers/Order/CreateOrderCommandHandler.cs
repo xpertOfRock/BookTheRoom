@@ -3,26 +3,17 @@ using Braintree;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {
-    public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, IResult>
+    public class CreateOrderCommandHandler(IUnitOfWork unitOfWork, IPaymentService paymentService, IEmailService emailService) 
+        : ICommandHandler<CreateOrderCommand, IResult>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IEmailService _emailService;
-        private readonly IPaymentService _paymentService;
-        public CreateOrderCommandHandler(IUnitOfWork unitOfWork, IPaymentService paymentService, IEmailService emailService)
-        {
-            _unitOfWork = unitOfWork;
-            _paymentService = paymentService;
-            _emailService = emailService;
-
-        }
         public async Task<IResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
         {
-            await _unitOfWork.BeginTransactionAsync();
+            await unitOfWork.BeginTransactionAsync();
 
             try
             {
-                var hotel = await _unitOfWork.Hotels.GetById(command.HotelId);
-                var room = await _unitOfWork.Rooms.GetById(command.HotelId, command.Number);
+                var hotel = await unitOfWork.Hotels.GetById(command.HotelId);
+                var room = await unitOfWork.Rooms.GetById(command.HotelId, command.Number);
 
                 var duration = command.Request.CheckOut.Subtract(command.Request.CheckIn);
                 int days = (int)Math.Ceiling(duration.TotalDays);
@@ -56,7 +47,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
 
                 if (command.Request.PaidImmediately)
                 {
-                    var gateway = _paymentService.CreateGateway();
+                    var gateway = paymentService.CreateGateway();
                     var request = new TransactionRequest
                     {
                         Amount = order.OverallPrice,
@@ -72,17 +63,17 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
 
                     if (!transactionResult.IsSuccess() || transactionResult.Target.ProcessorResponseText != "Approved")
                     {
-                        await _unitOfWork.RollbackAsync();
+                        await unitOfWork.RollbackAsync();
                         return new Fail("Card details are invalid or not enough funds on given card.");
                     }
                     order.IsPaid = true;                  
                 }
 
-                var result =  await _unitOfWork.Orders.Add(order);
+                var result =  await unitOfWork.Orders.Add(order);
 
-                await _unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync();
 
-                await _unitOfWork.CommitAsync();
+                await unitOfWork.CommitAsync();
 
                 SendMail(order.Email, order);
 
@@ -90,7 +81,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
             }
             catch (Exception ex)
             {
-                await _unitOfWork.RollbackAsync();
+                await unitOfWork.RollbackAsync();
                 throw new InvalidOperationException("An error occurred while processing the order.", ex);
             }
         }   
@@ -127,7 +118,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
                          $"Overall price : {Math.Round(order.OverallPrice, 2)}\n\n" +
                          $"Have a nice day!";
 
-            _emailService.SendEmail(email, subject, body);
+            emailService.SendEmail(email, subject, body);
         }
     }
 }

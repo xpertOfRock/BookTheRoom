@@ -3,18 +3,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Data.Repositories
 {
-    public class CommentRepository : ICommentRepository
+    public class CommentRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : ICommentRepository
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public CommentRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
-        {
-            _context = context;
-            _userManager = userManager;
-        }
         public async Task<IResult> Add(Comment comment)
         {
-            await _context.Comments.AddAsync(comment);
+            await context.Comments.AddAsync(comment);
             return new Success("Entity 'Comment' was created successfuly.");
         }
 
@@ -32,14 +25,14 @@ namespace Infrastructure.Data.Repositories
                 return new Fail("User is null.");
             }
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null )
             {
                 return new Fail("User is null."); ;
             }
 
-            var comment = await _context.Comments
+            var comment = await context.Comments
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -50,14 +43,14 @@ namespace Infrastructure.Data.Repositories
 
             if (comment.UserId == user.Id || user.Role == UserRole.Admin) 
             {
-                await _context.Comments.Where(c => c.Id == id).ExecuteDeleteAsync();
+                await context.Comments.Where(c => c.Id == id).ExecuteDeleteAsync();
             }
             return new Success("Entity 'Comment' was deleted successfuly.");
         }
 
         public async Task<IResult> Update(int id, string description)
         {
-            await _context.Comments
+            await context.Comments
                 .Where(c => c.Id == id)
                 .ExecuteUpdateAsync(x => x
                 .SetProperty(c => c.Description, description)
