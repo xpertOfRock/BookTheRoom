@@ -106,7 +106,7 @@ function RoomsFilter({ filter, setFilter, onApplyFilters }) {
   };
 
   return (
-    <Box className="bg-indigo-100 p-6 text-gray-700">
+    <Box className="bg-indigo-100 p-6 text-gray-700 rounded-lg shadow-md">
       <Text
         fontSize="xl"
         mb={4}

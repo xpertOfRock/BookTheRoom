@@ -26,7 +26,7 @@ function Filters({ filter, setFilter }) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="grid-cols-2 lg:flex-row gap-6 sm:grid-cols-2 flex flex-col ">
       <div>
         <h3 className="text-lg font-semibold mb-2">Countries:</h3>
         <CheckboxGroup
@@ -60,7 +60,7 @@ function Filters({ filter, setFilter }) {
                   value={rating.toString()}
                   className="border border-gray-400 rounded-md accent-blue-600 hover:accent-blue-700"
                 />
-                <span className="text-gray-800">{rating} Stars</span>
+                <span className="text-gray-800">{rating} ★</span>
               </label>
             ))}
           </div>

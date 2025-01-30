@@ -1,6 +1,6 @@
 import React from "react";
-import RoomsFilter from "../../rooms/RoomsFilter";
 import Rooms from "../../rooms/Rooms";
+import RoomsFilter from "../../rooms/subcomponents/Rooms/RoomsFilter";
 
 function RoomsSection({ filter, setFilter, onApplyFilters, rooms }) {
   return (
@@ -14,7 +14,7 @@ function RoomsSection({ filter, setFilter, onApplyFilters, rooms }) {
           setFilter={setFilter}
           onApplyFilters={onApplyFilters}
         />
-        <Rooms rooms={rooms} />
+        <Rooms rooms={rooms} className="items-center"/>
       </div>
     </div>
   );

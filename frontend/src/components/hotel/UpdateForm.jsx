@@ -9,6 +9,7 @@ import {
     NumberInputField,
     Switch,
     Button,
+    Heading,
   } from "@chakra-ui/react";
   import { useEffect, useState } from "react";
   import { useParams, useNavigate } from "react-router-dom";
@@ -111,6 +112,7 @@ import {
   
     return (
       <Box p={8} maxWidth="600px" mx="auto">
+        <Heading mb={6}>Update data for {hotelData.name}</Heading>
         <form onSubmit={handleSubmit}>
           <VStack spacing={4}>
             <FormControl id="name" isRequired>

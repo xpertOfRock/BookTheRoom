@@ -165,18 +165,25 @@ function HotelDetails() {
         <ImagesSection images={images} onImageClick={handleImageClick} />
 
         <div className="p-6 grid-cols-2 lg:flex-row gap-4 sm:grid-cols-2 flex flex-col">
-          <RoomsSection
-            filter={filter}
-            setFilter={setFilter}
-            onApplyFilters={handleFilterApply}
-            rooms={rooms}
-          />
+          <div className="lg:w-2/3">
+            <RoomsSection            
+              filter={filter}
+              setFilter={setFilter}
+              onApplyFilters={handleFilterApply}
+              rooms={rooms}
+            />
+          </div>
 
-          <CommentSection
-            hotel={hotel}
-            hasRatedComments={hasRatedComments}
-            currentUserId={currentUserId}
-          />
+          <div classname="lg:w-1/3">
+            <CommentSection
+              hotel={hotel}
+              hasRatedComments={hasRatedComments}
+              currentUserId={currentUserId}
+            />
+          </div>
+          
+
+          
         </div>
 
         <Lightbox

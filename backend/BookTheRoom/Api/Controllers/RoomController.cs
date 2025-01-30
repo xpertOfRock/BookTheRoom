@@ -120,7 +120,7 @@ namespace Api.Controllers
         {
             var images = new List<string>();
 
-            if (form.Images.Any())
+            if (form.Images is not null && form.Images.Any())
             {
                 foreach (var file in form.Images)
                 {
@@ -135,7 +135,7 @@ namespace Api.Controllers
                 form.Name,
                 form.Description,
                 form.Price,
-                (Core.Enums.RoomCategory)form.RoomCategory,
+                form.RoomCategory,
                 images
             );
 

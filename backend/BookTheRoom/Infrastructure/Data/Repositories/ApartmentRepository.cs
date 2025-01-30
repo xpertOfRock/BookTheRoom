@@ -4,7 +4,7 @@ namespace Infrastructure.Data.Repositories
 {
     public class ApartmentRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService) : IApartmentRepository
     {
-        private const int maxItemsOnPage = 15;
+        private const int MAX_PAGE_ITEMS = 15;
 
         public async Task<IResult> Add(Apartment apartment)
         {
@@ -79,7 +79,7 @@ namespace Infrastructure.Data.Repositories
                 ? query.OrderByDescending(selectorKey)
                 : query.OrderBy(selectorKey);
 
-            query = query.Skip((request.page - 1) * maxItemsOnPage).Take(maxItemsOnPage);
+            query = query.Skip((request.page - 1) * MAX_PAGE_ITEMS).Take(MAX_PAGE_ITEMS);
 
             return await query.ToListAsync();
         }
@@ -124,7 +124,7 @@ namespace Infrastructure.Data.Repositories
                  ? query = query.OrderByDescending(selectorKey)
                  : query = query.OrderBy(selectorKey);
 
-            query = query.Skip((request.page - 1) * maxItemsOnPage).Take(maxItemsOnPage);
+            query = query.Skip((request.page - 1) * MAX_PAGE_ITEMS).Take(MAX_PAGE_ITEMS);
 
             return await query.ToListAsync();
         }

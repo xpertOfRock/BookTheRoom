@@ -87,8 +87,6 @@ function CreateRoomForm() {
             isClosable: true,
           });
       }
-      
-
       navigate(`/hotels/${hotelId}`);
     } catch (error) {
       

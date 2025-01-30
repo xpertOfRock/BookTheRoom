@@ -37,18 +37,18 @@ function Hotels() {
       <section className="flex flex-col items-center justify-center p-8 gap-8">
         <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl">
 
-          <div className="w-full lg:w-1/4 bg-indigo-100 p-6 rounded-lg shadow-md">
+          <div className="w-full lg:w-1/4 bg-indigo-100 p-6 rounded-lg shadow-md border-[3px] border-indigo-300">
             <h2 className="text-xl font-semibold mb-4">Filters</h2>
             <Filters filter={filterBy} setFilter={setFilterBy} />
           </div>
 
           <div className="w-full lg:w-3/4 flex flex-col gap-6">
-            <div className="bg-indigo-100 p-6 rounded-lg shadow-md">
+            <div className="bg-indigo-100 p-6 rounded-lg shadow-md border-[3px] border-indigo-300">
               <SortAndSearch filter={sortAndSearch} setFilter={setSortAndSearch} />
             </div>
 
             <h2 className="text-xl font-semibold">Hotels</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-indigo-100 p-6 rounded-lg shadow-md">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-indigo-100 p-6 rounded-lg shadow-md border-[3px] border-indigo-300">
               {hotels && hotels.length > 0 ? (
                 hotels.slice(0, sortAndSearch.itemsCount).map((hotel) => (
                   <Card

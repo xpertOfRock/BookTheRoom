@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "axios";
 import { getCurrentToken } from "./auth";
 
 // "https://localhost:5286/api/room";
@@ -29,14 +29,14 @@ export const fetchRooms = async (hotelId, filter) => {
 };
 
 
-// export const fetchRoom = async (id) => {  
-//   try{
-//       let response = await axios.get(`${API_URL}/${id}`);
-//       return response.data;
-//   }catch(e){
-//       console.error(e);
-//   }
-// };
+export const fetchRoom = async (hotelId, number) => {  
+  try{
+      let response = await axios.get(`${API_URL}/${hotelId}/${number}`);
+      return response.data;
+  }catch(e){
+      console.error(e);
+  }
+};
 
 export const postRoom = async (hotelId, formData) => {
   try {
@@ -50,36 +50,36 @@ export const postRoom = async (hotelId, formData) => {
     
     return response.status;
   } catch (error) {
-    console.error('Error creating hotel:', error.response ? error.response.data : error.message);
+    console.error('Error creating room:', error.response ? error.response.data : error.message);
   }
 };
 
 
-// export const putRoom = async (id, number, formData) => {
-//   try {
-//     const token = getToken();
-//     const response = await axios.put(`${API_URL}/${id}/${number}`, formData, {
-//       headers: {
-//         'Content-Type': 'multipart/form-data',
-//         'Authorization': `Bearer ${token}`,
-//       },
-//     });
-//     return response.status;
-//   } catch (e) {
-//     console.error(e);
-//   }
-// };
+export const putRoom = async (id, number, formData) => {
+  try {
+    const token = getCurrentToken();
+    const response = await axios.put(`${API_URL}/${id}/${number}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.status;
+  } catch (error) {
+    console.error('Error updating room:', error.response ? error.response.data : error.message);
+  }
+};
 
-// export const deleteRoom = async(id) => {
-//   try {
-//     const token = getToken();
-//     const response = await axios.delete(`${API_URL}/${id}/${number}`, {
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//       },
-//     });
-//     return response.status;
-//   } catch (e) {
-//     console.error(e);
-//   }
-// };
+export const deleteRoom = async(id, number) => {
+  try {
+    const token = getCurrentToken();
+    const response = await axios.delete(`${API_URL}/${id}/${number}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.status;
+  } catch (e) {
+    console.error(e);
+  }
+};

@@ -138,7 +138,7 @@ namespace Infrastructure.Data.Repositories
 
             distributedCache.Remove(key);
 
-            if (request.Images is not null)
+            if (request.Images is not null && request.Images.Count > 0)
             {
                 if (room.Images != null && room.Images.Any())
                 {
