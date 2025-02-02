@@ -12,7 +12,7 @@ namespace Core.Contracts
         DateTime CheckIn,
         DateTime CheckOut,
         DateTime CreatedAt,
-        OrderStatus Status,
+        OrderStatus Status = OrderStatus.Active,
         bool PaidImmediately = false
     );
 }

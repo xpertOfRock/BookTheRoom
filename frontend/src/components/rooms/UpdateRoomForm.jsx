@@ -13,7 +13,7 @@ import {
   } from "@chakra-ui/react";
   import { useEffect, useState } from "react";
   import { useParams, useNavigate } from "react-router-dom";
-  import { putRoom, fetchRoom } from "../../../services/rooms";
+  import { putRoom, fetchRoom } from "../../services/rooms";
   
   function UpdateRoomForm() {
     const { id: hotelId, number: number } = useParams();
@@ -22,7 +22,7 @@ import {
       name: "",
       description: "",
       price: 0,
-      roomCategory: "",
+      category: "",
       images: []
     });
   
@@ -36,7 +36,7 @@ import {
             name: data.name || "",
             description: data.description || "",
             price: data.price ?? 0,
-            roomCategory: data.roomCategory || "",
+            category: data.roomCategory || "",
             images: data.images || []
           });
         } catch (error) {
@@ -73,7 +73,7 @@ import {
       formData.append("Name", roomData.name);
       formData.append("Description", roomData.description);
       formData.append("Price", roomData.price);
-      formData.append("RoomCategory", roomData.roomCategory);
+      formData.append("RoomCategory", roomData.category);
   
       for (let i = 0; i < selectedFiles.length; i++) {
         formData.append("Images", selectedFiles[i]);
@@ -135,7 +135,7 @@ import {
               <FormLabel>Room Category</FormLabel>
               <Select
                 name="roomCategory"
-                value={roomData.roomCategory}
+                value={roomData.category}
                 onChange={handleChange}
               >
                 <option value="1">One Bed Apartments</option>

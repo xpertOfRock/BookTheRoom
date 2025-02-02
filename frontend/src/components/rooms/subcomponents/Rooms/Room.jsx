@@ -1,11 +1,22 @@
-function Room({ name,  preview, number, category }) {
-  
+import { useNavigate } from "react-router-dom";
+
+function Room({hotelId, name,  preview, number, category, checkIn, checkOut }) {
+  const navigate = useNavigate();
   const categories = new Map([
     [1, 'One bed apartments'],
     [2, 'Two bed apartments'],
     [3, 'Three bed apartments'],
     [4, 'Luxury'],
   ]);
+
+  const datesData = {
+    checkIn: checkIn,
+    checkOut: checkOut,
+  };
+
+  const handleViewClick = () => {
+    navigate(`/hotels/${hotelId}/room/${number}`, { state: datesData });
+  };
 
   return (    
     <div className="relative max-w-sm bg-white border border-gray-200 rounded-lg shadow-md m-4 flex flex-col">
@@ -21,7 +32,7 @@ function Room({ name,  preview, number, category }) {
         <div className="flex-grow"></div>
         <div className="flex items-center justify-between mt-4">
           <button
-            // onClick={handleViewClick}
+            onClick={handleViewClick}
             className="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600"
           >
             View

@@ -7,7 +7,7 @@ namespace Api.Contracts.Room
         string Name,
         string Description,
         decimal Price,
-        RoomCategory RoomCategory,
+        RoomCategory Category,
         List<IFormFile>? Images
     );
 }

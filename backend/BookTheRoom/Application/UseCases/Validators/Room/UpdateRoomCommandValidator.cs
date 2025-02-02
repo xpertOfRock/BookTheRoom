@@ -34,9 +34,9 @@ namespace Application.UseCases.Validators.Room
                 .GreaterThan(0)
                     .WithMessage("Price must be greater than 0.");
 
-            RuleFor(x => x.Request.Category)
-                .IsInEnum()
-                    .WithMessage("Invalid room category.");
+            //RuleFor(x => x.Request.Category)
+            //    .IsInEnum()
+            //        .WithMessage("Invalid room category.");
 
             RuleFor(x => x.Request.Images)
                 .Must(images => images == null || images.Count <= 20)

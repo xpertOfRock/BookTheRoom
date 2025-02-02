@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { postRoom } from "../../../services/rooms";
+import { postRoom } from "../../services/rooms";
 import {
   Box,
   Button,

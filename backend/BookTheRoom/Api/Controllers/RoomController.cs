@@ -135,7 +135,7 @@ namespace Api.Controllers
                 form.Name,
                 form.Description,
                 form.Price,
-                form.RoomCategory,
+                form.Category,
                 images
             );
 

@@ -52,7 +52,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
                     {
                         Amount = order.OverallPrice,
                         OrderId = order.Id.ToString(),
-                        PaymentMethodNonce = command.NonceFromClient,
+                        PaymentMethodNonce = command.Request.NonceFromClient,
                         Options = new TransactionOptionsRequest
                         {
                             SubmitForSettlement = true

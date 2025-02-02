@@ -1,5 +1,6 @@
 ﻿using Api.Extensions;
 using Application.UseCases.Commands.Order;
+using Application.UseCases.Queries.Order;
 using Core.Contracts;
 using Infrastructure.Identity;
 using MediatR;
@@ -27,7 +28,13 @@ namespace Api.Controllers
             _mediator = mediator;
             _contextAccessor = contextAccessor;
             _userManager = userManager;
-        }      
+        }
+        [HttpGet("client-token")]
+        public async Task<IActionResult> GetClientToken()
+        {
+            var token = await _mediator.Send(new GetClientTokenQuery());
+            return Ok(token);
+        }
 
         [HttpPost("{hotelId}/{number}")]
         [AllowAnonymous]
@@ -39,12 +46,10 @@ namespace Api.Controllers
             {
                 userId = _contextAccessor.HttpContext?.User.GetUserId();
             }
-
-            var nonceFromClient = Request.Form["payment_method_nonce"]!;
                      
-            var result = await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, nonceFromClient!, request));
+            var result = await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, request));
 
-            return result.IsSuccess ? Created() : BadRequest(result);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         //[HttpPut("{id}")]
