@@ -3,6 +3,7 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250203125301_Update_Entity_Order")]
+    partial class Update_Entity_Order
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,16 +175,8 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("HotelId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("MealsIncluded")
                         .HasColumnType("boolean");
@@ -196,6 +191,9 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<int>("RoomId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("RoomNumber")
                         .HasColumnType("integer");
 
@@ -203,6 +201,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -210,6 +209,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("HotelId", "RoomNumber");
 
                     b.ToTable("Orders", (string)null);
                 });
@@ -608,6 +609,22 @@ namespace Infrastructure.Migrations
                     b.HasOne("Infrastructure.Identity.ApplicationUser", null)
                         .WithMany("Orders")
                         .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Core.Entities.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("HotelId", "RoomNumber")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("Core.Entities.Room", b =>

@@ -20,12 +20,14 @@ function RoomDetails() {
   const location = useLocation();
   const sliderRef = useRef(null);
 
-  const { checkIn, checkOut } = location.state || {};
-
+  const { checkIn, checkOut, hotel } = location.state || {};
+ 
   const [room, setRoom] = useState(null);
+  const [orderData, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+
 
   useEffect(() => {
     const loadRoom = async () => {
@@ -34,6 +36,16 @@ function RoomDetails() {
             navigate(`/hotels/${id}`);
         }
         const data = await fetchRoom(id, number);
+        setData({
+          hotelId: id,
+          roomNumber: number,
+          checkIn: checkIn,
+          checkOut: checkOut,
+          basePrice: data.price,
+          roomName: data.name,
+          hotelName: hotel
+        });
+        console.log(data);
         setRoom(data);
       } catch (e) {
         console.error("Error fetching room details:", e);
@@ -53,6 +65,13 @@ function RoomDetails() {
     slidesToScroll: 1,
     arrows: false,
   };
+
+  
+
+  const handleCheckoutRedirection = () => {
+    navigate(`/checkout`, {state: orderData});
+    console.log(orderData);
+  }
 
   const handleImageClick = (index) => {
     setPhotoIndex(index);
@@ -79,7 +98,7 @@ function RoomDetails() {
 
   return (
     <section>
-      <div className="container mx-auto px-4 w-5/6">
+      <div className="container mx-auto px-4 w-full">
         <h1 className="text-4xl font-bold my-6 text-gray-800">{name}</h1>
 
         <button
@@ -142,6 +161,12 @@ function RoomDetails() {
           slides={slides}
           index={photoIndex}
         />
+        <button
+          onClick={handleCheckoutRedirection}
+          className="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600 w-full"
+        >
+          Book this room
+        </button>
       </div>
     </section>
   );

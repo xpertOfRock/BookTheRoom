@@ -1,18 +1,15 @@
-﻿using Core.Enums;
-
-namespace Core.Contracts
+﻿namespace Core.Contracts
 {
     public record CreateOrderRequest
     (
         string NonceFromClient,
         string Email,
         string Number,
+        string FirstName,
+        string LastName,
         bool MinibarIncluded,
         bool MealsIncluded,        
         DateTime CheckIn,
-        DateTime CheckOut,
-        DateTime CreatedAt,
-        OrderStatus Status = OrderStatus.Active,
-        bool PaidImmediately = false
+        DateTime CheckOut
     );
 }

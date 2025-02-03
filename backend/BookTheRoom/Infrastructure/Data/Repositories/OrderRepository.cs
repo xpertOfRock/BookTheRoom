@@ -21,7 +21,7 @@
             return activeOrders;
         }
 
-        public async Task<List<Order>?> GetAll(GetDataRequest request)
+        public async Task<List<Order>> GetAll(GetOrdersRequest request)
         {
             var query = context.Orders
                 .Where(o => string.IsNullOrWhiteSpace(request.Search) ||

@@ -5,7 +5,7 @@ namespace Core.Interfaces
 {
     public interface IOrderRepository
     {
-        Task<List<Order>?> GetAll(GetDataRequest request);
+        Task<List<Order>> GetAll(GetOrdersRequest request);
         Task<List<Order>?> GetAllUserOrders(string userId, GetDataRequest request);
         Task<List<Order>?> GetActiveOrders();
         Task<List<Order>?> GetExpiredOrders();

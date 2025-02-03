@@ -1,7 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import dropin from "braintree-web-drop-in";
+import { getCurrentUser, isAuthorized } from "../../services/auth";
+import { getClientToken, postOrder } from "../../services/orders";
+import {
+  Heading
+} from "@chakra-ui/react";
 
 function Checkout() {
   const navigate = useNavigate();
@@ -12,16 +16,37 @@ function Checkout() {
     roomNumber,
     checkIn,
     checkOut,
-    basePrice,
-    roomName
+    basePrice = 0,
+    roomName = "Unknown Room"
   } = location.state || {};
 
-  const dropInContainer = useRef(null);
-  const [dropInInstance, setDropInInstance] = useState(null);
-  const [clientToken, setClientToken] = useState("");
+  const currentUser = isAuthorized() ? getCurrentUser() : null;
+
+  const comission = 0.05;
+
+  const [orderData, setOrderData] = useState({
+    firstName: currentUser?.firstName || "",
+    lastName: currentUser?.lastName || "",
+    email: currentUser?.email || "",
+    phone: currentUser?.phoneNumber || "",
+    minibarIncluded: false,
+    mealsIncluded: false,
+  });
 
   const [days, setDays] = useState(1);
+  const [subTotal, setSubTotal] = useState(basePrice);
   const [totalPrice, setTotalPrice] = useState(basePrice);
+
+  const [clientToken, setClientToken] = useState("");
+  const [dropInInstance, setDropInInstance] = useState(null);
+  const dropInContainer = useRef(null);
+
+  useEffect(() => {
+    if (!hotelId || !roomNumber || !checkIn || !checkOut) {
+      console.warn("Not enough data to create an order. Redirecting...");
+      navigate("/");
+    }
+  }, [hotelId, roomNumber, checkIn, checkOut, navigate]);
 
   useEffect(() => {
     if (checkIn && checkOut) {
@@ -29,37 +54,47 @@ function Checkout() {
       const outDate = new Date(checkOut);
       const diff = Math.ceil((outDate - inDate) / (1000 * 60 * 60 * 24));
       const validDays = diff > 0 ? diff : 1;
+
+      let tempSub = basePrice * validDays;
+
+      if (orderData.minibarIncluded) {
+        tempSub *= 1.03;
+      }
+      if (orderData.mealsIncluded) {
+        tempSub *= 1.03;
+      }
+
+      const final = tempSub * (1 + comission);
+
       setDays(validDays);
-      setTotalPrice(basePrice * validDays);
+      setSubTotal(parseFloat(tempSub.toFixed(2)));
+      setTotalPrice(parseFloat(final.toFixed(2)));
     }
-  }, [checkIn, checkOut, basePrice, navigate]);
+  }, [checkIn, checkOut, basePrice, orderData.minibarIncluded, orderData.mealsIncluded]);
 
   useEffect(() => {
-    const fetchClientToken = async () => {
+    const fetchToken = async () => {
       try {
-        const response = await axios.get("/api/order/client-token");
-        setClientToken(response.data);
+        const token = await getClientToken();
+        setClientToken(token);
       } catch (error) {
-        console.error("Error occured while fetching the client token:", error);
+        console.error("Error fetching Braintree client token:", error);
       }
     };
-    fetchClientToken();
+    fetchToken();
   }, []);
 
   useEffect(() => {
     if (!clientToken) return;
-
     dropin.create(
       {
         authorization: clientToken,
         container: dropInContainer.current,
-        paypal: {
-          flow: "vault",
-        },
+        paypal: { flow: "vault" },
       },
       (err, instance) => {
         if (err) {
-          console.error("Ошибка dropin.create:", err);
+          console.error("Error creating Drop-In:", err);
           return;
         }
         setDropInInstance(instance);
@@ -67,140 +102,214 @@ function Checkout() {
     );
   }, [clientToken]);
 
-  if (!hotelId || !roomNumber || !checkIn || !checkOut) {
-    return (
-      <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Нет данных для заказа</h1>
-          <p>Пожалуйста, вернитесь и выберите комнату заново.</p>
-        </div>
-      </div>
-    );
-  }
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setOrderData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
+  };
 
   const handleBookSecurely = async () => {
-    if (!dropInInstance) return;
+    const { firstName, lastName, email, phone } = orderData;
+    if (!firstName || !lastName || !email || !phone) {
+      alert("Please fill out all required fields (First/Last Name, Email, Phone).");
+      return;
+    }
+
+    if (!dropInInstance) {
+      alert("Payment system not ready. Try again later.");
+      return;
+    }
+
     try {
       const { nonce } = await dropInInstance.requestPaymentMethod();
 
       const createOrderRequest = {
         NonceFromClient: nonce,
-        Email: "user@example.com",
-        Number: "1234567890",
-        MinibarIncluded: false,
-        MealsIncluded: false,
+        Email: orderData.email,
+        FirstName: orderData.firstName,
+        LastName: orderData.lastName,
+        Number: orderData.phone,
+        MinibarIncluded: orderData.minibarIncluded,
+        MealsIncluded: orderData.mealsIncluded,
         CheckIn: checkIn,
         CheckOut: checkOut,
-        CreatedAt: new Date().toISOString(),
-        PaidImmediately: true,
-        Status: 0,
+        CreatedAt: new Date().toISOString()
       };
+      
+      console.log(createOrderRequest);
 
-      const response = await axios.post(
-        `/api/order/${hotelId}/${roomNumber}`,
-        createOrderRequest
-      );
-
-      if (response.status === 201) {
-        alert("Заказ успешно создан и оплачен!");
-      } else {
-        console.error("Ошибка при создании заказа:", response.data);
+      const result = await postOrder(hotelId, roomNumber, createOrderRequest);
+      if (result) {
+        alert("Order created and paid successfully!");
+        navigate("/some-success-page");
       }
     } catch (error) {
-      console.error("Ошибка при оплате:", error);
+      console.error("Payment error:", error);
+      alert("Payment failed. Check card details or try again.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 py-8 px-4 flex items-center justify-center">
-      <div className="bg-white w-full max-w-4xl rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 overflow-hidden">
-        
+  <section>
+    <div className="min-h-screen flex items-center justify-center bg-white  p-6">
+    
+      <div className="bg-white w-full max-w-4xl rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-md shadow-md ">
         <div
           className="relative bg-cover bg-center"
           style={{
-            backgroundImage: `url("https://images.pexels.com/photos/2876787/pexels-photo-2876787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2")`,
-            minHeight: "400px",
+            backgroundImage: `url("https://images.pexels.com/photos/2876787/pexels-photo-2876787.jpeg")`,
+            minHeight: "400px"
           }}
         >
           <div className="absolute inset-0 bg-indigo-900 bg-opacity-50 flex flex-col justify-end p-6">
-            <h1 className="text-3xl text-white font-bold">
-              {roomName || "Room"}
-            </h1>
-            <p className="text-lg text-gray-100 font-semibold">
-              {basePrice} USD / ночь
+            <h1 className="text-3xl text-white font-bold">{roomName}</h1>
+            <p className="text-lg text-gray-200 font-semibold">
+              {basePrice} USD / night
             </p>
             <hr className="my-2 border-gray-300" />
-            <p className="text-gray-200 text-sm">
-              {days} {days === 1 ? "ночь" : "ночей"}: {checkIn} → {checkOut}
+            <p className="text-gray-100 text-sm">
+              {days} {days === 1 ? "night" : "nights"}: {checkIn} → {checkOut}
             </p>
           </div>
         </div>
-
-        <div className="p-6 flex flex-col justify-between">
+        <div className="p-6 flex flex-col justify-between rounded-md shadow-md">
+          {/* Блок итога */}
           <div>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              Receipt Summary
-            </h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Receipt Summary</h2>
             <table className="w-full mb-6 text-gray-600">
               <tbody>
                 <tr className="border-b">
                   <td className="py-2">
-                    {basePrice} USD x {days} {days > 1 ? "ночи" : "ночь"}
+                    {basePrice} USD x {days} {days > 1 ? "nights" : "night"}
                   </td>
-                  <td className="text-right py-2">
-                    {(basePrice * days).toFixed(2)} USD
-                  </td>
+                  <td className="text-right py-2">{(basePrice * days).toFixed(2)} USD</td>
                 </tr>
-                <tr className="border-b">
-                  <td className="py-2">Discount</td>
-                  <td className="text-right py-2">0.00 USD</td>
-                </tr>
+                {(orderData.minibarIncluded || orderData.mealsIncluded) && (
+                  <tr className="border-b">
+                    <td className="py-2">
+                      Extras (+3% each): 
+                      <br />
+                      {orderData.minibarIncluded && <span>Minibar </span>}
+                      {orderData.mealsIncluded && <span>Meals </span>}
+                    </td>
+                    <td className="text-right py-2">+3%</td>
+                  </tr>
+                )}
                 <tr className="border-b">
                   <td className="py-2 font-semibold">Subtotal</td>
-                  <td className="text-right py-2 font-semibold">
-                    {(basePrice * days).toFixed(2)} USD
-                  </td>
+                  <td className="text-right py-2 font-semibold">{subTotal.toFixed(2)} USD</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="py-2">Tax (пример ~10%)</td>
+                  <td className="py-2">Tax (~5%)</td>
                   <td className="text-right py-2">
-                    {((basePrice * days) * 0.1).toFixed(2)} USD
+                    {(subTotal * comission).toFixed(2)} USD
                   </td>
                 </tr>
                 <tr className="border-b">
                   <td className="py-2 font-bold text-lg">Total</td>
                   <td className="text-right py-2 font-bold text-lg">
-                    {(totalPrice * 1.1).toFixed(2)} USD
+                    {totalPrice.toFixed(2)} USD
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <div className="mb-6">
+            <h3 className="text-md font-semibold text-gray-800 mb-2">Contact Info</h3>
+            <div className="grid grid-cols-1 gap-4 mb-4">
+              <div>
+                <label className="block font-semibold mb-1">First Name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  className="w-full border border-gray-300 p-2 rounded"
+                  value={orderData.firstName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Last Name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  className="w-full border border-gray-300 p-2 rounded"
+                  value={orderData.lastName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  className="w-full border border-gray-300 p-2 rounded"
+                  value={orderData.email}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  className="w-full border border-gray-300 p-2 rounded"
+                  value={orderData.phone}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <div className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                id="minibar"
+                name="minibarIncluded"
+                className="mr-2"
+                checked={orderData.minibarIncluded}
+                onChange={handleInputChange}
+              />
+              <label htmlFor="minibar" className="font-semibold">
+                Minibar Included (+3%)
+              </label>
+            </div>
+            <div className="flex items-center mb-4">
+              <input
+                type="checkbox"
+                id="meals"
+                name="mealsIncluded"
+                className="mr-2"
+                checked={orderData.mealsIncluded}
+                onChange={handleInputChange}
+              />
+              <label htmlFor="meals" className="font-semibold">
+                Meals Included (+3%)
+              </label>
+            </div>
 
-          <div>
-            <h3 className="text-md font-semibold text-gray-800 mb-2">
-              Payment Information
-            </h3>
+            <h3 className="text-md font-semibold text-gray-800 mb-2">Payment Information</h3>
             <div
-              className="bg-gray-100 p-4 rounded-md"
               ref={dropInContainer}
+              className="bg-gray-100 p-4 rounded-md"
               style={{ minHeight: "200px" }}
-            ></div>
-
-            <button
-              className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-md transition-colors"
-              onClick={handleBookSecurely}
-            >
-              Book Securely
-            </button>
-            <p className="text-xs text-gray-500 text-center mt-2">
-              <i className="fa-solid fa-lock mr-1" />
-              Your credit card information is encrypted
-            </p>
+            />
           </div>
+
+          <button
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-md transition-colors"
+            onClick={handleBookSecurely}
+          >
+            Confirm
+          </button>
+
+          <p className="text-xs text-gray-500 text-center mt-2">
+            Your credit card information is encrypted
+          </p>
         </div>
       </div>
     </div>
+  </section>
+    
   );
 }
 

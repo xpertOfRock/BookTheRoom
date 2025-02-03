@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../../services/auth';
 import InputMask from 'react-input-mask';
-import { Box, Button, Input, Stack, Heading, Text } from '@chakra-ui/react';
+import { Box, Button, Input, Stack, Heading, Text, Center } from '@chakra-ui/react';
 
 function Register() {
   const [userData, setUserData] = useState({
@@ -36,7 +36,8 @@ function Register() {
   };
 
   return (
-    <Box p={4}>
+    <Center axis="both">
+    <Box p={4} width={"25%"}>
       <Heading mb={6}>Register</Heading>
       {error && <Text color="red.500">{error}</Text>}
       <Stack spacing={4}>
@@ -100,6 +101,7 @@ function Register() {
         </Button>
       </Stack>
     </Box>
+    </Center>
   );
 }
 

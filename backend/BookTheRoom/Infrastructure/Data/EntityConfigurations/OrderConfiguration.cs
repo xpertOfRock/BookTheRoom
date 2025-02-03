@@ -26,21 +26,19 @@ namespace Infrastructure.Data.EntityConfigurations
                 .HasMaxLength(20);
 
             builder.Property(o => o.UserId)
+                .IsRequired(false);
+
+            builder.Property(o => o.FirstName)
                 .IsRequired();
 
-            builder.Property(o => o.Status)
-                .IsRequired()
-                .HasConversion<string>();
+            builder.Property(o => o.LastName)
+                .IsRequired();
 
-            builder.HasOne(o => o.Hotel)
-                .WithMany()
-                .HasForeignKey(o => o.HotelId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(o => o.HotelId)
+                .IsRequired();
 
-            builder.HasOne(o => o.Room)
-                .WithMany()
-                .HasForeignKey(o => new { o.HotelId, o.RoomNumber })
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(o => o.RoomNumber)
+                .IsRequired();
 
             builder.HasIndex(o => o.UserId);
         }

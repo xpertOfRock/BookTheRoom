@@ -8,20 +8,18 @@ namespace Core.Entities
         public decimal OverallPrice { get; set; }        
         public string? Email { get; set; } = null;
         public string? Phone { get; set; } = null;
+        public string FirstName {  get; set; }
+        public string LastName { get; set; }
         public bool MinibarIncluded { get; set; } = false;
         public bool MealsIncluded { get; set; } = false;
         public string? UserId { get; set; } = null;
         public int RoomNumber { get; set; }
         public int HotelId { get; set; }
-        public int RoomId { get; set; }
-        public bool IsPaid { get; set; } = false;
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
         public DateTime CreatedAt { get; set; }
 
 
-        public Hotel Hotel { get; set; }
-        public Room Room { get; set; }
         public OrderStatus Status { get; set; }      
     }
 }

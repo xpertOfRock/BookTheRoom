@@ -1,6 +1,4 @@
-﻿using Application.UseCases.Abstractions;
-
-namespace Application.UseCases.Commands.Order
+﻿namespace Application.UseCases.Commands.Order
 {
     public class CreateOrderCommand : ICommand<IResult>
     {

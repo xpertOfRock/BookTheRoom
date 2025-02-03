@@ -20,7 +20,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 function HotelDetails() {
-  const { id } = useParams();
+  const { id: id } = useParams();
   const navigate = useNavigate();
   const sliderRef = useRef(null);
 
@@ -104,7 +104,7 @@ function HotelDetails() {
 
   return (
     <section>
-      <div className="container mx-auto px-4 w-5/6">
+      <div className="container mx-auto px-4 w-full">
         <h1 className="text-4xl font-bold my-6 text-gray-800">{name}</h1>
 
         <button
@@ -146,7 +146,6 @@ function HotelDetails() {
               <FontAwesomeIcon icon={faChevronRight} />
             </button>
           </div>
-
           <div className="xl:w-1/2 w-full bg-indigo-200 border-[3px] border-indigo-400 flex flex-col rounded-lg shadow-md my-auto">
             <div className="bg-indigo-100 p-6 rounded-lg shadow-md align-middle my-3 mx-3">
               <h3 className="text-2xl font-semibold text-gray-700">{name}</h3>
@@ -172,6 +171,7 @@ function HotelDetails() {
               setFilter={setFilter}
               onApplyFilters={handleFilterApply}
               rooms={rooms}
+              hotelName={name}
             />
           </div>
 

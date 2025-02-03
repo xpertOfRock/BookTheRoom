@@ -25,7 +25,7 @@ namespace Application.ExternalServices
             email.Body = new TextPart(TextFormat.Plain) { Text = body };
 
             using var smtp = new SmtpClient();
-            smtp.Connect(_options.EmailHost, _options.EmailPort, SecureSocketOptions.StartTls);
+            smtp.Connect(_options.EmailHost, 587, SecureSocketOptions.StartTls);
             smtp.Authenticate(_options.EmailUsername, _options.EmailPassword);
             smtp.Send(email);
             smtp.Disconnect(true);

@@ -42,20 +42,14 @@ namespace Api.Controllers
         {
             string? userId = null;
 
-            if(User.Identity.IsAuthenticated)
+            if(User.Identity!.IsAuthenticated)
             {
-                userId = _contextAccessor.HttpContext?.User.GetUserId();
+                userId = _contextAccessor.HttpContext!.User.GetUserId();
             }
                      
             var result = await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, request));
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> Put(int id, [FromBody] string value)
-        //{
-        //    return Ok();
-        //}
     }
 }

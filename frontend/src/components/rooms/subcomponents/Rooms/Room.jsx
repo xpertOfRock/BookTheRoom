@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function Room({hotelId, name,  preview, number, category, checkIn, checkOut }) {
+function Room({hotelId, name,  preview, number, category, checkIn, checkOut, hotel }) {
   const navigate = useNavigate();
   const categories = new Map([
     [1, 'One bed apartments'],
@@ -9,13 +9,14 @@ function Room({hotelId, name,  preview, number, category, checkIn, checkOut }) {
     [4, 'Luxury'],
   ]);
 
-  const datesData = {
+  const redirectData = {
     checkIn: checkIn,
     checkOut: checkOut,
+    hotel: hotel
   };
 
   const handleViewClick = () => {
-    navigate(`/hotels/${hotelId}/room/${number}`, { state: datesData });
+    navigate(`/hotels/${hotelId}/room/${number}`, { state: redirectData });
   };
 
   return (    

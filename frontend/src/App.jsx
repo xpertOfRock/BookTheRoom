@@ -29,7 +29,7 @@ function App() {
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/hotels/:id" element={<HotelDetails />} />
           <Route path="/hotels/:id/room/:number" element={<RoomDetails />}/>
-          <Route path="/hotels/:id/room/:number/checkout" element={<Checkout />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/admin/hotels/create" element={<CreateForm/> } />
           <Route path="/admin/hotels/update/:id" element={<UpdateForm /> } />
           <Route path="/admin/hotels/:id/rooms/create" element={<CreateRoomForm /> } />

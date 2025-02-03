@@ -1,4 +1,5 @@
 ﻿using Application.UseCases.Queries.Room;
+using System.Linq;
 
 namespace Application.UseCases.Handlers.QueryHandlers.Room
 {
@@ -13,25 +14,28 @@ namespace Application.UseCases.Handlers.QueryHandlers.Room
                 throw new ValidationException(validationResult.Errors);
             }
 
-            var activeOrders = await unitOfWork.Orders.GetActiveOrders();
+            var allOrders = await unitOfWork.Orders.GetAll(new GetOrdersRequest(null, null, null)); // все заказы
                                                                            
-            var hotelRooms = await unitOfWork.Rooms.GetAll(query.HotelId, query.Request);
+            var hotelRooms = await unitOfWork.Rooms.GetAll(query.HotelId, query.Request); // все комнаты данного отеля
 
-            if (activeOrders is null || !activeOrders.Any())
+            if (allOrders is null || !allOrders.Any())
             {
                 return hotelRooms;
             }
 
-            activeOrders = activeOrders.Where(o => o.HotelId == query.HotelId).ToList();                      
-
-            var freeRooms = activeOrders
-                .Where(x => 
-                    query.CheckIn > x.CheckOut && 
-                    query.CheckOut < x.CheckIn 
+            var roomsToExclude = allOrders
+                .Where(o => 
+                    o.HotelId == query.HotelId &&
+                    (query.CheckIn <= o.CheckIn && query.CheckOut >= query.CheckIn) ||
+                    (query.CheckIn <= o.CheckOut && query.CheckOut >= o.CheckOut)
                 )
-                .Select(x => x.RoomNumber).ToList();
+                .Select(o => o.RoomNumber)
+                .ToList(); // брони связанные с даным отелем на время, указанное в фильтрах, выбор номеров, соответствующих этому условию           
 
-            return hotelRooms.Where(x => freeRooms.Contains(x.Number)).ToList();
+            var freeRooms = hotelRooms
+                .Where(x => !roomsToExclude.Contains(x.Number)).ToList();
+
+            return freeRooms;
         }
     }
 }
