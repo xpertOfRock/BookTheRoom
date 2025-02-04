@@ -3,6 +3,7 @@
     public enum OrderStatus
     {
         Active,
+        Awaiting,
         Completed,
         Closed
     }

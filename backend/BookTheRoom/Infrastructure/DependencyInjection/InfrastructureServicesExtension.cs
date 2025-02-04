@@ -19,8 +19,8 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IEmailService, EmailService>();
 
-            //services.AddHostedService<OrderStatusUpdater>();
-            services.AddHostedService<RoomStatusUpdater>();
+            services.AddHostedService<OrderStatusUpdater>();
+            //services.AddHostedService<RoomStatusUpdater>();
 
             return services;
         }

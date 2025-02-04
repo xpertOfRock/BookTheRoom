@@ -8,7 +8,7 @@ namespace Infrastructure.Data.Repositories
         public async Task<IResult> Add(Comment comment)
         {
             await context.Comments.AddAsync(comment);
-            return new Success("Entity 'Comment' was created successfuly.");
+            return new Success("Entity 'Comment' was created successfully.");
         }
 
         //public async Task<Comment> GetById(int? id)
@@ -45,7 +45,7 @@ namespace Infrastructure.Data.Repositories
             {
                 await context.Comments.Where(c => c.Id == id).ExecuteDeleteAsync();
             }
-            return new Success("Entity 'Comment' was deleted successfuly.");
+            return new Success("Entity 'Comment' was deleted successfully.");
         }
 
         public async Task<IResult> Update(int id, string description)
@@ -56,7 +56,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(c => c.Description, description)
                 .SetProperty(c => c.UpdatedAt, DateTime.UtcNow));
 
-            return new Success("Entity 'Comment' was updated successfuly.");
+            return new Success("Entity 'Comment' was updated successfully.");
         }
     }
 }

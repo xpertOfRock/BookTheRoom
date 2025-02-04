@@ -160,13 +160,13 @@ namespace Tests.ControllersTests
 
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<UpdateHotelCommand>(), default))
-                .ReturnsAsync(new Success("Entity 'Hotel' was updated successfuly."));
+                .ReturnsAsync(new Success("Entity 'Hotel' was updated successfully."));
 
             var result = await _controller.Put(hotelId, form);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var actualResult = okResult.Value as Success;
-            Assert.Equal("Entity 'Hotel' was updated successfuly.", actualResult?.Message);
+            Assert.Equal("Entity 'Hotel' was updated successfully.", actualResult?.Message);
             Assert.Equal(true, actualResult?.IsSuccess);
             _mockPhotoService.Verify(x => x.AddPhotoAsync(It.IsAny<string>(), It.IsAny<Stream>()), Times.Exactly(2));
             _mockMediator.Verify(x => x.Send(It.IsAny<UpdateHotelCommand>(), default), Times.Once);

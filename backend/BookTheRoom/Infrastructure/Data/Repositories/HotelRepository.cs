@@ -16,7 +16,7 @@ namespace Infrastructure.Data.Repositories
 
             await context.Hotels.AddAsync(hotel);
 
-            return new Success("Entity 'Hotel' was created successfuly.");
+            return new Success("Entity 'Hotel' was created successfully.");
         }
         
         public async Task<IResult> Delete(int id)
@@ -39,7 +39,7 @@ namespace Infrastructure.Data.Repositories
             }
             
             context.Hotels.Remove(hotel);
-            return new Success("Entity 'Hotel' was deleted successfuly.");
+            return new Success("Entity 'Hotel' was deleted successfully.");
         }
         
         public async Task<List<Hotel>> GetAll(GetHotelsRequest request)
@@ -194,7 +194,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Address.PostalCode, request.Address.PostalCode)
                 .SetProperty(h => h.HasPool, request.HasPool));
 
-            return new Success("Entity 'Hotel' was updated successfuly.");
+            return new Success("Entity 'Hotel' was updated successfully.");
         }
     }
 }

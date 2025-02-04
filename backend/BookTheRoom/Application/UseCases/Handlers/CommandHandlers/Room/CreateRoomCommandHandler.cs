@@ -25,7 +25,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Room
 
                 IResult result = !addResult.IsSuccess
                                ? new Fail("Could not add room to the list of hotel rooms.")
-                               : new Success("Room was successfuly added to the list of hotel rooms.");
+                               : new Success("Room was successfully added to the list of hotel rooms.");
 
                 if (!result.IsSuccess)
                 {

@@ -48,12 +48,12 @@ namespace Infrastructure.Data.Repositories
 
         public async Task CommitAsync()
         {
-            await _context.Database.CurrentTransaction?.CommitAsync();
+            await _context.Database.CurrentTransaction!.CommitAsync();
         }
 
         public async Task RollbackAsync()
         {
-            await _context.Database.CurrentTransaction?.RollbackAsync();
+            await _context.Database.CurrentTransaction!.RollbackAsync();
         }
         public void Dispose()
         {

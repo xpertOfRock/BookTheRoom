@@ -1,8 +1,6 @@
 ﻿using Application.UseCases.Commands.Order;
 using Braintree;
-using Core.TasksResults;
-using Core.ValueObjects;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Core.Entities;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {
@@ -25,7 +23,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
 
                 var room = await unitOfWork.Rooms.GetById(command.HotelId, command.Number, cancellationToken);
 
-                if (hotel is null)
+                if (room is null)
                 {
                     await unitOfWork.RollbackAsync();
                     return new Fail("[Post Order] Room is null", ErrorStatuses.NotFoundError);
@@ -58,58 +56,74 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
                     RoomNumber = command.Number,
                     MealsIncluded = command.Request.MealsIncluded,
                     MinibarIncluded = command.Request.MinibarIncluded,
-                    Status = OrderStatus.Active
+                    Status = OrderStatus.Awaiting
                 };
 
-                var gateway = paymentService.CreateGateway();
-
-                var request = new TransactionRequest
-                {
-                    Amount = order.OverallPrice,
-                    OrderId = order.Id.ToString(),
-                    PaymentMethodNonce = command.Request.NonceFromClient,
-                    Options = new TransactionOptionsRequest
-                    {
-                        SubmitForSettlement = true
-                    }
-                };
-
-                var transactionResult = await gateway.Transaction.SaleAsync(request);
-
-                if (!transactionResult.IsSuccess())
-                {
-                    await unitOfWork.RollbackAsync();
-                    return new Fail("Card details are invalid or not enough funds on given card.", ErrorStatuses.ValidationError);
-                }
-
-                var result = await unitOfWork.Orders.Add(order);
+                await unitOfWork.Orders.Add(order);
 
                 await unitOfWork.SaveChangesAsync();
 
+                var paymentResult = await ProcessPayment(order.Id.ToString(), order.OverallPrice, command.Request.NonceFromClient);
+
+                if(!paymentResult.IsSuccess)
+                {
+                    await unitOfWork.RollbackAsync();
+                    return paymentResult;
+                }               
+
                 await unitOfWork.CommitAsync();
 
-                string subject = $"Order No. {order.Id}";
+                PostMessage(command.Request.Email, order, hotel, days);
 
-                string body = "Thanks for choosing Book The Room!\n\n" +
-
-                             $"Your hotel: {hotel.Name} ( Address: {hotel.Address.ToString()} )\n" +
-                             $"You have successfully booked the room with immediate payment!\n" +
-                             $"Room No. : {command.Number}\n" +
-                             $"Duration: {days} days\n" +
-                             $"Check in date: {order.CheckIn.ToString("dd.MM.yyyy HH:mm")}\n" +
-                             $"Check out date: {order.CheckOut.ToString("dd.MM.yyyy HH:mm")}\n" +
-                             $"Overall price : {Math.Round(order.OverallPrice, 2)}\n\n" +
-                             $"Have a nice day!";
-
-                emailService.SendEmail(command.Request.Email, subject, body);
-
-                return result;
+                return new Success("Order was successfully created and payment processed successfully.");
             }
             catch (Exception ex)
             {
                 await unitOfWork.RollbackAsync();
                 throw new InvalidOperationException("An error occurred while processing the order.", ex);
             }
-        }   
+        }
+
+        private void PostMessage(string emailToSend, Core.Entities.Order order, Core.Entities.Hotel hotel, int days)
+        {
+            string subject = $"Order No. {order.Id}";
+
+            string body = "Thanks for choosing Book The Room!\n\n" +
+
+                         $"Your hotel: {hotel.Name} ( Address: {hotel.Address.ToString()} )\n" +
+                         $"You have successfully booked the room with immediate payment!\n" +
+                         $"Room No. : {order.RoomNumber}\n" +
+                         $"Duration: {days} days\n" +
+                         $"Check in date: {order.CheckIn.ToString("dd.MM.yyyy HH:mm")}\n" +
+                         $"Check out date: {order.CheckOut.ToString("dd.MM.yyyy HH:mm")}\n" +
+                         $"Overall price : {Math.Round(order.OverallPrice, 2)}\n\n" +
+                         $"Have a nice day!";
+
+            emailService.SendEmail(emailToSend, subject, body);
+        }
+
+        private async Task<IResult> ProcessPayment(string orderId, decimal price, string nonceFromClient)
+        {
+            var gateway = paymentService.CreateGateway();
+
+            var request = new TransactionRequest
+            {
+                Amount = price,
+                OrderId = orderId,
+                PaymentMethodNonce = nonceFromClient,
+                Options = new TransactionOptionsRequest
+                {
+                    SubmitForSettlement = true
+                }
+            };
+
+            var transactionResult = await gateway.Transaction.SaleAsync(request);
+
+            IResult result = transactionResult.IsSuccess() 
+                ? new Success("[Post Order] Paymemt successfully processed & order success")
+                : new Fail("[Post order] Card details are invalid or not enough funds on given card.", ErrorStatuses.ValidationError);
+
+            return result;         
+        }
     }
 }

@@ -14,9 +14,9 @@ namespace Application.UseCases.Handlers.QueryHandlers.Room
                 throw new ValidationException(validationResult.Errors);
             }
 
-            var allOrders = await unitOfWork.Orders.GetAll(new GetOrdersRequest(null, null, null)); // все заказы
+            var allOrders = await unitOfWork.Orders.GetAll(new GetOrdersRequest(null, null, null));
                                                                            
-            var hotelRooms = await unitOfWork.Rooms.GetAll(query.HotelId, query.Request); // все комнаты данного отеля
+            var hotelRooms = await unitOfWork.Rooms.GetAll(query.HotelId, query.Request);
 
             if (allOrders is null || !allOrders.Any())
             {
@@ -30,7 +30,7 @@ namespace Application.UseCases.Handlers.QueryHandlers.Room
                     (query.CheckIn <= o.CheckOut && query.CheckOut >= o.CheckOut)
                 )
                 .Select(o => o.RoomNumber)
-                .ToList(); // брони связанные с даным отелем на время, указанное в фильтрах, выбор номеров, соответствующих этому условию           
+                .ToList();       
 
             var freeRooms = hotelRooms
                 .Where(x => !roomsToExclude.Contains(x.Number)).ToList();

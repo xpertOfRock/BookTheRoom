@@ -18,7 +18,7 @@ namespace Infrastructure.Data.Repositories
 
             await context.Apartments.AddAsync(apartment);
 
-            return new Success("New entity 'Apartment' created successfuly.");
+            return new Success("New entity 'Apartment' created successfully.");
         }
 
         public async Task<IResult> Delete(int id)
@@ -43,7 +43,7 @@ namespace Infrastructure.Data.Repositories
 
             context.Apartments.Remove(apartment);
 
-            return new Success("Entity 'Apartment' was deleted successfuly.");
+            return new Success("Entity 'Apartment' was deleted successfully.");
         }
         public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request)
         {
@@ -221,7 +221,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Description, request.Description)
                 .SetProperty(h => h.PriceForNight, request.Price));
 
-            return new Success("Entity 'Apartment' was deleted successfuly.");
+            return new Success("Entity 'Apartment' was deleted successfully.");
         }
     }
 }

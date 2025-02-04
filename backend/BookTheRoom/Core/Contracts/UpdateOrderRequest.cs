@@ -4,8 +4,6 @@ namespace Core.Contracts
 {
     public record UpdateOrderRequest
     (
-        bool MinibarIncluded,
-        bool MealsIncluded,
         OrderStatus Status
     );
 }

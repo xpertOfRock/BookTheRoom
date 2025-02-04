@@ -5,7 +5,7 @@
         public async Task<IResult> Add(Order order)
         {
             await context.Orders.AddAsync(order);
-            return new Success("Entity 'Order' was created successfuly.");
+            return new Success("Entity 'Order' was created successfully.");
         }
 
         public async Task<List<Order>?> GetActiveOrders()
@@ -104,8 +104,6 @@
                 .Where(o => o.Id == id)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(o => o.Status, request.Status)
-                .SetProperty(o => o.MinibarIncluded, request.MinibarIncluded)
-                .SetProperty(o => o.MealsIncluded, request.MealsIncluded)
                 );            
         }
     }

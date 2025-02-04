@@ -14,7 +14,7 @@ namespace Infrastructure.Data.Repositories
             }            
             await context.Rooms.AddAsync(room);
 
-            return new Success("Entity 'Room' was created successfuly.");
+            return new Success("Entity 'Room' was created successfully.");
         }
 
         public async Task<IResult> Delete(int hotelId, int number)
@@ -40,7 +40,7 @@ namespace Infrastructure.Data.Repositories
 
             context.Rooms.Remove(room);
 
-            return new Success("Entity 'Room' was deleted successfuly.");
+            return new Success("Entity 'Room' was deleted successfully.");
         }
         public async Task<List<Room>> GetAllRooms()
         {
@@ -161,7 +161,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(r => r.Price, request.Price)
                 .SetProperty(r => r.Category, request.Category));
 
-            return new Success("Entity 'Room' was updated successfuly.");
+            return new Success("Entity 'Room' was updated successfully.");
         }
     }
 }
