@@ -3,37 +3,31 @@ using Application.UseCases.Queries.Order;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Data.BackgroundServices
 {
-    public class OrderStatusUpdater : IHostedService
+    public class OrderStatusUpdater(IServiceScopeFactory scopeFactory, ILogger<OrderStatusUpdater> logger) : IHostedService
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-
-        public OrderStatusUpdater(IServiceScopeFactory scopeFactory)
-        {
-            _scopeFactory = scopeFactory;
-        }
         private async Task UpdateOrderStatus()
         {
-            using (var scope = _scopeFactory.CreateScope())
+            using (var scope = scopeFactory.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-                var expiredOrders = await mediator.Send(new GetExpiredOrdersQuery());
+                var orders = await mediator.Send(new GetAllOrdersQuery(new GetOrdersRequest(null, null, null)));
 
-                if (expiredOrders.Any())
+                if (orders.Any())
                 {
-                    foreach (var order in expiredOrders)
+                    foreach (var order in orders)
                     {
-                        var request = new UpdateOrderRequest(order.Status);
 
-                        if (order.Status == OrderStatus.Active && order.CheckOut < DateTime.UtcNow)
+                        if (order.Status == OrderStatus.Active && order.CheckOut <= DateTime.UtcNow.Date)
                         {
                             await mediator.Send(new UpdateOrderCommand(order.Id, new UpdateOrderRequest(OrderStatus.Completed)));
                         }
 
-                        if(order.Status == OrderStatus.Awaiting && order.CheckIn >= DateTime.UtcNow)
+                        if (order.Status == OrderStatus.Awaiting && order.CheckIn <= DateTime.UtcNow.Date && order.CheckOut > DateTime.UtcNow.Date)
                         {
                             await mediator.Send(new UpdateOrderCommand(order.Id, new UpdateOrderRequest(OrderStatus.Active)));
                         }
@@ -45,6 +39,7 @@ namespace Infrastructure.Data.BackgroundServices
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            logger.LogInformation("[START] OrderStatusUpdater background service has been started.");
             var _timer = new Timer(async entry =>
             {
                 await UpdateOrderStatus();
@@ -54,7 +49,8 @@ namespace Infrastructure.Data.BackgroundServices
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            logger.LogInformation("[STOP] OrderStatusUpdater background service has been stoped.");
+            return Task.CompletedTask;
         }
     }
 }

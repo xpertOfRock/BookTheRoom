@@ -40,7 +40,12 @@ namespace Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Post(int hotelId, int number, [FromBody] CreateOrderRequest request)
         {
-            string? userId = _contextAccessor.HttpContext!.User.GetUserId() ?? null;           
+            string? userId =  null;
+
+            if (User.Identity!.IsAuthenticated)
+            {
+                userId = _contextAccessor.HttpContext!.User.GetUserId();
+            }
                      
             var result = await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, request));
 

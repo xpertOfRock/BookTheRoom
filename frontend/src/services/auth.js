@@ -108,6 +108,19 @@ export const getCurrentUser = () => {
   return user ? JSON.parse(user) : null;
 };
 
+export const isAdmin = () => {
+  const userCookie = Cookies.get('user');
+  if (!userCookie) return false;
+
+  try {
+    const user = JSON.parse(userCookie);
+    return user.role === 'admin';
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+};
+
 export const getCurrentUsername = () => {
   const userCookie = Cookies.get('user');
 

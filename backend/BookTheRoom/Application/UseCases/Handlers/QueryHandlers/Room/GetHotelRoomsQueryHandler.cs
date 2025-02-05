@@ -26,8 +26,8 @@ namespace Application.UseCases.Handlers.QueryHandlers.Room
             var roomsToExclude = allOrders
                 .Where(o => 
                     o.HotelId == query.HotelId &&
-                    (query.CheckIn <= o.CheckIn && query.CheckOut >= query.CheckIn) ||
-                    (query.CheckIn <= o.CheckOut && query.CheckOut >= o.CheckOut)
+                    (query.CheckIn >= o.CheckIn && query.CheckIn <= o.CheckOut) ||
+                    (query.CheckOut >= o.CheckIn && query.CheckOut <= o.CheckOut)
                 )
                 .Select(o => o.RoomNumber)
                 .ToList();       

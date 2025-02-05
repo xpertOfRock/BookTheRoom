@@ -75,7 +75,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
 
                 PostMessage(command.Request.Email, order, hotel, days);
 
-                return new Success("Order was successfully created and payment processed successfully.");
+                return new Success(order.Id.ToString());
             }
             catch (Exception ex)
             {

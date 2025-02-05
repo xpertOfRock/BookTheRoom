@@ -3,13 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import dropin from "braintree-web-drop-in";
 import { getCurrentUser, isAuthorized } from "../../services/auth";
 import { getClientToken, postOrder } from "../../services/orders";
-import {
-  Heading
-} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 
 function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useToast();
 
   const {
     hotelId,
@@ -89,8 +88,7 @@ function Checkout() {
     dropin.create(
       {
         authorization: clientToken,
-        container: dropInContainer.current,
-        paypal: { flow: "vault" },
+        container: dropInContainer.current
       },
       (err, instance) => {
         if (err) {
@@ -137,17 +135,21 @@ function Checkout() {
         CheckOut: checkOut,
         CreatedAt: new Date().toISOString()
       };
-      
-      console.log(createOrderRequest);
 
       const result = await postOrder(hotelId, roomNumber, createOrderRequest);
-      if (result) {
-        alert("Order created and paid successfully!");
-        navigate("/some-success-page");
-      }
+      console.log(result.isSuccess)
+      if (result.isSuccess === true) {
+        toast({
+            title: "Success!",
+            description: "Your order was successfully created!",
+            status: "success",
+            duration: 7000,
+            isClosable: true,
+          });   
+        navigate("/checkout/success", { state: createOrderRequest });
+      }    
     } catch (error) {
       console.error("Payment error:", error);
-      alert("Payment failed. Check card details or try again.");
     }
   };
 

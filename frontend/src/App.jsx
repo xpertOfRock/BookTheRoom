@@ -15,6 +15,7 @@ import Login from './components/authorization/Login';
 import Register from './components/authorization/Register';
 import RoomDetails from './components/rooms/RoomDetails';
 import Checkout from './components/checkout/Checkout';
+import Success from './components/checkout/Success';
 
 function App() { 
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/hotels/:id" element={<HotelDetails />} />
           <Route path="/hotels/:id/room/:number" element={<RoomDetails />}/>
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/success" element={<Success/>} />
           <Route path="/admin/hotels/create" element={<CreateForm/> } />
           <Route path="/admin/hotels/update/:id" element={<UpdateForm /> } />
           <Route path="/admin/hotels/:id/rooms/create" element={<CreateRoomForm /> } />

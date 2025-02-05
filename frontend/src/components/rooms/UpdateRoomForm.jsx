@@ -9,15 +9,18 @@ import {
     NumberInputField,
     Button,
     Heading,
-    Select
+    Select,
+    useToast
   } from "@chakra-ui/react";
   import { useEffect, useState } from "react";
   import { useParams, useNavigate } from "react-router-dom";
   import { putRoom, fetchRoom } from "../../services/rooms";
-  
+  import { isAdmin } from "../../services/auth";
+
   function UpdateRoomForm() {
     const { id: hotelId, number: number } = useParams();
     const navigate = useNavigate();
+    const toast = useToast();
     const [roomData, setRoomData] = useState({
       name: "",
       description: "",
@@ -29,6 +32,9 @@ import {
     const [selectedFiles, setSelectedFiles] = useState([]);
   
     useEffect(() => {
+      if(isAdmin() === false){
+        navigate("/");
+      }
       const getRoom = async () => {
         try {
           const data = await fetchRoom(hotelId, number);
@@ -82,10 +88,22 @@ import {
       try {
         const status = await putRoom(hotelId, number, formData);
         if (status === 200) {
-          alert("Room updated successfully!");
+          toast({
+            title: "Success!",
+            description: "The room was successfully created.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });     
           navigate(`/hotels/${hotelId}`);
         } else {
-          alert("Failed to update room");
+          toast({
+            title: "Error!",
+            description: "An error occurred while updating the room.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
         }
       } catch (error) {
         console.error("Error updating room", error);
