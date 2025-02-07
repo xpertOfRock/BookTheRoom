@@ -9,7 +9,7 @@
         string LastName,
         bool MinibarIncluded,
         bool MealsIncluded,        
-        DateTime CheckIn,
-        DateTime CheckOut
+        DateTimeOffset CheckIn,
+        DateTimeOffset CheckOut
     );
 }

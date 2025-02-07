@@ -22,12 +22,12 @@ namespace Infrastructure.Data.BackgroundServices
                     foreach (var order in orders)
                     {
 
-                        if (order.Status == OrderStatus.Active && order.CheckOut <= DateTime.UtcNow.Date)
+                        if (order.Status != OrderStatus.Completed && order.CheckOut <= DateTime.UtcNow.Date)
                         {
                             await mediator.Send(new UpdateOrderCommand(order.Id, new UpdateOrderRequest(OrderStatus.Completed)));
                         }
 
-                        if (order.Status == OrderStatus.Awaiting && order.CheckIn <= DateTime.UtcNow.Date && order.CheckOut > DateTime.UtcNow.Date)
+                        if (order.Status != OrderStatus.Active && order.CheckIn <= DateTime.UtcNow.Date && order.CheckOut > DateTime.UtcNow.Date)
                         {
                             await mediator.Send(new UpdateOrderCommand(order.Id, new UpdateOrderRequest(OrderStatus.Active)));
                         }
@@ -39,7 +39,7 @@ namespace Infrastructure.Data.BackgroundServices
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("[START] OrderStatusUpdater background service has been started.");
+            logger.LogInformation("[START OrderStatusUpdater] background service has been started.");
             var _timer = new Timer(async entry =>
             {
                 await UpdateOrderStatus();
@@ -49,7 +49,7 @@ namespace Infrastructure.Data.BackgroundServices
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("[STOP] OrderStatusUpdater background service has been stoped.");
+            logger.LogInformation("[STOP OrderStatusUpdater] background service has been stoped.");
             return Task.CompletedTask;
         }
     }

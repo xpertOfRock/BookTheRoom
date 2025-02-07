@@ -10,7 +10,7 @@ namespace Infrastructure.Identity
         public string LastName { get; set; }
 
         public DateOnly BirthDate { get; set; }
-        public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
+        public DateTimeOffset RegisteredAt { get; set; } = DateTime.UtcNow;
         public List<Order>? Orders { get; set; }
         public List<Apartment>? Apartments { get; set; }
         public List<Comment>? Comments { get; set; }

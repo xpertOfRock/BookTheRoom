@@ -9,7 +9,7 @@
         public float? UserScore { get; set; }
         public int? HotelId { get; set; } = null;
         public int? ApartmentId { get; set; } = null;
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; } = null;
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; } = null;
     }
 }

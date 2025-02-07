@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250203164547_FixOrdersProps")]
-    partial class FixOrdersProps
+    [Migration("20250207103301_ChangeUTC_to_UTCoffset_type")]
+    partial class ChangeUTC_to_UTCoffset_type
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -78,7 +78,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -91,7 +91,7 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("HotelId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserId")
@@ -162,13 +162,13 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CheckIn")
+                    b.Property<DateTimeOffset>("CheckIn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CheckOut")
+                    b.Property<DateTimeOffset>("CheckOut")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
@@ -336,7 +336,7 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("RegisteredAt")
+                    b.Property<DateTimeOffset>("RegisteredAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Role")

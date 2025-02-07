@@ -38,9 +38,13 @@ function HotelDetails() {
     checkOut: null,
   });
 
+  const defaultCheckIn = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+  const defaultCheckOut = new Date(Date.now() + 172800000).toISOString().split("T")[0];
+
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
-
+  const [redirectCheckIn, setCheckIn] = useState(defaultCheckIn);
+  const [redirectCheckOut, setCheckOut] = useState(defaultCheckOut);
   const currentUserId = getCurrentUserId();
 
   useEffect(() => {
@@ -56,9 +60,11 @@ function HotelDetails() {
     };
     loadHotel();
   }, [id]);
-
+  
   const handleFilterApply = async () => {
     try {
+      setCheckIn(filter.checkIn);
+      setCheckOut(filter.checkOut);
       const roomsData = await fetchRooms(id, filter);
       setRooms(roomsData);
     } catch (e) {
@@ -172,6 +178,8 @@ function HotelDetails() {
               onApplyFilters={handleFilterApply}
               rooms={rooms}
               hotelName={name}
+              checkIn={redirectCheckIn}
+              checkOut={redirectCheckOut}
             />
           </div>
 
@@ -181,10 +189,7 @@ function HotelDetails() {
               hasRatedComments={hasRatedComments}
               currentUserId={currentUserId}
             />
-          </div>
-          
-
-          
+          </div>       
         </div>
 
         <Lightbox

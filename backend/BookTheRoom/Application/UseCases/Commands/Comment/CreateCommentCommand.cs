@@ -8,7 +8,7 @@
         public int? ApartmentId { get; set; }
         public string Description { get; set; }
         public float? UserScore { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public CreateCommentCommand
         (
