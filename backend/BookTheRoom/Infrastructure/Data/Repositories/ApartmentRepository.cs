@@ -2,14 +2,19 @@
 
 namespace Infrastructure.Data.Repositories
 {
-    public class ApartmentRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService) : IApartmentRepository
+    public class ApartmentRepository(
+        ApplicationDbContext context,
+        IDistributedCache distributedCache,
+        IPhotoService photoService) : IApartmentRepository
     {
-        private const int MAX_PAGE_ITEMS = 15;
+        private const int MAX_PAGE_ITEMS = 15; // since apartment service is not implemented yet, I've left a constant value here
 
         public async Task<IResult> Add(Apartment apartment)
         {
             
-            var existingApartment = context.Apartments.AsNoTracking().FirstOrDefaultAsync(a => a.Address == apartment.Address);
+            var existingApartment = context.Apartments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Address == apartment.Address);
 
             if (existingApartment is not null) 
             { 
@@ -64,8 +69,15 @@ namespace Infrastructure.Data.Repositories
 
             if (!string.IsNullOrWhiteSpace(request.Prices))
             {
-                var prices = request.Prices.Split(',').Select(decimal.Parse).ToList();
-                query = query.Where(h => prices[0] < h.PriceForNight && prices[1] < h.PriceForNight);
+                var prices = request.Prices
+                    .Split(',')
+                    .Select(decimal.Parse)
+                    .ToList();
+
+                query = query
+                    .Where(h => 
+                        prices[0] < h.PriceForNight &&
+                        prices[1] < h.PriceForNight);
             }
 
             Expression<Func<Apartment, object>> selectorKey = request.SortItem?.ToLower() switch
@@ -79,7 +91,9 @@ namespace Infrastructure.Data.Repositories
                 ? query.OrderByDescending(selectorKey)
                 : query.OrderBy(selectorKey);
 
-            query = query.Skip((request.page - 1) * MAX_PAGE_ITEMS).Take(MAX_PAGE_ITEMS);
+            query = query
+                .Skip((request.page - 1) * MAX_PAGE_ITEMS)
+                .Take(MAX_PAGE_ITEMS);
 
             return await query.ToListAsync();
         }
@@ -102,7 +116,10 @@ namespace Infrastructure.Data.Repositories
             if 
             (
                 !string.IsNullOrWhiteSpace(request.Prices) &&
-                request.Prices.Split(',').Select(decimal.Parse).ToList().Count == 2
+                request.Prices
+                .Split(',')
+                .Select(decimal.Parse)
+                .ToList().Count == 2
             )
             {
                 var prices = request.Prices
@@ -154,7 +171,7 @@ namespace Infrastructure.Data.Repositories
                     key,
                     JsonConvert.SerializeObject(apartment),
                     cancellationToken
-                    );
+                );
 
                 return apartment;
             }

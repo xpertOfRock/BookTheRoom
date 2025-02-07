@@ -1,13 +1,17 @@
 ﻿using Newtonsoft.Json;
-using System.Linq;
 
 namespace Infrastructure.Data.Repositories
 {
-    public class HotelRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService) : IHotelRepository
+    public class HotelRepository(
+        ApplicationDbContext context,
+        IDistributedCache distributedCache,
+        IPhotoService photoService) : IHotelRepository
     {
         public async Task<IResult> Add(Hotel hotel)
         {
-            Hotel? existingHotel = await context.Hotels.AsNoTracking().FirstOrDefaultAsync(h => h.Name == hotel.Name);
+            Hotel? existingHotel = await context.Hotels
+                .AsNoTracking()
+                .FirstOrDefaultAsync(h => h.Name == hotel.Name);
 
             if(existingHotel is not null)
             {
@@ -68,18 +72,26 @@ namespace Infrastructure.Data.Repositories
             if (!string.IsNullOrWhiteSpace(request.Countries))
             {
                 var countries = request.Countries.Split(',');
+
                 query = query.Where(h => countries.Contains(h.Address.Country));
             }
 
             if (!string.IsNullOrWhiteSpace(request.Ratings))
             {
-                var ratings = request.Ratings.Split(',').Select(int.Parse).ToList();
+                var ratings = request.Ratings
+                    .Split(',')
+                    .Select(int.Parse)
+                    .ToList();
+
                 query = query.Where(h => ratings.Contains(h.Rating));
             }
 
             if (!string.IsNullOrWhiteSpace(request.Services))
             {
-                var services = request.Services.Split(',').Select(service => Enum.Parse<HotelService>(service, true));
+                var services = request.Services
+                    .Split(',')
+                    .Select(service => Enum.Parse<HotelService>(service, true));
+
                 query = query.Where(h => h.Services.Any(x => services.Contains(x.ServiceName)));
             }
 
@@ -94,7 +106,9 @@ namespace Infrastructure.Data.Repositories
                 ? query.OrderByDescending(selectorKey)
                 : query.OrderBy(selectorKey);
 
-            query = query.Skip((request.Page - 1) * request.ItemsCount).Take(request.ItemsCount);
+            query = query
+                .Skip((request.Page - 1) * request.ItemsCount)
+                .Take(request.ItemsCount);
 
             return await query.ToListAsync();
         }

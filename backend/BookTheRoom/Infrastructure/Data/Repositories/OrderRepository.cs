@@ -1,6 +1,8 @@
 ﻿namespace Infrastructure.Data.Repositories
 {
-    public class OrderRepository(ApplicationDbContext context, IDistributedCache distributedCache) : IOrderRepository
+    public class OrderRepository(
+        ApplicationDbContext context,
+        IDistributedCache distributedCache) : IOrderRepository
     {
         public async Task<IResult> Add(Order order)
         {
@@ -11,10 +13,7 @@
         public async Task<List<Order>?> GetActiveOrders()
         {
             var activeOrders = await context.Orders
-                     .Where(o =>
-                            o.CheckIn <= DateTime.UtcNow &&
-                            o.CheckOut >= DateTime.UtcNow &&
-                            o.Status == OrderStatus.Active)
+                     .Where(o => o.Status == OrderStatus.Active)
                      .AsNoTracking()
                      .ToListAsync();
 

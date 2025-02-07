@@ -43,7 +43,9 @@ namespace Infrastructure.Data.Repositories
 
             if (comment.UserId == user.Id || user.Role == UserRole.Admin) 
             {
-                await context.Comments.Where(c => c.Id == id).ExecuteDeleteAsync();
+                await context.Comments
+                    .Where(c => c.Id == id)
+                    .ExecuteDeleteAsync();
             }
             return new Success("Entity 'Comment' was deleted successfully.");
         }

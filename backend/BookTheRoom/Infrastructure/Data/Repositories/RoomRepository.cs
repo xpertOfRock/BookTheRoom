@@ -2,7 +2,10 @@
 
 namespace Infrastructure.Data.Repositories
 {
-    public class RoomRepository(ApplicationDbContext context, IDistributedCache distributedCache, IPhotoService photoService) : IRoomRepository
+    public class RoomRepository
+        (ApplicationDbContext context,
+        IDistributedCache distributedCache,
+        IPhotoService photoService) : IRoomRepository
     {
         public async Task<IResult> Add(Room room)
         {
@@ -116,7 +119,7 @@ namespace Infrastructure.Data.Repositories
                     key,
                     JsonConvert.SerializeObject(room),
                     cancellationToken
-                    );
+                );
 
                 return room;
             }
