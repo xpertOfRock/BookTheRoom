@@ -177,7 +177,6 @@ function Checkout() {
           </div>
         </div>
         <div className="p-6 flex flex-col justify-between rounded-md shadow-md">
-          {/* Блок итога */}
           <div>
             <h2 className="text-xl font-bold text-gray-800 mb-4">Receipt Summary</h2>
             <table className="w-full mb-6 text-gray-600">
@@ -310,8 +309,7 @@ function Checkout() {
         </div>
       </div>
     </div>
-  </section>
-    
+  </section>  
   );
 }
 

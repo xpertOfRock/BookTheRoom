@@ -52,8 +52,6 @@ namespace Api.Controllers
                 return BadRequest(new { message = "Invalid login attempt." });
             }
 
-            //await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
-
             var token = GenerateJwtToken(user);
             var refreshToken = await GenerateAndStoreRefreshToken(user);
             return Ok(new { token, refreshToken, user });
@@ -97,7 +95,6 @@ namespace Api.Controllers
             }
 
             await _userManager.AddToRoleAsync(newUser, UserRole.User);
-            //await _signInManager.PasswordSignInAsync(newUser, request.Password, false, false);
 
             const string subject = "Registration";
             const string body = "Thanks for choosing Book The Room! Hope you will be satisfied with our service!";
@@ -119,7 +116,6 @@ namespace Api.Controllers
             {
                 await RemoveRefreshToken(user);
             }
-            //await _signInManager.SignOutAsync();
             return Ok(new { message = "Successfully logged out." });
         }
 
