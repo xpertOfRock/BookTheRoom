@@ -4,8 +4,9 @@ function Rooms({ rooms, checkIn, checkOut, hotel }) {
     return (
         <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4 mt-6 mx-auto">
         {rooms.length > 0 ? (
-          rooms.map((room) => (
-            <Room 
+          rooms.map((room, index) => (
+            <Room
+              key={index} 
               hotelId={room.hotelId}
               hotelName={hotel}
               name={room.name} 

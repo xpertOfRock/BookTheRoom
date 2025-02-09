@@ -183,7 +183,7 @@ function HotelDetails() {
             />
           </div>
 
-          <div classname="lg:w-1/3">
+          <div className="lg:w-1/3">
             <CommentSection
               hotel={hotel}
               hasRatedComments={hasRatedComments}
