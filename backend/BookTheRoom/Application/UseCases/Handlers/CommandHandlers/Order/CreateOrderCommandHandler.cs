@@ -1,40 +1,36 @@
 ﻿using Application.UseCases.Commands.Order;
 using Braintree;
-using Core.Entities;
 
 namespace Application.UseCases.Handlers.CommandHandlers.Order
 {
     public class CreateOrderCommandHandler(IUnitOfWork unitOfWork, IPaymentService paymentService, IEmailService emailService) 
         : ICommandHandler<CreateOrderCommand, IResult>
     {
+        const decimal COEF = 1.05m;
         public async Task<IResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
         {
             await unitOfWork.BeginTransactionAsync();
-
+            
             try
             {
-                var hotel = await unitOfWork.Hotels.GetById(command.HotelId, cancellationToken);
+                var hotel = unitOfWork.Hotels.GetById(command.HotelId, cancellationToken);
 
-                if (hotel is null)
+                var room =  unitOfWork.Rooms.GetById(command.HotelId, command.Number, cancellationToken);
+
+                await Task.WhenAll(hotel, room);
+
+                if (room is null || hotel is null)
                 {
                     await unitOfWork.RollbackAsync();
-                    return new Fail("[Post Order] Hotel is null.", ErrorStatuses.NotFoundError);
-                }
-
-                var room = await unitOfWork.Rooms.GetById(command.HotelId, command.Number, cancellationToken);
-
-                if (room is null)
-                {
-                    await unitOfWork.RollbackAsync();
-                    return new Fail("[Post Order] Room is null", ErrorStatuses.NotFoundError);
+                    return new Fail("[Post Order] Hotel or Room is null", ErrorStatuses.NotFoundError);
                 }
 
                 var duration = command.Request.CheckOut.Subtract(command.Request.CheckIn);
                 int days = (int)Math.Ceiling(duration.TotalDays);
 
-                decimal price = room!.Price;
+                decimal price = room.Result!.Price;
 
-                decimal multiplier = 1.05m;
+                decimal multiplier = COEF;
 
                 if (command.Request.MealsIncluded) multiplier += 0.03m;
                 if (command.Request.MinibarIncluded) multiplier += 0.03m;
@@ -73,7 +69,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
 
                 await unitOfWork.CommitAsync();
 
-                PostMessage(command.Request.Email, order, hotel, days);
+                PostMessage(command.Request.Email, order, hotel.Result!, days);
 
                 return new Success(order.Id.ToString());
             }
@@ -110,10 +106,11 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
             {
                 Amount = price,
                 OrderId = orderId,
-                PaymentMethodNonce = nonceFromClient,
+                PaymentMethodNonce = nonceFromClient,                
                 Options = new TransactionOptionsRequest
                 {
-                    SubmitForSettlement = true
+                    SubmitForSettlement = true,
+                    SkipCvv = false
                 }
             };
 

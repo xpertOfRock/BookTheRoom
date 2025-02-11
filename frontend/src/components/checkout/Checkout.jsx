@@ -88,8 +88,14 @@ function Checkout() {
     dropin.create(
       {
         authorization: clientToken,
-        container: dropInContainer.current
+        container: dropInContainer.current,
+        card: {
+          cardholderName: {
+            required: true,
+          }
+        },
       },
+      
       (err, instance) => {
         if (err) {
           console.error("Error creating Drop-In:", err);
