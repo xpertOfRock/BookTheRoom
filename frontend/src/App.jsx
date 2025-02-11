@@ -2,8 +2,9 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CreateForm from './components/hotel/CreateForm';
 import UpdateForm from './components/hotel/UpdateForm';
-import Hotels from './components/hotel/Hotels';
-import HotelDetails from './components/hotel/HotelDetails';
+import Hotels from './pages/Hotels/Hotels';
+import HotelDetails from './pages/HotelDetails/HotelDetails';
+import RoomDetails from './pages/RoomDetails/RoomDetails';
 import CreateRoomForm from './components/rooms/CreateRoomForm';
 import UpdateRoomForm from './components/rooms/UpdateRoomForm';
 import Navbar from './components/Navbar'; 
@@ -13,8 +14,7 @@ import FAQ from './components/FAQ';
 import Support from './components/Support';
 import Login from './components/authorization/Login';
 import Register from './components/authorization/Register';
-import RoomDetails from './components/rooms/RoomDetails';
-import Checkout from './components/checkout/Checkout';
+import Checkout from './pages/Checkout/Checkout';
 import Success from './components/checkout/Success';
 
 function App() { 

@@ -76,9 +76,9 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import SortAndSearch from './subcomponents/Hotels/SortAndSearch';
-import Filters from './subcomponents/Hotels/Filters';
-import Card from './subcomponents/Hotels/Card';
+import SortAndSearch from '../../components/hotel/subcomponents/Hotels/SortAndSearch';
+import Filters from '../../components/hotel/subcomponents/Hotels/Filters';
+import Card from '../../components/hotel/subcomponents/Hotels/Card';
 import { fetchHotels } from '../../services/hotels';
 
 function Hotels() {
