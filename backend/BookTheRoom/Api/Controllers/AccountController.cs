@@ -6,6 +6,7 @@ using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -23,10 +24,11 @@ namespace Api.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager,
-                                 SignInManager<ApplicationUser> signInManager,
-                                 IEmailService emailService,
-                                 IConfiguration configuration)
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IEmailService emailService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -35,6 +37,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("Login")]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Login([FromBody] AuthorizeRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.EmailOrUsername) ??
@@ -58,6 +61,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("Register")]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             var existingUserByEmail = await _userManager.FindByEmailAsync(request.Email);
@@ -109,6 +113,7 @@ namespace Api.Controllers
 
         [HttpPost("Logout")]
         [Authorize]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Logout()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -251,8 +256,9 @@ namespace Api.Controllers
 
         private async Task RemoveRefreshToken(ApplicationUser user)
         {
-            await _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken");
-            await _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime");
+            var refresh = _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken");
+            var expireTime = _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime");
+            await Task.WhenAll(refresh, expireTime);
         }
     }
 }

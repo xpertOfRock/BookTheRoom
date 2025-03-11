@@ -12,8 +12,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Controllers
 {
@@ -21,19 +21,18 @@ namespace Api.Controllers
     [ApiController]
     public class ApartmentController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly ISender _sender;
         private readonly IPhotoService _photoService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
-        public ApartmentController
-        (
-            IMediator mediator,
+        public ApartmentController(
+            ISender sender,
             IPhotoService photoService,
             IHttpContextAccessor contextAccessor,
             UserManager<ApplicationUser> userManager
         )
         {
-            _mediator = mediator;
+            _sender = sender;
             _photoService = photoService;
             _userManager = userManager;
             _contextAccessor = contextAccessor;
@@ -41,6 +40,7 @@ namespace Api.Controllers
 
         [HttpGet("user")]
         [AllowAnonymous]
+        [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> GetAllUsersApartments([FromQuery] GetApartmentsRequest request)
         {
             if (!User.Identity.IsAuthenticated)
@@ -51,7 +51,7 @@ namespace Api.Controllers
             var thisUserId = _contextAccessor.HttpContext?.User.GetUserId();
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
 
-            var apartments = await _mediator.Send(new GetUsersApartmentsQuery(thisUserId, request));
+            var apartments = await _sender.Send(new GetUsersApartmentsQuery(thisUserId, request));
 
             var apartmentsDTO = apartments.Select(h => new ApartmentsDTO(
                 h.Id,
@@ -69,9 +69,10 @@ namespace Api.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
+        [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> GetAll([FromQuery] GetApartmentsRequest request)
         {
-            var apartments = await _mediator.Send(new GetApartmentsQuery(request));
+            var apartments = await _sender.Send(new GetApartmentsQuery(request));
 
             var apartmentsDTO = apartments.Select(h => new ApartmentsDTO(
                 h.Id,
@@ -90,9 +91,10 @@ namespace Api.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
+        [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> Get(int id)
         {
-            var apartment = await _mediator.Send(new GetApartmentQuery(id));
+            var apartment = await _sender.Send(new GetApartmentQuery(id));
 
             if (apartment is null)
             {
@@ -125,6 +127,7 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Post([FromForm] CreateApartmentForm form)
         {
             var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
@@ -161,7 +164,7 @@ namespace Api.Controllers
                 images
             );
 
-            var result = await _mediator.Send(new CreateApartmentCommand(request));
+            var result = await _sender.Send(new CreateApartmentCommand(request));
 
             if (!result.IsSuccess)
             {

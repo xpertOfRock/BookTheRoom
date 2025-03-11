@@ -6,7 +6,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
     public class CreateOrderCommandHandler(IUnitOfWork unitOfWork, IPaymentService paymentService, IEmailService emailService) 
         : ICommandHandler<CreateOrderCommand, IResult>
     {
-        const decimal COEF = 1.05m;
+        private const decimal COEF = 1.05m;
         public async Task<IResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
         {
             await unitOfWork.BeginTransactionAsync();

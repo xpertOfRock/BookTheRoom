@@ -28,6 +28,12 @@ function RoomDetails() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
 
+  const categories = new Map([
+    [1, 'One bed apartments'],
+    [2, 'Two bed apartments'],
+    [3, 'Three bed apartments'],
+    [4, 'Luxury'],
+  ]);
 
   useEffect(() => {
     const loadRoom = async () => {
@@ -145,7 +151,7 @@ function RoomDetails() {
           <div className="xl:w-1/2 w-full bg-indigo-200 border-[3px] border-indigo-400 flex flex-col rounded-lg shadow-md my-auto">
             <div className="bg-indigo-100 p-6 rounded-lg shadow-md align-middle my-3 mx-3">
               <h3 className="text-2xl font-semibold text-gray-700">{name}</h3>
-              <h4 className="text-gray-600 mb-2">{category}</h4>
+              <h4 className="text-gray-600 mb-2">{categories.get(category) ?? 'Standard'}</h4>
               <p className="text-gray-600">{description}</p>
               <p className="mt-4 text-lg font-medium text-gray-900">
                 Price: ${price}

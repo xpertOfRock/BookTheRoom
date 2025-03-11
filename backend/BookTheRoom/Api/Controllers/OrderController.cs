@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 
 namespace Api.Controllers
@@ -15,29 +16,29 @@ namespace Api.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly ISender _sender;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
-        public OrderController
-        (
-            IMediator mediator,
+        public OrderController(
+            ISender sender,
             IHttpContextAccessor contextAccessor,
             UserManager<ApplicationUser> userManager
         )
         {
-            _mediator = mediator;
+            _sender = sender;
             _contextAccessor = contextAccessor;
             _userManager = userManager;
         }
         [HttpGet("client-token")]
         public async Task<IActionResult> GetClientToken()
         {
-            var token = await _mediator.Send(new GetClientTokenQuery());
+            var token = await _sender.Send(new GetClientTokenQuery());
             return Ok(token);
         }
 
         [HttpPost("{hotelId}/{number}")]
         [AllowAnonymous]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Post(int hotelId, int number, [FromBody] CreateOrderRequest request)
         {
             string? userId =  null;
@@ -47,7 +48,7 @@ namespace Api.Controllers
                 userId = _contextAccessor.HttpContext!.User.GetUserId();
             }
                      
-            var result = await _mediator.Send(new CreateOrderCommand(hotelId, number, userId, request));
+            var result = await _sender.Send(new CreateOrderCommand(hotelId, number, userId, request));
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }

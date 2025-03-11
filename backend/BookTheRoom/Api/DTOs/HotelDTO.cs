@@ -8,7 +8,7 @@ namespace Api.DTOs
         string Name,
         string Description,
         string Address,
-        string jsonAddress,
+        string JsonAddress,
         bool HasPool,
         int Rating,      
         float? UserScore,

@@ -6,6 +6,7 @@ using Infrastructure.DependencyInjection;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
@@ -52,7 +53,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 
 builder.Services.AddHttpClient();
 
+
+
 builder.Services.AddResponseCompressionServices();
+
+builder.Services.AddRateLimiterServices();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -127,6 +132,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseResponseCompression();
+
+app.UseRateLimiter();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

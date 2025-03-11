@@ -13,6 +13,7 @@ using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -22,21 +23,25 @@ namespace Api.Controllers
     [ApiController]
     public class HotelController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly ISender _sender;
         private readonly IPhotoService _photoService;
         private readonly IHttpContextAccessor _contextAccessor;
-        public HotelController(IMediator mediator, IPhotoService photoService, IHttpContextAccessor contextAccessor)
+        public HotelController(
+            ISender sender,
+            IPhotoService photoService,
+            IHttpContextAccessor contextAccessor)
         {
-            _mediator = mediator;
+            _sender = sender;
             _photoService = photoService;
             _contextAccessor = contextAccessor;
         }
 
-        [HttpGet]
+        [HttpGet]        
         [AllowAnonymous]
+        [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> GetAll([FromQuery] GetHotelsRequest request)
         {
-            var hotels = await _mediator.Send(new GetHotelsQuery(request));
+            var hotels = await _sender.Send(new GetHotelsQuery(request));
 
             var hotelsDTO = hotels.Select(h =>
                 new HotelsDTO
@@ -65,9 +70,10 @@ namespace Api.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
+        [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> Get(int id)
         {
-            var hotel = await _mediator.Send(new GetHotelQuery(id));
+            var hotel = await _sender.Send(new GetHotelQuery(id));
 
             if (hotel is null)
             {
@@ -101,6 +107,7 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize(Roles = UserRole.Admin)]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
             var images = new List<string>();
@@ -132,7 +139,7 @@ namespace Api.Controllers
                 images
             );
 
-            var result = await _mediator.Send(new CreateHotelCommand(request));
+            var result = await _sender.Send(new CreateHotelCommand(request));
 
             if (!result.IsSuccess)
             {
@@ -154,6 +161,7 @@ namespace Api.Controllers
 
         [HttpPost("{id}/comments")]
         [Authorize]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> PostComment(int id, [FromBody] CreateCommentForm form)
         {
             var userId = _contextAccessor.HttpContext?.User.GetUserId();
@@ -164,13 +172,14 @@ namespace Api.Controllers
                 return Unauthorized();
             }
 
-            var result = await _mediator.Send(new CreateCommentCommand(userId, username!, form.Description, form.UserScore, id));
+            var result = await _sender.Send(new CreateCommentCommand(userId, username!, form.Description, form.UserScore, id));
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin)]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
             var images = new List<string>();
@@ -204,7 +213,7 @@ namespace Api.Controllers
                     : null
             );            
 
-            var result = await _mediator.Send(new UpdateHotelCommand(id, request));
+            var result = await _sender.Send(new UpdateHotelCommand(id, request));
 
             if (!result.IsSuccess)
             {
@@ -220,9 +229,10 @@ namespace Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin)]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _mediator.Send(new DeleteHotelCommand(id));
+            var result = await _sender.Send(new DeleteHotelCommand(id));
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }

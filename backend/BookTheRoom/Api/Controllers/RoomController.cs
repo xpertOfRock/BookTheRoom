@@ -8,6 +8,7 @@ using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 
 namespace Api.Controllers
@@ -16,19 +17,22 @@ namespace Api.Controllers
     [ApiController]
     public class RoomController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly ISender _sender;
         private readonly IPhotoService _photoService;
-        public RoomController(IMediator mediator, IPhotoService photoService)
+        public RoomController(
+            ISender sender,
+            IPhotoService photoService)
         {
-            _mediator = mediator;
+            _sender = sender;
             _photoService = photoService;
         }
 
         [HttpGet("{hotelId}")]
         [AllowAnonymous]
+        [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> GetAll(int hotelId, [FromQuery] GetRoomsRequest request)
         {            
-            var rooms = await _mediator.Send(new GetHotelRoomsQuery(hotelId, request));
+            var rooms = await _sender.Send(new GetHotelRoomsQuery(hotelId, request));
 
             var roomsDTO = rooms.Select(r => new RoomsDTO(
                 r.HotelId,
@@ -47,9 +51,10 @@ namespace Api.Controllers
 
         [HttpGet("{hotelId}/{number}")]
         [AllowAnonymous]
+        [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> Get(int hotelId, int number)
         {
-            var room = await _mediator.Send(new GetRoomQuery(hotelId, number));
+            var room = await _sender.Send(new GetRoomQuery(hotelId, number));
 
             if(room is null)
             {
@@ -73,9 +78,10 @@ namespace Api.Controllers
 
             return Ok(roomDTO); 
         }
-
+       
         [HttpPost("{hotelId}")]
         [Authorize(Roles = UserRole.Admin)]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Post(int hotelId, [FromForm] CreateRoomForm form)
         {
             var images = new List<string>();
@@ -100,7 +106,7 @@ namespace Api.Controllers
                 images
             );
 
-            var result = await _mediator.Send(new CreateRoomCommand(hotelId, request));
+            var result = await _sender.Send(new CreateRoomCommand(hotelId, request));
 
             if (!result.IsSuccess)
             {
@@ -116,6 +122,7 @@ namespace Api.Controllers
 
         [HttpPut("{hotelId}/{number}")]
         [Authorize(Roles = UserRole.Admin)]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Put(int hotelId, int number, [FromForm] UpdateRoomForm form)
         {
             var images = new List<string>();
@@ -139,7 +146,7 @@ namespace Api.Controllers
                 images
             );
 
-            var result = await _mediator.Send(new UpdateRoomCommand(hotelId, number, request));
+            var result = await _sender.Send(new UpdateRoomCommand(hotelId, number, request));
 
             if (!result.IsSuccess)
             {
@@ -155,9 +162,10 @@ namespace Api.Controllers
 
         [HttpDelete("{hotelId}/{number}")]
         [Authorize(Roles = UserRole.Admin)]
+        [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Delete(int hotelId, int number)
         {
-            var result = await _mediator.Send(new DeleteRoomCommand(hotelId, number));
+            var result = await _sender.Send(new DeleteRoomCommand(hotelId, number));
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
