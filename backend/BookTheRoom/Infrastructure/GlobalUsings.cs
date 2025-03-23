@@ -7,3 +7,4 @@ global using Core.TasksResults;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Caching.Distributed;
 global using System.Linq.Expressions;
+global using Newtonsoft.Json;

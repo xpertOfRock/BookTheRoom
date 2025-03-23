@@ -9,7 +9,7 @@
         public decimal Price { get; set; }
 
         public Address Address { get; set; }
-        public List<string > Images { get; set; }
+        public List<string> Images { get; set; }
         public CreateApartmentCommand(CreateApartmentRequest request)
         {
             Title = request.Title;

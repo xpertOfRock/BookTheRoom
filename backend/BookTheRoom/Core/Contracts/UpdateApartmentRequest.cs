@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.ValueObjects;
 
 namespace Core.Contracts
 {
@@ -7,7 +8,7 @@ namespace Core.Contracts
         string Title,
         string Description,
         decimal Price,
+        Address Address,
         List<string>? Images
-        //List<Comment>? Comments
     );
 }

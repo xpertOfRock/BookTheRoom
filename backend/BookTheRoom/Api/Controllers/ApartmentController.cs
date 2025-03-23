@@ -130,9 +130,19 @@ namespace Api.Controllers
         [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Post([FromForm] CreateApartmentForm form)
         {
+            if (!User.Identity!.IsAuthenticated)
+            {
+                return Unauthorized("User has to be authorized before processing this operation.");
+            }
+
+            if (form.Images.Any() && form.Images.Count > 20)
+            {
+                return BadRequest("You cannot add more than 20 files.");
+            }
+
             var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
-            
+
             var images = new List<string>();
 
             if (form.Images is not null && form.Images.Any())
@@ -166,51 +176,62 @@ namespace Api.Controllers
 
             var result = await _sender.Send(new CreateApartmentCommand(request));
 
-            if (!result.IsSuccess)
-            {
-                foreach (var image in images)
-                {
-                    await _photoService.DeletePhotoAsync(image);
-                }
-                return BadRequest(result);
-            }
-
-            return Ok(result);
+            return !result.IsSuccess ? BadRequest(result) : Ok(result);                      
 
         }
 
-        //[HttpPut("{id}")]
-        ////[Authorize(Roles = UserRole.Admin)]
-        //public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
-        //{
-        //    var images = new List<string>();
+        [HttpPut("{id}")]
+        [Authorize]
+        [EnableRateLimiting("SlidingModify")]
+        public async Task<IActionResult> Put(int id, [FromForm] UpdateApartmentForm form)
+        {
+            if (!User.Identity!.IsAuthenticated)
+            {
+                return Unauthorized("User has to be authorized before processing this operation.");
+            }
 
-        //    if (form.Images is not null && form.Images.Any())
-        //    {
-        //        foreach (var file in form.Images)
-        //        {
-        //            using (var stream = file.OpenReadStream())
-        //            {
-        //                var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-        //                images.Add(resultForList.Url.ToString());
-        //            }
-        //        }
-        //    }
+            if (form.Images.Any() && form.Images.Count > 20)
+            {
+                return BadRequest("You cannot add more than 20 files.");
+            }
 
-        //    var request = new UpdateHotelRequest
-        //    (
-        //        form.Name,
-        //        form.Description,
-        //        form.Rating,
-        //        form.Pool,
-        //        images
-        //    );
+            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
 
-        //    var result = await _mediator.Send(new UpdateHotelCommand(id, request));
-        //    if (!result.IsSuccess) return BadRequest(result);
-            
-        //    return Ok(result);
-        //}
+            var images = new List<string>();
+
+            if (form.Images is not null && form.Images.Any())
+            {
+                foreach (var file in form.Images)
+                {
+                    using (var stream = file.OpenReadStream())
+                    {
+                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                        images.Add(resultForList.Url.ToString());
+                    }
+                }
+            }
+
+            var request = new UpdateApartmentRequest
+            (
+                form.Title,
+                form.Description,
+                form.Price,
+
+                new Address
+                (
+                    form.Country,
+                    form.State,
+                    form.City,
+                    form.Street,
+                    form.PostalCode
+                ),
+                
+                images
+            );
+
+            var result = await _sender.Send(new UpdateApartmentCommand(id, thisUserId, request));
+            return !result.IsSuccess ? BadRequest(result) : Ok(result);
+        }
 
         //[HttpDelete("{id}")]
         ////[Authorize(Roles = UserRole.Admin)]
