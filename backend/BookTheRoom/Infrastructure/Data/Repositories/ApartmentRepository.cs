@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿
 
 namespace Infrastructure.Data.Repositories
 {
@@ -26,7 +26,7 @@ namespace Infrastructure.Data.Repositories
             return new Success("New entity 'Apartment' created successfully.");
         }
 
-        public async Task<IResult> Delete(int id)
+        public async Task<IResult> Delete(int id, string userId)
         {
             var apartment = await context.Apartments.FirstOrDefaultAsync(a => a.Id == id);
 
@@ -194,13 +194,8 @@ namespace Infrastructure.Data.Repositories
                 cancellationToken
             );
         }
-        public async Task<IResult> Update(int? id, UpdateApartmentRequest request)
+        public async Task<IResult> Update(int id, string userId, UpdateApartmentRequest request)
         {           
-            if(id is null)
-            {
-                throw new ArgumentNullException($"Cannot get entity '{nameof(Apartment)}' with '{id}' is null.");
-            }
-
             var apartment = await GetById(id);
 
             if(apartment == null)
@@ -208,11 +203,14 @@ namespace Infrastructure.Data.Repositories
                 return new Fail("Impossible to update a non-existent entity.");
             }
 
+            if(apartment.OwnerId != userId)
+            {
+                return new Fail("Mismatch between OwnerId property and passed value.");
+            }
+
             string key = $"apartment-{id}";
            
             distributedCache.Remove(key);
-
-            //var comments = request.Comments == null ? apartment.Comments : new List<Comment>();
 
             if (request.Images is not null)
             {
@@ -230,15 +228,19 @@ namespace Infrastructure.Data.Repositories
                         .SetProperty(h => h.Images, request.Images));
             }
 
-
             await context.Apartments
                 .Where(h => h.Id == id)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(h => h.Title, request.Title)
                 .SetProperty(h => h.Description, request.Description)
-                .SetProperty(h => h.PriceForNight, request.Price));
+                .SetProperty(h => h.PriceForNight, request.Price)
+                .SetProperty(h => h.Address.Country, request.Address.Country)
+                .SetProperty(h => h.Address.State, request.Address.State)
+                .SetProperty(h => h.Address.City, request.Address.City)
+                .SetProperty(h => h.Address.Street, request.Address.Street)
+                .SetProperty(h => h.Address.PostalCode, request.Address.PostalCode));
 
-            return new Success("Entity 'Apartment' was deleted successfully.");
+            return new Success("Entity 'Apartment' was updated successfully.");
         }
     }
 }

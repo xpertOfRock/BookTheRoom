@@ -9,8 +9,8 @@ namespace Core.Interfaces
         Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request);
         Task<Apartment?> GetById(int? id, CancellationToken cancellationToken = default);
         Task<IResult> Add(Apartment apartment);
-        Task<IResult> Update(int? id, UpdateApartmentRequest request);
-        Task<IResult> Delete(int id);
+        Task<IResult> Update(int id, string userId, UpdateApartmentRequest request);
+        Task<IResult> Delete(int id, string userId);
         Task UpdateCache(Apartment apartment, CancellationToken cancellationToken = default);
     }
 }
