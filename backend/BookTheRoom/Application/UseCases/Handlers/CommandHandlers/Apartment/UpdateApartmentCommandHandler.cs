@@ -2,7 +2,7 @@
 
 namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 {
-    class UpdateApartmentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateApartmentCommand, IResult>
+    class UpdateApartmentCommandHandler(IUnitOfWork unitOfWork) : ICommandHandler<UpdateApartmentCommand, IResult>
     {
         public async Task<IResult> Handle(UpdateApartmentCommand command, CancellationToken cancellationToken)
         {

@@ -1,6 +1,6 @@
 ﻿namespace Application.UseCases.Commands.Apartment
 {
-    public class UpdateApartmentCommand : IRequest<IResult>
+    public class UpdateApartmentCommand : ICommand<IResult>
     {
         public int Id { get; }
         public string UserId { get; set; }
