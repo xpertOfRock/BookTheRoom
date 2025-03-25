@@ -194,13 +194,8 @@ namespace Infrastructure.Data.Repositories
                 cancellationToken
             );
         }
-        public async Task<IResult> Update(int? id, string userId, UpdateApartmentRequest request)
+        public async Task<IResult> Update(int id, string userId, UpdateApartmentRequest request)
         {           
-            if(id is null)
-            {
-                throw new ArgumentNullException($"Cannot get entity '{nameof(Apartment)}' with '{id}' is null.");
-            }
-
             var apartment = await GetById(id);
 
             if(apartment == null)
