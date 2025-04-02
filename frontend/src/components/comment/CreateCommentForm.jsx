@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { isAuthorized } from "../../services/auth";
-import { postComment } from "../../services/hotels";
+import { postComment } from "../../services/comments";
 
 function CreateCommentForm({ hotelId, hasRatedComments }) {
   const [commentText, setCommentText] = useState("");
   const [rating, setRating] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+
   const handleRatingClick = (value) => {
     if (!hasRatedComments) {
       setRating(value);
@@ -32,8 +34,10 @@ function CreateCommentForm({ hotelId, hasRatedComments }) {
     setLoading(true);
 
     try {
-      await postComment(hotelId, {
+      await postComment({
         description: commentText,
+        propertyId: hotelId,
+        propertyType: 1,
         userScore: rating,
       });
       setCommentText("");

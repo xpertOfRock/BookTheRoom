@@ -1,5 +1,8 @@
 ﻿
 
+using Core.Entities;
+using Infrastructure.Exceptions;
+
 namespace Infrastructure.Data.Repositories
 {
     public class ApartmentRepository(
@@ -146,7 +149,7 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Apartment?> GetById(int? id, CancellationToken cancellationToken = default)
+        public async Task<Apartment?> GetById(int id, CancellationToken cancellationToken = default)
         {
             string key = $"apartment-{id}";
             string? cachedApartment = await distributedCache.GetStringAsync(key, cancellationToken);
@@ -162,9 +165,9 @@ namespace Infrastructure.Data.Repositories
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id);
 
-                if(apartment is null)
+                if (apartment is null)
                 {
-                    return apartment;
+                    throw new EntityNotFoundException<Apartment>();
                 }
 
                 await distributedCache.SetStringAsync(
@@ -177,6 +180,12 @@ namespace Infrastructure.Data.Repositories
             }
 
             apartment = JsonConvert.DeserializeObject<Apartment>(cachedApartment);
+
+            if (apartment is null)
+            {
+                throw new EntityNotFoundException<Apartment>();
+            }
+
             return apartment;
         }
         public async Task UpdateCache(Apartment apartment, CancellationToken cancellationToken = default)

@@ -4,8 +4,8 @@
     {
         public string UserId { get; set; }
         public string Username { get; set; }
-        public int? HotelId { get; set; }
-        public int? ApartmentId { get; set; }
+        public int PropertyId { get; set; }
+        public PropertyType PropertyType { get; set; }
         public string Description { get; set; }
         public float? UserScore { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
@@ -15,15 +15,15 @@
             string userId,
             string username,
             string description,
-            float? userScore,
-            int? hotelId = null,
-            int? apartmentId = null            
+            int ropertyId,
+            PropertyType propertyType,
+            float? userScore          
         )
         {
             UserId = userId;
             Username = username;
-            HotelId = hotelId;
-            ApartmentId = apartmentId;
+            PropertyId = ropertyId;
+            PropertyType = propertyType;
             Description = description;
             UserScore = userScore ?? null;
             CreatedAt = DateTime.UtcNow;
