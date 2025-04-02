@@ -159,23 +159,7 @@ namespace Api.Controllers
         //    return Ok();
         //}
 
-        [HttpPost("{id}/comments")]
-        [Authorize]
-        [EnableRateLimiting("SlidingModify")]
-        public async Task<IActionResult> PostComment(int id, [FromBody] CreateCommentForm form)
-        {
-            var userId = _contextAccessor.HttpContext?.User.GetUserId();
-            var username = _contextAccessor.HttpContext?.User.GetUsername();
-
-            if(userId is null || username.IsNullOrEmpty())
-            {
-                return Unauthorized();
-            }
-
-            var result = await _sender.Send(new CreateCommentCommand(userId, username!, form.Description, form.UserScore, id));
-
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
-        }
+        
 
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin)]

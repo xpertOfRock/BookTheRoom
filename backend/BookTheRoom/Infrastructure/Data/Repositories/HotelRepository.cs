@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Infrastructure.Exceptions;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Data.Repositories
 {
@@ -114,10 +115,8 @@ namespace Infrastructure.Data.Repositories
         }
 
 
-        public async Task<Hotel?> GetById(int? id, CancellationToken cancellationToken = default)
+        public async Task<Hotel?> GetById(int id, CancellationToken cancellationToken = default)
         {
-            if (id == null) throw new ArgumentNullException("Cannot get entity 'Hotel' when 'id' is null.");
-
             string key = $"hotel-{id}";
             string? cachedHotel = await distributedCache.GetStringAsync(key, cancellationToken);
 
@@ -135,7 +134,7 @@ namespace Infrastructure.Data.Repositories
 
                 if (hotel is null)
                 {
-                    return hotel;
+                    throw new EntityNotFoundException<Hotel>();
                 }
 
                 await distributedCache.SetStringAsync
@@ -149,6 +148,12 @@ namespace Infrastructure.Data.Repositories
             }
 
             hotel = JsonConvert.DeserializeObject<Hotel>(cachedHotel);
+
+            if (hotel is null)
+            {
+                throw new EntityNotFoundException<Hotel>();
+            }
+
             return hotel;
         }
         public async Task UpdateCache(Hotel hotel, CancellationToken cancellationToken = default)

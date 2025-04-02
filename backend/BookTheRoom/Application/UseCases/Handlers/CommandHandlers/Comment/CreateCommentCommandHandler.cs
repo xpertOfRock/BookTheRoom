@@ -9,22 +9,18 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
             await unitOfWork.BeginTransactionAsync();
 
             try
-            {      
-                var hotel = await unitOfWork.Hotels.GetById(request.HotelId);
-                var apartment = await unitOfWork.Apartments.GetById(request.ApartmentId);
-
+            {                     
                 var comment = new Core.Entities.Comment
                 {
                     UserId = request.UserId,
                     Username = request.Username,
                     Description = request.Description,
                     UserScore = request.UserScore ?? null,
-                    HotelId = request.HotelId,
-                    ApartmentId = request.ApartmentId,
+                    HotelId = request.PropertyType == PropertyType.Hotel ? request.PropertyId : null,
+                    ApartmentId = request.PropertyType == PropertyType.Apartment ? request.PropertyId : null,
                     CreatedAt = request.CreatedAt,
                     UpdatedAt = request.UpdatedAt
-                };
-                                   
+                };                                   
 
                 var result = await unitOfWork.Comments.Add(comment);
 
@@ -32,23 +28,27 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
                 {
                     await unitOfWork.RollbackAsync();
                     return new Fail("Failed to add a new entity 'Comment' to the entity 'Hotel'.");
+                }                
+
+                if (request.PropertyType == PropertyType.Hotel)
+                {
+                    var hotel = await unitOfWork.Hotels.GetById(request.PropertyId);
+
+                    hotel!.Comments?.Add(comment);
+                    await unitOfWork.Hotels.UpdateCache(hotel); 
+                }
+                else if (request.PropertyType == PropertyType.Apartment)
+                {
+                    var apartment = await unitOfWork.Apartments.GetById(request.PropertyId);
+
+                    apartment!.Comments?.Add(comment);
+                    await unitOfWork.Apartments.UpdateCache(apartment);
                 }
 
                 await unitOfWork.SaveChangesAsync();
 
                 await unitOfWork.CommitAsync();
 
-                if (hotel is not null)
-                {
-                    hotel.Comments?.Add(comment);
-                    await unitOfWork.Hotels.UpdateCache(hotel); 
-                }
-                else if (apartment is not null)
-                {
-                    apartment.Comments?.Add(comment);
-                    await unitOfWork.Apartments.UpdateCache(apartment);
-                }
-               
                 return result;
             }
             catch (Exception ex)
