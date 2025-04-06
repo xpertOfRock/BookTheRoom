@@ -10,6 +10,7 @@ import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons
 
 import { fetchHotel } from "../../services/hotels";
 import { fetchRooms } from "../../services/rooms";
+import { postComment } from "../../services/comments";
 import { getCurrentUserId } from "../../services/auth";
 import RoomsSection from "../../components/hotel/subcomponents/HotelDetails/RoomsSection";
 import CommentSection from "../../components/hotel/subcomponents/HotelDetails/CommentsSection";
@@ -93,6 +94,23 @@ function HotelDetails() {
   const handleImageClick = (index) => {
     setPhotoIndex(index);
     setIsLightboxOpen(true);
+  };
+
+
+  const addComment = async ({description,propertyId, propertyType, userScore}) => {
+    try{
+      const response = await postComment({
+        description: description,
+        propertyId: propertyId,
+        propertyType: propertyType,
+        userScore: userScore,
+      });
+      const data = await fetchHotel(id);
+      setHotel(data);
+    }
+    catch(error){
+      console.error(error);
+    }
   };
 
   if (loading) {
@@ -187,6 +205,7 @@ function HotelDetails() {
               hotel={hotel}
               hasRatedComments={hasRatedComments}
               currentUserId={currentUserId}
+              onAddComment={addComment}
             />
           </div>       
         </div>

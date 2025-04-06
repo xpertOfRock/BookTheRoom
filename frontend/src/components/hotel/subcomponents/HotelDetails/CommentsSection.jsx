@@ -2,12 +2,16 @@ import React from "react";
 import CreateCommentForm from "../../../comment/CreateCommentForm";
 import Comment from "../../../comment/Comment";
 
-function CommentsSection({ hotel, hasRatedComments, currentUserId }) {
+function CommentsSection({ hotel, hasRatedComments, currentUserId, onAddComment }) {
   return (
     <div className="w-full p-4 rounded-lg shadow-md border-[3px] border-indigo-300">
       <h3 className="text-2xl font-semibold text-gray-700 mb-2">Comments</h3>
       
-      <CreateCommentForm hotelId={hotel.id} hasRatedComments={hasRatedComments} />
+      <CreateCommentForm 
+        hotelId={hotel.id}
+        hasRatedComments={hasRatedComments}
+        onAddComment={onAddComment}
+        />
 
       {hotel.comments && hotel.comments.length > 0 ? (
         <div className="border-2 border-indigo-300 mt-6 p-6 rounded-lg shadow-lg">

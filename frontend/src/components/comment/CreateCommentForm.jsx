@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { isAuthorized } from "../../services/auth";
-import { postComment } from "../../services/comments";
 
-function CreateCommentForm({ hotelId, hasRatedComments }) {
-  const [commentText, setCommentText] = useState("");
+function CreateCommentForm({ hotelId, hasRatedComments, onAddComment }) {
+  const [description, setDescription] = useState("");
   const [rating, setRating] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,13 +19,8 @@ function CreateCommentForm({ hotelId, hasRatedComments }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!commentText.trim()) {
+    if (!description.trim()) {
       setError("Comment cannot be empty.");
-      return;
-    }
-
-    if (!hasRatedComments && rating === 0) {
-      setError("Please provide a rating.");
       return;
     }
 
@@ -34,15 +28,13 @@ function CreateCommentForm({ hotelId, hasRatedComments }) {
     setLoading(true);
 
     try {
-      await postComment({
-        description: commentText,
+      await onAddComment({
+        description: description,
         propertyId: hotelId,
         propertyType: 1,
-        userScore: rating,
-      });
-      setCommentText("");
+        userScore: rating,})
+      setDescription("");
       setRating(0);
-      window.location.reload();
     } catch (err) {
       console.error("Error posting comment:", err);
       setError("Failed to post comment. Please try again.");
@@ -60,8 +52,8 @@ function CreateCommentForm({ hotelId, hasRatedComments }) {
         <textarea
           id="comment"
           rows="4"
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           className="w-full border border-gray-300 rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Write your comment here..."
         ></textarea>
