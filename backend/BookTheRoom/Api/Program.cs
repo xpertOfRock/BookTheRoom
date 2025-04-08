@@ -6,7 +6,6 @@ using Infrastructure.DependencyInjection;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +18,12 @@ builder.Services.AddControllers();
 builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure();
+
+builder.Configuration
+    //.SetBasePath(Directory.GetCurrentDirectory())
+    //.AddJsonFile("config/appsettings.json", optional: false, reloadOnChange: true)
+    //.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables();
 
 builder.Services.Configure<HostOptions>(options =>
 {

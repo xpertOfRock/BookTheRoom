@@ -1,0 +1,1 @@
+Copyright 2025 Max Sheludchenko. All rights reserved.

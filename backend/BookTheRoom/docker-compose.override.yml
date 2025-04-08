@@ -8,7 +8,7 @@ services:
       - POSTGRES_DB=BookTheRoomDb
     restart: always
     ports:
-        - "5432:5432"
+      - "5432:5432"
     volumes:
       - postgres_booktheroom:/var/lib/postgresql/data/
  
@@ -23,6 +23,20 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Database=${ConnectionStrings__Database}
+      - Jwt__Key=${Jwt__Key}
+      - Jwt__Issuer=${Jwt__Issuer}
+      - Jwt__Audience=${Jwt__Audience}
+      - BraintreeGateway__Environment=${BraintreeGateway__Environment}
+      - BraintreeGateway__MerchantId=${BraintreeGateway__MerchantId}
+      - BraintreeGateway__PublicKey=${BraintreeGateway__PublicKey}
+      - BraintreeGateway__PrivateKey=${BraintreeGateway__PrivateKey}
+      - CloudinarySettings__CloudName=${CloudinarySettings__CloudName}
+      - CloudinarySettings__ApiKey=${CloudinarySettings__ApiKey}
+      - CloudinarySettings__ApiSecret=${CloudinarySettings__ApiSecret}
+      - EmailSettings__EmailHost=${EmailSettings__EmailHost}
+      - EmailSettings__EmailUsername=${EmailSettings__EmailUsername}
+      - EmailSettings__EmailPassword=${EmailSettings__EmailPassword}
     depends_on:
       - booktheroomdb
       - distributedcache
