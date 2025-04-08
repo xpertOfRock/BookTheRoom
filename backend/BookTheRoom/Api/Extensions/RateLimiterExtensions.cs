@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.AspNetCore.ResponseCompression;
-using System.Threading.RateLimiting;
+﻿using System.Threading.RateLimiting;
 
 namespace Api.Extensions
 {

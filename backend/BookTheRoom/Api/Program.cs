@@ -19,11 +19,7 @@ builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure();
 
-builder.Configuration
-    //.SetBasePath(Directory.GetCurrentDirectory())
-    //.AddJsonFile("config/appsettings.json", optional: false, reloadOnChange: true)
-    //.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-    .AddEnvironmentVariables();
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.Configure<HostOptions>(options =>
 {
