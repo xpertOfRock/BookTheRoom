@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
@@ -37,10 +36,9 @@ namespace Api.Controllers
                 return Unauthorized();
             }
 
-            var result = await _sender.Send(new CreateCommentCommand(userId, username!, form.Description, form.PropertyId, form.PropertyType,form.UserScore));
+            var result = await _sender.Send(new CreateCommentCommand(userId, username!, form.Description, form.PropertyId, form.PropertyType, form.UserScore));
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-
     }
 }
