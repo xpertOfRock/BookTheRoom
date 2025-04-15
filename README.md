@@ -55,3 +55,6 @@ Technologies used:
 			slick-carousel - library for carousel
 
 			js-cookie - library for storaging data in cookies (in this case - auth tokents: access, refresh; user data)
+
+
+Documentation required for all components with complicated business or infrastructure logic.
