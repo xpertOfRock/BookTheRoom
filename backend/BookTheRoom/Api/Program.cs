@@ -1,3 +1,4 @@
+using Api.Exceptions.ExceptionHandler;
 using Api.Extensions;
 using Application.DependencyInjection;
 using Application.Settings;
@@ -108,6 +109,8 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -145,5 +148,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseExceptionHandler(options => { });
 
 app.Run();
