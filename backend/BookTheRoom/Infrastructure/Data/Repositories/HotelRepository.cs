@@ -3,6 +3,9 @@ using Newtonsoft.Json;
 
 namespace Infrastructure.Data.Repositories
 {
+    /// <summary>
+    /// Repository for managing entities type of "Hotel" in database using Redis and Entity Framework with cache aside pattern
+    /// </summary>
     public class HotelRepository(
         ApplicationDbContext context,
         IDistributedCache distributedCache,

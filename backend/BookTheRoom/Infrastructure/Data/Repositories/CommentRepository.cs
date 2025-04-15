@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Data.Repositories
 {
+    /// <summary>
+    /// Repository for managing entities type of "Comment" in database using Entity Framework with cache aside pattern
+    /// </summary>
     public class CommentRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : ICommentRepository
     {
         public async Task<IResult> Add(Comment comment)

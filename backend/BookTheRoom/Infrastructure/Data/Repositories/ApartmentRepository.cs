@@ -1,10 +1,10 @@
-﻿
-
-using Core.Entities;
-using Infrastructure.Exceptions;
+﻿using Infrastructure.Exceptions;
 
 namespace Infrastructure.Data.Repositories
 {
+    /// <summary>
+    /// Repository for managing entities type of "Apartment" in database using Redis and Entity Framework with cache aside pattern
+    /// </summary>
     public class ApartmentRepository(
         ApplicationDbContext context,
         IDistributedCache distributedCache,

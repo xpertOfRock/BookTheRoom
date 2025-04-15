@@ -3,6 +3,9 @@ using Core.Entities;
 
 namespace Core.Interfaces
 {
+    /// <summary>
+    /// Interface which represents an abstraction for managing entities type of "Room" in database using Redis and Entity Framework with cache aside pattern.
+    /// </summary>
     public interface IRoomRepository
     {
         Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request);

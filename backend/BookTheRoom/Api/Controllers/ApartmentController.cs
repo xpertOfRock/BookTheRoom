@@ -17,6 +17,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Controller for apartment operations such as CRUD and listing.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ApartmentController : ControllerBase
@@ -37,7 +40,11 @@ namespace Api.Controllers
             _userManager = userManager;
             _contextAccessor = contextAccessor;
         }
-
+        /// <summary>
+        /// Retrieves apartments associated with the currently authenticated user with optional filtering, sorting, and pagination.
+        /// </summary>
+        /// <param name="request">Filter, sort, and pagination parameters for apartments.</param>
+        /// <returns>List of apartments based on the given filters.</returns>
         [HttpGet("user")]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
@@ -67,6 +74,11 @@ namespace Api.Controllers
 
             return Ok(new GetApartmentsResponse(apartmentsDTO));
         }
+        /// <summary>
+        /// Retrieves all apartments with optional filtering, sorting, and pagination.
+        /// </summary>
+        /// <param name="request">Filter, sort, and pagination parameters for apartments.</param>
+        /// <returns>List of apartments based on the given filters.</returns>
         [HttpGet]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
@@ -88,7 +100,9 @@ namespace Api.Controllers
 
             return Ok(new GetApartmentsResponse(apartmentsDTO));
         }
-
+        /// <summary>
+        /// Retrieves a single apartment by ID.
+        /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
@@ -124,7 +138,9 @@ namespace Api.Controllers
 
             return Ok(apartmentDTO);
         }
-
+        /// <summary>
+        /// Creates a new apartment entity.
+        /// </summary>
         [HttpPost]
         [Authorize]
         [EnableRateLimiting("SlidingModify")]
@@ -179,7 +195,9 @@ namespace Api.Controllers
             return !result.IsSuccess ? BadRequest(result) : Ok(result);                      
 
         }
-
+        /// <summary>
+        /// Updates an existing apartment.
+        /// </summary>
         [HttpPut("{id}")]
         [Authorize]
         [EnableRateLimiting("SlidingModify")]

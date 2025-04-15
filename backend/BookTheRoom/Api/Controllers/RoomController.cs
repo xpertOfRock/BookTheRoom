@@ -26,7 +26,11 @@ namespace Api.Controllers
             _sender = sender;
             _photoService = photoService;
         }
-
+        /// <summary>
+        /// Retrieves all rooms for a specific hotel.
+        /// </summary>
+        /// <param name="hotelId">ID of the hotel to get rooms from.</param>
+        /// <param name="request">Request parameters for room filtering and pagination.</param>
         [HttpGet("{hotelId}")]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
@@ -48,7 +52,9 @@ namespace Api.Controllers
             ).ToList();
             return Ok(new GetRoomsResponse(roomsDTO));
         }
-
+        /// <summary>
+        /// Retrieves a room by its hotel and room number.
+        /// </summary>
         [HttpGet("{hotelId}/{number}")]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
@@ -78,7 +84,9 @@ namespace Api.Controllers
 
             return Ok(roomDTO); 
         }
-       
+        /// <summary>
+        /// Creates a new room in a hotel. Only accessible by admins.
+        /// </summary>
         [HttpPost("{hotelId}")]
         [Authorize(Roles = UserRole.Admin)]
         [EnableRateLimiting("SlidingModify")]
@@ -119,7 +127,9 @@ namespace Api.Controllers
 
             return Ok(result);
         }
-
+        /// <summary>
+        /// Updates an existing room. Only accessible by admins.
+        /// </summary>
         [HttpPut("{hotelId}/{number}")]
         [Authorize(Roles = UserRole.Admin)]
         [EnableRateLimiting("SlidingModify")]
@@ -159,7 +169,9 @@ namespace Api.Controllers
 
             return Ok(result);
         }
-
+        /// <summary>
+        /// Deletes a room by hotel ID and room number. Only accessible by admins.
+        /// </summary>
         [HttpDelete("{hotelId}/{number}")]
         [Authorize(Roles = UserRole.Admin)]
         [EnableRateLimiting("SlidingModify")]

@@ -19,6 +19,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Controller for managing hotel operations including CRUD and listing.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class HotelController : ControllerBase
@@ -35,7 +38,11 @@ namespace Api.Controllers
             _photoService = photoService;
             _contextAccessor = contextAccessor;
         }
-
+        /// <summary>
+        /// Retrieves a list of hotels with optional filters, sorting, and pagination.
+        /// </summary>
+        /// <param name="request">Filter, sort, and pagination parameters for hotels.</param>
+        /// <returns>Filtered and paginated list of hotels.</returns>
         [HttpGet]        
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
@@ -68,6 +75,9 @@ namespace Api.Controllers
             return Ok(new GetHotelsResponse(hotelsDTO));
         }
 
+        /// <summary>
+        /// Retrieves hotel details by ID.
+        /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
@@ -104,7 +114,9 @@ namespace Api.Controllers
 
             return Ok(hotelDTO);
         }
-
+        /// <summary>
+        /// Creates a new hotel entity. Only accessible by admins.
+        /// </summary>
         [HttpPost]
         [Authorize(Roles = UserRole.Admin)]
         [EnableRateLimiting("SlidingModify")]
@@ -157,10 +169,10 @@ namespace Api.Controllers
         //public async Task<IActionResult> PostService(int hotelId, [FromBody] )
         //{
         //    return Ok();
-        //}
-
-        
-
+        //}       
+        /// <summary>
+        /// Updates existing hotel entity. Only accessible by admins.
+        /// </summary>
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin)]
         [EnableRateLimiting("SlidingModify")]
@@ -210,7 +222,9 @@ namespace Api.Controllers
 
             return Ok(result);
         }
-
+        /// <summary>
+        /// Deletes a hotel by ID. Only accessible by admins.
+        /// </summary>
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin)]
         [EnableRateLimiting("SlidingModify")]

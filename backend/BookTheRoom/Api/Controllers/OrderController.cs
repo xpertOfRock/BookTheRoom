@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Controller for managing order operations.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase
@@ -29,13 +32,18 @@ namespace Api.Controllers
             _contextAccessor = contextAccessor;
             _userManager = userManager;
         }
+        /// <summary>
+        /// Method for getting ClientToken which is be used to create method payment nonce string which is used to eencrypt the user's card data.
+        /// </summary>
         [HttpGet("client-token")]
         public async Task<IActionResult> GetClientToken()
         {
             var token = await _sender.Send(new GetClientTokenQuery());
             return Ok(token);
         }
-
+        /// <summary>
+        /// Creates new entity "Order".
+        /// </summary>
         [HttpPost("{hotelId}/{number}")]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingModify")]

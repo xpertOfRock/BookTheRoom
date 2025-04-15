@@ -5,10 +5,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Controller for posting comments to hotels or apartments.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
@@ -23,7 +25,10 @@ namespace Api.Controllers
             _sender = sender;
             _contextAccessor = contextAccessor;
         }
-
+        /// <summary>
+        /// Posts a comment for a property (hotel/apartment).
+        /// </summary>
+        /// <param name="form">The comment form containing property details and user feedback.</param>
         [HttpPost]
         [Authorize]
         [EnableRateLimiting("SlidingModify")]
@@ -41,6 +46,5 @@ namespace Api.Controllers
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-
     }
 }

@@ -15,6 +15,9 @@ using System.Text;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Controller for managing user authentication and account-related operations.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -36,6 +39,11 @@ namespace Api.Controllers
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Authenticates a user and returns JWT and refresh token.
+        /// </summary>
+        /// <param name="request">Login credentials (email/username and password).</param>
+        /// <returns>JWT and refresh token on success.</returns>
         [HttpPost("Login")]
         [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Login([FromBody] AuthorizeRequest request)
@@ -59,7 +67,11 @@ namespace Api.Controllers
             var refreshToken = await GenerateAndStoreRefreshToken(user);
             return Ok(new { token, refreshToken, user });
         }
-
+        /// <summary>
+        /// Registers a new user and sends a welcome email.
+        /// </summary>
+        /// <param name="request">User registration details.</param>
+        /// <returns>JWT and refresh token on success. Returns 400 status code in case of invalid credentials.</returns>
         [HttpPost("Register")]
         [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -110,7 +122,9 @@ namespace Api.Controllers
             return Ok(new { token, refreshToken, newUser });
 
         }
-
+        /// <summary>
+        /// Logs out the authenticated user by removing the refresh token.
+        /// </summary>
         [HttpPost("Logout")]
         [Authorize]
         [EnableRateLimiting("SlidingModify")]
@@ -123,7 +137,11 @@ namespace Api.Controllers
             }
             return Ok(new { message = "Successfully logged out." });
         }
-
+        /// <summary>
+        /// Issues a new JWT and refresh token based on an expired one.
+        /// </summary>
+        /// <param name="request">Expired JWT and current refresh token.</param>
+        /// <returns>New JWT and refresh token if validation is successful.</returns>
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {

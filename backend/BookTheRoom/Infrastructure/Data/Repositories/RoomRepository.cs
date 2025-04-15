@@ -2,8 +2,11 @@
 
 namespace Infrastructure.Data.Repositories
 {
-    public class RoomRepository
-        (ApplicationDbContext context,
+    /// <summary>
+    /// Repository for managing entities type of "Room" in database using Redis and Entity Framework with cache aside pattern
+    /// </summary>
+    public class RoomRepository(
+        ApplicationDbContext context,
         IDistributedCache distributedCache,
         IPhotoService photoService) : IRoomRepository
     {

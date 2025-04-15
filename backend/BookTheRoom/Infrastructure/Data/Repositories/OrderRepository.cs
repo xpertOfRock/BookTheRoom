@@ -1,5 +1,8 @@
 ﻿namespace Infrastructure.Data.Repositories
 {
+    /// <summary>
+    /// Repository for managing entities type of "Order" in database using Redis and Entity Framework with cache aside pattern
+    /// </summary>
     public class OrderRepository(
         ApplicationDbContext context,
         IDistributedCache distributedCache) : IOrderRepository
