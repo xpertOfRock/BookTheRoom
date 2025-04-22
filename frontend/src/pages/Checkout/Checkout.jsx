@@ -201,7 +201,7 @@ function Checkout() {
                       {orderData.minibarIncluded && <span>Minibar </span>}
                       {orderData.mealsIncluded && <span>Meals </span>}
                     </td>
-                    <td className="text-right py-2">+3%</td>
+                    {/* <td className="text-right py-2">+3%</td> */}
                   </tr>
                 )}
                 <tr className="border-b">
