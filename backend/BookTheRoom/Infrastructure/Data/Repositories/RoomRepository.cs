@@ -1,5 +1,4 @@
-﻿using Core.Entities;
-
+﻿
 namespace Infrastructure.Data.Repositories
 {
     public class RoomRepository

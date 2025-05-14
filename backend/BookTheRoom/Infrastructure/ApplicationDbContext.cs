@@ -9,6 +9,8 @@ namespace Infrastructure
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatMessage> Messages { get; set; }
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Order> Orders { get; set; }

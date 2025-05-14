@@ -29,6 +29,7 @@ namespace Infrastructure.Data.Repositories
             Rooms = new RoomRepository(_context, _distributedCache, _photoService);
             Orders = new OrderRepository(_context, _distributedCache);
             Comments = new CommentRepository(_context, _userManager);
+            Chats = new ChatRepository(_context);
         }
 
         public IHotelRepository Hotels { get; private set; }
@@ -36,6 +37,7 @@ namespace Infrastructure.Data.Repositories
         public IOrderRepository Orders { get; private set; }
         public IApartmentRepository Apartments { get; private set; }
         public ICommentRepository Comments { get; private set; }
+        public IChatRepository Chats { get; private set; }
 
         public async Task SaveChangesAsync(CancellationToken token = default)
         {
