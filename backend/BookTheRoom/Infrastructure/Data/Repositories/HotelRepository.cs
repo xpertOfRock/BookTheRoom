@@ -1,39 +1,33 @@
-﻿using Infrastructure.Exceptions;
-using Newtonsoft.Json;
-
-namespace Infrastructure.Data.Repositories
+﻿namespace Infrastructure.Data.Repositories
 {
     public class HotelRepository(
         ApplicationDbContext context,
         IDistributedCache distributedCache,
         IPhotoService photoService) : IHotelRepository
     {
-        public async Task<IResult> Add(Hotel hotel)
+        public async Task<IResult> Add(Hotel hotel, CancellationToken token = default)
         {
-            Hotel? existingHotel = await context.Hotels
+            var existingHotel = await context.Hotels
                 .AsNoTracking()
-                .FirstOrDefaultAsync(h => h.Name == hotel.Name);
+                .FirstOrDefaultAsync(h => h.Name == hotel.Name, token);
 
             if(existingHotel is not null)
             {
                 return new Fail("Entity with this address and name already exists.");
             }
 
-            await context.Hotels.AddAsync(hotel);
+            await context.Hotels.AddAsync(hotel, token);
 
             return new Success("Entity 'Hotel' was created successfully.");
         }
         
-        public async Task<IResult> Delete(int id)
+        public async Task<IResult> Delete(int id, CancellationToken token = default)
         {            
-            var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+            var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Id == id, token);
 
-            if(hotel == null)
-            {
-                return new Fail("Impossible to delete a non-existent entity.");
-            }
+            if(hotel == null) throw new EntityNotFoundException<Hotel>();
 
-            distributedCache.Remove($"hotel-{id}");
+            await distributedCache.RemoveAsync($"hotel-{id}", token);
 
             if (hotel.Images != null && hotel.Images.Count > 0)
             {
@@ -42,12 +36,17 @@ namespace Infrastructure.Data.Repositories
                     await photoService.DeletePhotoAsync(image);
                 }
             }
-            
-            context.Hotels.Remove(hotel);
+
+            var rawsAffected = await context.Hotels
+                .Where(h => h.Id == id)
+                .ExecuteDeleteAsync(token);
+
+            if (rawsAffected == 0) throw new EntityNotFoundException<Hotel>();
+
             return new Success("Entity 'Hotel' was deleted successfully.");
         }
         
-        public async Task<List<Hotel>> GetAll(GetHotelsRequest request)
+        public async Task<List<Hotel>> GetAll(GetHotelsRequest request, CancellationToken token = default)
         {
             var query = context.Hotels
                 .Include(h => h.Address)
@@ -111,14 +110,13 @@ namespace Infrastructure.Data.Repositories
                 .Skip((request.Page - 1) * request.ItemsCount)
                 .Take(request.ItemsCount);
 
-            return await query.ToListAsync();
+            return await query.ToListAsync(token);
         }
 
-
-        public async Task<Hotel?> GetById(int id, CancellationToken cancellationToken = default)
+        public async Task<Hotel?> GetById(int id, CancellationToken token = default)
         {
             string key = $"hotel-{id}";
-            string? cachedHotel = await distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedHotel = await distributedCache.GetStringAsync(key, token);
 
             Hotel? hotel;
             
@@ -130,18 +128,16 @@ namespace Infrastructure.Data.Repositories
                     .Include(h => h.Comments)                    
                     .AsSplitQuery()
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(h => h.Id == id);
+                    .FirstOrDefaultAsync(h => h.Id == id,
+                    token);
 
-                if (hotel is null)
-                {
-                    throw new EntityNotFoundException<Hotel>();
-                }
+                if (hotel is null) throw new EntityNotFoundException<Hotel>();
 
                 await distributedCache.SetStringAsync
                 (
                     key,
                     JsonConvert.SerializeObject(hotel),
-                    cancellationToken
+                    token
                 );
 
                 return hotel;
@@ -149,18 +145,15 @@ namespace Infrastructure.Data.Repositories
 
             hotel = JsonConvert.DeserializeObject<Hotel>(cachedHotel);
 
-            if (hotel is null)
-            {
-                throw new EntityNotFoundException<Hotel>();
-            }
+            if (hotel is null) throw new EntityNotFoundException<Hotel>();
 
             return hotel;
         }
-        public async Task UpdateCache(Hotel hotel, CancellationToken cancellationToken = default)
+        public async Task UpdateCache(Hotel hotel, CancellationToken token = default)
         {
             string key  = $"hotel-{hotel.Id}";
 
-            string? cachedHotel = await distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedHotel = await distributedCache.GetStringAsync(key, token);
 
 
             if (string.IsNullOrEmpty(cachedHotel)) return;
@@ -169,21 +162,18 @@ namespace Infrastructure.Data.Repositories
             (
                 key,
                 JsonConvert.SerializeObject(hotel),
-                cancellationToken
+                token
             );
         }
-        public async Task<IResult> Update(int id, UpdateHotelRequest request)
+        public async Task<IResult> Update(int id, UpdateHotelRequest request, CancellationToken token = default)
         {
-            var hotel = await GetById(id);
+            var hotel = await GetById(id, token);
 
-            if (hotel == null)
-            {
-                return new Fail("Impossible to update a non-existent entity.");
-            }
+            if (hotel is null) throw new EntityNotFoundException<Hotel>();
 
             string key = $"hotel-{id}";
 
-            distributedCache.Remove(key);
+            await distributedCache.RemoveAsync(key, token);
 
             if (request.Images is not null)
             {
@@ -197,10 +187,11 @@ namespace Infrastructure.Data.Repositories
                 await context.Hotels
                         .Where(h => h.Id == id)
                         .ExecuteUpdateAsync(e => e
-                        .SetProperty(h => h.Images, request.Images));
+                        .SetProperty(h => h.Images, request.Images),
+                        token);
             }
 
-            await context.Hotels
+            var affectedRaws = await context.Hotels
                 .Where(h => h.Id == id)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(h => h.Name, request.Name)
@@ -211,7 +202,10 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Address.City, request.Address.City)
                 .SetProperty(h => h.Address.Street, request.Address.Street)
                 .SetProperty(h => h.Address.PostalCode, request.Address.PostalCode)
-                .SetProperty(h => h.HasPool, request.HasPool));
+                .SetProperty(h => h.HasPool, request.HasPool),
+                token);
+
+            if (affectedRaws == 0) throw new EntityNotFoundException<Hotel>();
 
             return new Success("Entity 'Hotel' was updated successfully.");
         }

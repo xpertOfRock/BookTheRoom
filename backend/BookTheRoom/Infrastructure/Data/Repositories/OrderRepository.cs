@@ -1,26 +1,26 @@
-﻿namespace Infrastructure.Data.Repositories
+﻿using Infrastructure.Exceptions;
+
+namespace Infrastructure.Data.Repositories
 {
     public class OrderRepository(
         ApplicationDbContext context,
         IDistributedCache distributedCache) : IOrderRepository
     {
-        public async Task<IResult> Add(Order order)
+        public async Task<IResult> Add(Order order, CancellationToken token = default)
         {
-            await context.Orders.AddAsync(order);
+            await context.Orders.AddAsync(order, token);
             return new Success("Entity 'Order' was created successfully.");
         }
 
-        public async Task<List<Order>?> GetActiveOrders()
+        public async Task<List<Order>?> GetActiveOrders(CancellationToken token = default)
         {
-            var activeOrders = await context.Orders
+            return await context.Orders
                      .Where(o => o.Status == OrderStatus.Active)
                      .AsNoTracking()
-                     .ToListAsync();
-
-            return activeOrders;
+                     .ToListAsync(token);
         }
 
-        public async Task<List<Order>> GetAll(GetOrdersRequest request)
+        public async Task<List<Order>> GetAll(GetOrdersRequest request, CancellationToken token = default)
         {
             var query = context.Orders
                 .Where(o => string.IsNullOrWhiteSpace(request.Search) ||
@@ -40,10 +40,10 @@
                  : query = query.OrderBy(selectorKey);
 
 
-            return await query.ToListAsync();
+            return await query.ToListAsync(token);
         }
 
-        public async Task<List<Order>?> GetAllUserOrders(string userId, GetDataRequest request)
+        public async Task<List<Order>?> GetAllUserOrders(string userId, GetDataRequest request, CancellationToken token = default)
         {
             var query = context.Orders
                 .Where(o => o.UserId == userId && (
@@ -71,39 +71,46 @@
             }
 
 
-            return await query.ToListAsync();
+            return await query.ToListAsync(token);
         }
 
-        public async Task<Order> GetById(int orderId)
+        public async Task<Order> GetById(int orderId, CancellationToken token = default)
         {
-            return await context.Orders
+            var order = await context.Orders
                 .AsNoTracking()
-                .FirstOrDefaultAsync(o => o.Id == orderId);
+                .FirstOrDefaultAsync(o => o.Id == orderId, token);
+
+            if(order is null)
+            {
+                throw new EntityNotFoundException<Order>();
+            }
+
+            return order;
         }
 
-        public async Task<List<Order>?> GetExpiredOrders()
+        public async Task<List<Order>?> GetExpiredOrders(CancellationToken token = default)
         {
             var expiredOrders = await context.Orders
                 .Where(o =>
                        o.CheckOut < DateTime.UtcNow &&
                        o.Status != OrderStatus.Completed)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(token);
 
             return expiredOrders;
         }
 
-        public async Task Update(int id, UpdateOrderRequest request)
+        public async Task Update(int id, UpdateOrderRequest request, CancellationToken token = default)
         {
             string key = $"order-{id}";
 
-            distributedCache.Remove(key);
+            await distributedCache.RemoveAsync(key, token);
 
             await context.Orders
                 .Where(o => o.Id == id)
                 .ExecuteUpdateAsync(e => e
-                .SetProperty(o => o.Status, request.Status)
-                );            
+                .SetProperty(o => o.Status, request.Status),
+                token);            
         }
     }
 }

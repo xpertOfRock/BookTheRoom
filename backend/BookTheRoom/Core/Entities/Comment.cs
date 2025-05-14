@@ -1,6 +1,8 @@
-﻿namespace Core.Entities
+﻿using Core.Abstractions;
+
+namespace Core.Entities
 {
-    public class Comment
+    public class Comment : IEntity
     {
         public int Id { get; set; }
         public string UserId { get; set; }

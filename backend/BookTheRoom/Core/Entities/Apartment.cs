@@ -1,8 +1,9 @@
-﻿using Core.ValueObjects;
+﻿using Core.Abstractions;
+using Core.ValueObjects;
 
 namespace Core.Entities
 {
-    public class Apartment
+    public class Apartment : IEntity
     {
         public int Id { get; set; }
         public string OwnerId { get; set; }
@@ -11,6 +12,7 @@ namespace Core.Entities
         public decimal PriceForNight { get; set; }
 
         public List<string> Images { get; set; }
+        public List<Chat>? Chats { get; set; }
         public List<Comment>? Comments { get; set; }
         public Address Address { get; set; }
     }

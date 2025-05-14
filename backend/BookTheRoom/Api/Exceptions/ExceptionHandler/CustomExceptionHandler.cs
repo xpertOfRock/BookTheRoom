@@ -1,5 +1,7 @@
 ﻿using Braintree.Exceptions;
+using Core.Abstractions;
 using FluentValidation;
+using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +19,12 @@ namespace Api.Exceptions.ExceptionHandler
 
             (string Detail, string Title, int StatusCode) details = exception switch
             {
+                EntityNotFoundException<IEntity> => 
+                (
+                    exception.Message,
+                    exception.GetType().Name,
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest
+                ),
                 ValidationException =>
                 (
                     exception.Message,

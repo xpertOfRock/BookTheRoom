@@ -5,13 +5,13 @@ namespace Core.Interfaces
 {
     public interface IOrderRepository
     {
-        Task<List<Order>> GetAll(GetOrdersRequest request);
-        Task<List<Order>?> GetAllUserOrders(string userId, GetDataRequest request);
-        Task<List<Order>?> GetActiveOrders();
-        Task<List<Order>?> GetExpiredOrders();
+        Task<List<Order>> GetAll(GetOrdersRequest request, CancellationToken token = default);
+        Task<List<Order>?> GetAllUserOrders(string userId, GetDataRequest request, CancellationToken token = default);
+        Task<List<Order>?> GetActiveOrders(CancellationToken token = default);
+        Task<List<Order>?> GetExpiredOrders(CancellationToken token = default);
         //Task<Order> GetById(int id);
-        Task<IResult> Add(Order order);
-        Task Update(int id, UpdateOrderRequest request);
+        Task<IResult> Add(Order order, CancellationToken token = default);
+        Task Update(int id, UpdateOrderRequest request, CancellationToken token = default);
 
     }
 }

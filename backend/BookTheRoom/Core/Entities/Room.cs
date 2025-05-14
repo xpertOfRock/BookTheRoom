@@ -1,9 +1,9 @@
-﻿using Core.Entities;
+﻿using Core.Abstractions;
 using Core.Enums;
 
 namespace Core.Entities
 {
-    public class Room
+    public class Room : IEntity
     {
         public int HotelId { get; set; }
         public string Name { get; set; }

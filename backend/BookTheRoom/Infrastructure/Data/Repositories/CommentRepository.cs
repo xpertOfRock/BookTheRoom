@@ -5,9 +5,9 @@ namespace Infrastructure.Data.Repositories
 {
     public class CommentRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : ICommentRepository
     {
-        public async Task<IResult> Add(Comment comment)
+        public async Task<IResult> Add(Comment comment, CancellationToken token = default)
         {
-            await context.Comments.AddAsync(comment);
+            await context.Comments.AddAsync(comment, token);
             return new Success("Entity 'Comment' was created successfully.");
         }
 
@@ -18,45 +18,46 @@ namespace Infrastructure.Data.Repositories
         //    return await _context.Comments.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
         //}
 
-        public async Task<IResult> Delete(int id, string userId = "null")
+        public async Task<IResult> Delete(int id, string userId = "null", CancellationToken token = default)
         {
             if(userId == "null")
             {
                 return new Fail("User is null.");
             }
 
-            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == userId, token);
 
-            if (user == null )
+            if (user is null )
             {
                 return new Fail("User is null."); ;
             }
 
             var comment = await context.Comments
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id, token);
 
-            if (comment == null)
+            if (comment is null)
             {
-                return new Fail("Impossible to delete a non-existent entity.");
+                throw new EntityNotFoundException<Comment>();
             }
 
             if (comment.UserId == user.Id || user.Role == UserRole.Admin) 
             {
                 await context.Comments
                     .Where(c => c.Id == id)
-                    .ExecuteDeleteAsync();
+                    .ExecuteDeleteAsync(token);
             }
             return new Success("Entity 'Comment' was deleted successfully.");
         }
 
-        public async Task<IResult> Update(int id, string description)
+        public async Task<IResult> Update(int id, string description, CancellationToken token = default)
         {
             await context.Comments
                 .Where(c => c.Id == id)
                 .ExecuteUpdateAsync(x => x
                 .SetProperty(c => c.Description, description)
-                .SetProperty(c => c.UpdatedAt, DateTime.UtcNow));
+                .SetProperty(c => c.UpdatedAt, DateTime.UtcNow),
+                token);
 
             return new Success("Entity 'Comment' was updated successfully.");
         }

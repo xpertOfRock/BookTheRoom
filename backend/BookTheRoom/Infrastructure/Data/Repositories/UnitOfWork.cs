@@ -37,9 +37,9 @@ namespace Infrastructure.Data.Repositories
         public IApartmentRepository Apartments { get; private set; }
         public ICommentRepository Comments { get; private set; }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken token = default)
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(token);
         }
         public async Task BeginTransactionAsync()
         {

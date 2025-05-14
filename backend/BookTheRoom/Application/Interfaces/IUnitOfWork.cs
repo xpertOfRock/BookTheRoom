@@ -10,6 +10,6 @@
         Task BeginTransactionAsync();
         Task CommitAsync();
         Task RollbackAsync();
-        Task SaveChangesAsync();
+        Task SaveChangesAsync(CancellationToken token = default);
     }
 }

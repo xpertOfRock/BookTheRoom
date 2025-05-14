@@ -1,8 +1,9 @@
-﻿using Core.ValueObjects;
+﻿using Core.Abstractions;
+using Core.ValueObjects;
 
 namespace Core.Entities
 {
-    public class Hotel
+    public class Hotel : IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
