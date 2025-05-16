@@ -1,15 +1,15 @@
-﻿using Application.Interfaces;
+﻿using Api.Chat.Interfaces;
+using Api.Chat.Models;
+using Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Api.Hubs
+namespace Api.Chat.Hubs
 {
     [Authorize]
-    public class ChatHub(IUnitOfWork unitOfWork) : Hub
+    public class ChatHub(ISender sender, IUnitOfWork unitOfWork) : Hub<IChatClient>
     {
-  
-
         public override async Task OnConnectedAsync()
         {
             if (Context.User.IsInRole("Admin"))
@@ -17,9 +17,14 @@ namespace Api.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task JoinChat(Guid chatId)
+        public async Task JoinChat(UserConnection connection)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, chatId.ToString());
+            await Groups
+                .AddToGroupAsync(Context.ConnectionId, connection.ChatId.ToString());
+
+            await Clients
+                .Group(connection.ChatId.ToString())
+                .RecieveMessage("System", $"{connection.UserName} has joined the chat.");
         }
 
         public async Task SendMessage(Guid chatId, string text)

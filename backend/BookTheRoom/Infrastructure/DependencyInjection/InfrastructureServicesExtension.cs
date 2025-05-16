@@ -16,13 +16,14 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IHotelRepository, HotelRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IChatRepository, ChatRepository>();
+
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IEmailService, EmailService>();
 
             services.AddScoped<IOrderStatusUpdaterService, OrderStatusUpdaterService>();
             services.AddHostedService<OrderStatusUpdaterBackgroundService>();
-            //services.AddHostedService<RoomStatusUpdater>();
 
             return services;
         }

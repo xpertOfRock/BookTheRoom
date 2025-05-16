@@ -3,44 +3,41 @@ namespace Infrastructure.Data.Repositories
 {
     public class ChatRepository(ApplicationDbContext context) : IChatRepository
     {
-        public async Task<Chat> CreateChatAsync(string userId, CancellationToken ct = default)
+        public async Task<List<Chat>> GetChatsByApartmentIdAsync(int apartmentId)
         {
-            var chat = new Chat();
-            chat.UsersId.Add(userId);
+            return await context.Chats
+                .Where(c => c.ApartmentId == apartmentId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<Chat> CreateChatAsync(int apartmentId, string userId, string ownerId)
+        {
+            var chat = new Chat
+            {
+                ApartmentId = apartmentId,
+                UsersId = new List<string> { userId, ownerId }
+            };
             context.Chats.Add(chat);
-            await context.SaveChangesAsync(ct);
+            await context.SaveChangesAsync();
             return chat;
         }
 
-        public async Task<Chat?> GetChatAsync(Guid chatId, CancellationToken ct = default) =>
-            await context.Chats
-                     .Include(c => c.Messages)
-                     .FirstOrDefaultAsync(c => c.Id == chatId, ct);
-
-        public async Task<IEnumerable<Chat>> GetChatsForAdminAsync(CancellationToken ct = default) =>
-            await context.Chats
-                     .Include(c => c.Messages)
-                     .ToListAsync(ct);
-
-        public async Task<ChatMessage> AddMessageAsync(Guid chatId, string userId, string userName, string text, CancellationToken ct = default)
+        public async Task<List<ChatMessage>> GetMessagesByChatIdAsync(Guid chatId)
         {
-            var msg = new ChatMessage
-            {
-                ChatId = chatId,
-                UserId = userId,
-                UserName = userName,
-                Message = text
-            };
-            context.ChatMessages.Add(msg);
-            await context.SaveChangesAsync(ct);
-            return msg;
+            return await context.Messages
+                .Where(m => m.ChatId == chatId)
+                .OrderBy(m => m.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<ChatMessage>> GetMessagesAsync(Guid chatId, CancellationToken ct = default) =>
-            await context.ChatMessages
-                     .Where(m => m.ChatId == chatId)
-                     .OrderBy(m => m.CreatedAt)
-                     .ToListAsync(ct);
+        public async Task<ChatMessage> AddMessageAsync(ChatMessage message)
+        {
+            context.Messages.Add(message);
+            await context.SaveChangesAsync();
+            return message;
+        }
     }
 }
-}
+
