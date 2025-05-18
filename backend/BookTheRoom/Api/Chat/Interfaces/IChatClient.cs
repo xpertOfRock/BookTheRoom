@@ -4,6 +4,5 @@
     {
         public Task RecieveMessage(string userName, string message);
 
-
     }
 }

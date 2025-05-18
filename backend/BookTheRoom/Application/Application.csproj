@@ -31,9 +31,7 @@
 
   <ItemGroup>
     <Folder Include="UseCases\Commands\Services\" />
-    <Folder Include="UseCases\Commands\Chat\" />
     <Folder Include="UseCases\Handlers\CommandHandlers\Services\" />
-    <Folder Include="UseCases\Handlers\CommandHandlers\Chat\" />
     <Folder Include="UseCases\Handlers\QueryHandlers\Chat\" />
     <Folder Include="UseCases\Queries\Chat\" />
     <Folder Include="UseCases\Validators\Order\" />

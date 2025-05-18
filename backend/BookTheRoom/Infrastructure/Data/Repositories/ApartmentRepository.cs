@@ -151,7 +151,7 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Apartment?> GetById(int id, CancellationToken token = default)
+        public async Task<Apartment> GetById(int id, CancellationToken token = default)
         {
             string key = $"apartment-{id}";
             string? cachedApartment = await distributedCache.GetStringAsync(key, token);

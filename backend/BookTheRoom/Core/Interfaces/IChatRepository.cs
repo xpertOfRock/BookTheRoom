@@ -4,9 +4,9 @@ namespace Core.Interfaces
 {
     public interface IChatRepository
     {
-        Task<List<Chat>> GetChatsByApartmentIdAsync(int apartmentId);
-        Task<Chat> CreateChatAsync(int apartmentId, string userId, string ownerId);
-        Task<List<ChatMessage>> GetMessagesByChatIdAsync(Guid chatId);
-        Task<ChatMessage> AddMessageAsync(ChatMessage message);
+        Task<List<Chat>> GetChatsByApartmentId(int apartmentId);
+        Task<Chat> CreateChat(int apartmentId, List<string> userIds);
+        Task<List<ChatMessage>> GetMessagesByChatId(Guid chatId);
+        Task<ChatMessage> AddMessage(ChatMessage message);
     }
 }

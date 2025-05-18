@@ -6,7 +6,7 @@ namespace Application.UseCases.Handlers.QueryHandlers.Apartment
     {
         public async Task<List<Core.Entities.Apartment>> Handle(GetApartmentsQuery request, CancellationToken cancellationToken)
         {
-            return await unitOfWork.Apartments.GetAll(request.Filter);
+            return await unitOfWork.Apartments.GetAll(request.Filter, cancellationToken);
         }
     }
 }

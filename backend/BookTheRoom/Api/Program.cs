@@ -1,3 +1,4 @@
+using Api.Chat.Hubs;
 using Api.Exceptions.ExceptionHandler;
 using Api.Extensions;
 using Application.DependencyInjection;
@@ -150,5 +151,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseExceptionHandler(options => { });
+
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();

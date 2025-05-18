@@ -3,7 +3,7 @@ namespace Infrastructure.Data.Repositories
 {
     public class ChatRepository(ApplicationDbContext context) : IChatRepository
     {
-        public async Task<List<Chat>> GetChatsByApartmentIdAsync(int apartmentId)
+        public async Task<List<Chat>> GetChatsByApartmentId(int apartmentId)
         {
             return await context.Chats
                 .Where(c => c.ApartmentId == apartmentId)
@@ -11,19 +11,19 @@ namespace Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Chat> CreateChatAsync(int apartmentId, string userId, string ownerId)
+        public async Task<Chat> CreateChat(int apartmentId, List<string> userIds)
         {
             var chat = new Chat
             {
                 ApartmentId = apartmentId,
-                UsersId = new List<string> { userId, ownerId }
+                UsersId = userIds
             };
-            context.Chats.Add(chat);
+            await context.Chats.AddAsync(chat);
             await context.SaveChangesAsync();
             return chat;
         }
 
-        public async Task<List<ChatMessage>> GetMessagesByChatIdAsync(Guid chatId)
+        public async Task<List<ChatMessage>> GetMessagesByChatId(Guid chatId)
         {
             return await context.Messages
                 .Where(m => m.ChatId == chatId)
@@ -32,9 +32,9 @@ namespace Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ChatMessage> AddMessageAsync(ChatMessage message)
+        public async Task<ChatMessage> AddMessage(ChatMessage message)
         {
-            context.Messages.Add(message);
+            await context.Messages.AddAsync(message);
             await context.SaveChangesAsync();
             return message;
         }
