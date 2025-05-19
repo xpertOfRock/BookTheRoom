@@ -6,7 +6,8 @@ namespace Application.UseCases.Handlers.CommandHandlers.Chat
     {
         public async Task<Core.Entities.Chat> Handle(CreateChatCommand request, CancellationToken cancellationToken)
         {
-            await unitOfWork.Chats.CreateChatAsync();
+            //await unitOfWork.Chats.CreateChatAsync();
+            return new Core.Entities.Chat { };
         }
     }
 }

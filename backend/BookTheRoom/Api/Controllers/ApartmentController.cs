@@ -48,7 +48,7 @@ namespace Api.Controllers
                 return BadRequest("You have to sign in to add an apartment for rent.");
             }
 
-            var thisUserId = _contextAccessor.HttpContext?.User.GetUserId();
+            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
 
             var apartments = await _sender.Send(new GetUsersApartmentsQuery(thisUserId, request));

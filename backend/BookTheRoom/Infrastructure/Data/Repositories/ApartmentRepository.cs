@@ -1,14 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace Infrastructure.Data.Repositories
+﻿namespace Infrastructure.Data.Repositories
 {
     public class ApartmentRepository(
         ApplicationDbContext context,
         IDistributedCache distributedCache,
         IPhotoService photoService) : IApartmentRepository
     {
-        private const int MAX_PAGE_ITEMS = 15; // since apartment service is not implemented yet, I've left a constant value here
-
         public async Task<IResult> Add(Apartment apartment, CancellationToken token = default)
         {
             
@@ -72,17 +68,14 @@ namespace Infrastructure.Data.Repositories
                 query = query.Where(h => countries.Contains(h.Address.Country));
             }
 
-            if (!string.IsNullOrWhiteSpace(request.Prices))
+            if (request.MinPrice is not null && request.MinPrice >= 0)
             {
-                var prices = request.Prices
-                    .Split(',')
-                    .Select(decimal.Parse)
-                    .ToList();
+                query = query.Where(x => x.PriceForNight >= request.MinPrice);
+            }
 
-                query = query
-                    .Where(h => 
-                        prices[0] < h.PriceForNight &&
-                        prices[1] < h.PriceForNight);
+            if (request.MaxPrice is not null && request.MinPrice >= 1m)
+            {
+                query = query.Where(x => x.PriceForNight <= request.MaxPrice);
             }
 
             Expression<Func<Apartment, object>> selectorKey = request.SortItem?.ToLower() switch
@@ -97,8 +90,8 @@ namespace Infrastructure.Data.Repositories
                 : query.OrderBy(selectorKey);
 
             query = query
-                .Skip((request.page - 1) * MAX_PAGE_ITEMS)
-                .Take(MAX_PAGE_ITEMS);
+                .Skip((request.Page - 1) * request.ItemsCount)
+                .Take(request.ItemsCount);
 
             return await query.ToListAsync(token);
         }
@@ -118,20 +111,14 @@ namespace Infrastructure.Data.Repositories
                 query = query.Where(h => countries.Contains(h.Address.Country));
             }
 
-            if 
-            (
-                !string.IsNullOrWhiteSpace(request.Prices) &&
-                request.Prices
-                .Split(',')
-                .Select(decimal.Parse)
-                .ToList().Count == 2
-            )
+            if (request.MinPrice is not null && request.MinPrice >= 0)
             {
-                var prices = request.Prices
-                    .Split(',')
-                    .Select(decimal.Parse)
-                    .ToList();
-                query = query.Where(h => prices[0] < h.PriceForNight && prices[1] < h.PriceForNight);
+                query = query.Where(x => x.PriceForNight >= request.MinPrice);
+            }
+
+            if (request.MaxPrice is not null && request.MinPrice >= 1m)
+            {
+                query = query.Where(x => x.PriceForNight <= request.MaxPrice);
             }
 
             Expression<Func<Apartment, object>> selectorKey = request.SortItem?.ToLower() switch
@@ -141,12 +128,11 @@ namespace Infrastructure.Data.Repositories
                 _ => apartment => apartment.Id
             };
 
-
             query = request.SortOrder == "desc"
                  ? query = query.OrderByDescending(selectorKey)
                  : query = query.OrderBy(selectorKey);
 
-            query = query.Skip((request.page - 1) * MAX_PAGE_ITEMS).Take(MAX_PAGE_ITEMS);
+            query = query.Skip((request.Page - 1) * request.ItemsCount).Take(request.ItemsCount);
 
             return await query.ToListAsync();
         }

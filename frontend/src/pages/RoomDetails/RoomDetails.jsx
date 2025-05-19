@@ -53,7 +53,7 @@ function RoomDetails() {
           roomName: data.name,
           hotelName: hotel
         });
-        console.log(data);
+
         setRoom(data);
       } catch (e) {
         console.error("Error fetching room details:", e);
@@ -72,9 +72,7 @@ function RoomDetails() {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: false,
-  };
-
-  
+  }; 
 
   const handleCheckoutRedirection = () => {
     navigate(`/checkout`, {state: orderData});

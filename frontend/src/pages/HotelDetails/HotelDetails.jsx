@@ -97,7 +97,7 @@ function HotelDetails() {
   };
 
 
-  const addComment = async ({description,propertyId, propertyType, userScore}) => {
+  const addComment = async ({description, propertyId, propertyType, userScore}) => {
     try{
       const response = await postComment({
         description: description,

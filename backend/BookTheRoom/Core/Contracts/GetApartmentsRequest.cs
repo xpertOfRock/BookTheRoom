@@ -6,7 +6,9 @@
         string? SortItem,
         string? SortOrder,
         string? Countries,
-        string? Prices,
-        int page = 1
+        decimal? MinPrice,
+        decimal? MaxPrice,
+        int ItemsCount = 9,
+        int Page = 1
     );
 }

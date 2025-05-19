@@ -112,6 +112,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
