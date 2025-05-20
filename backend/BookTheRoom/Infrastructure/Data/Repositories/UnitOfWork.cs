@@ -29,7 +29,7 @@ namespace Infrastructure.Data.Repositories
             Rooms = new RoomRepository(_context, _distributedCache, _photoService);
             Orders = new OrderRepository(_context, _distributedCache);
             Comments = new CommentRepository(_context, _userManager);
-            Chats = new ChatRepository(_context);
+            Chats = new ChatRepository(_context, _distributedCache);
         }
 
         public IHotelRepository Hotels { get; private set; }

@@ -2,8 +2,7 @@
 {
     public class CreateChatCommand : ICommand<Core.Entities.Chat>
     {
-
-        public int? ApartmentId { get; } 
+        public int? ApartmentId { get; }
         public List<string> UsersId { get; }
         public CreateChatCommand(List<string> usersId, int? apartmentId = null)
         {

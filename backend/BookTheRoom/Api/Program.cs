@@ -154,6 +154,6 @@ app.MapControllers();
 
 app.UseExceptionHandler(options => { });
 
-app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<ApartmentChatHub>("/hubs/apartment/chat");
 
 app.Run();

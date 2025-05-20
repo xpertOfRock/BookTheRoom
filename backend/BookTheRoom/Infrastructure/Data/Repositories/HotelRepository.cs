@@ -17,7 +17,7 @@
             }
 
             await context.Hotels.AddAsync(hotel, token);
-
+            
             return new Success("Entity 'Hotel' was created successfully.");
         }
         
