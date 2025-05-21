@@ -15,7 +15,7 @@ import {
   import { useParams, useNavigate } from "react-router-dom";
   import { fetchHotel, putHotel } from "../../services/hotels";
   
-  function UpdateForm() {
+  function UpdateHotelForm() {
     const { id } = useParams();
     const navigate = useNavigate();
   
@@ -229,5 +229,5 @@ import {
     );
   }
   
-  export default UpdateForm;
+  export default UpdateHotelForm;
   

@@ -1,12 +1,6 @@
 ﻿using Api.Contracts.Account;
 using Api.Contracts.Token;
-using Application.Interfaces;
-using Core.Entities;
-using Infrastructure.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

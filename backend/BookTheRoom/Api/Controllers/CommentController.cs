@@ -1,11 +1,5 @@
 ﻿using Api.Contracts.Comment;
-using Api.Extensions;
 using Application.UseCases.Commands.Comment;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {

@@ -1,18 +1,7 @@
 ﻿using Api.Contracts.Apartment;
-using Api.DTOs;
-using Api.Extensions;
-using Application.Interfaces;
 using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Queries.Apartment;
-using Core.Contracts;
-using Core.Entities;
-using Core.ValueObjects;
-using Infrastructure.Identity;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers

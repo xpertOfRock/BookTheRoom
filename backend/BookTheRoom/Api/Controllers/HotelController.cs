@@ -1,20 +1,6 @@
-﻿using Api.Contracts.Comment;
-using Api.Contracts.Hotel;
-using Api.DTOs;
-using Api.Extensions;
-using Application.Interfaces;
-using Application.UseCases.Commands.Comment;
+﻿using Api.Contracts.Hotel;
 using Application.UseCases.Commands.Hotel;
 using Application.UseCases.Queries.Hotel;
-using Core.Contracts;
-using Core.Entities;
-using Core.ValueObjects;
-using Infrastructure.Identity;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.IdentityModel.Tokens;
 
 
 namespace Api.Controllers
@@ -25,15 +11,12 @@ namespace Api.Controllers
     {
         private readonly ISender _sender;
         private readonly IPhotoService _photoService;
-        private readonly IHttpContextAccessor _contextAccessor;
         public HotelController(
             ISender sender,
-            IPhotoService photoService,
-            IHttpContextAccessor contextAccessor)
+            IPhotoService photoService)
         {
             _sender = sender;
             _photoService = photoService;
-            _contextAccessor = contextAccessor;
         }
 
         [HttpGet]        
