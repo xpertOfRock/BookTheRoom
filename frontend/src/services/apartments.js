@@ -1,6 +1,7 @@
 import axios from "axios"
 
 const API_URL = "https://localhost:6061/api/apartment";
+const HUB_URL = "https://localhost:6061/hubs/apartment/chat";
 
 export const fetchApartments = async (filter) => {
   try {
@@ -82,3 +83,22 @@ export const deleteApartment = async(id) => {
     console.error(e);
   }
 };
+
+// const joinChat = async (userName, chatId) => {
+    
+//     const { id: id } = useParams();
+//     const navigate = useNavigate();
+
+//     var connection = new HubConnectionBuilder()
+//         .withUrl(`${HUB_URL}`)
+//         .withAutomaticReconnect()
+//         .build();
+
+//     try{
+//         await connection.start();
+//         await connection.invoke("JoinChat", { userName, chatId });
+//         navigate(`/Apartments/${id}/Chats/${chatId}`);
+//     }catch(error){
+//         console.error(error);
+//     }
+// }

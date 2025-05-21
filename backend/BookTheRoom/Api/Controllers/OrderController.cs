@@ -1,4 +1,5 @@
-﻿using Api.Extensions;
+﻿using Api.DTOs;
+using Api.Extensions;
 using Application.UseCases.Commands.Order;
 using Application.UseCases.Queries.Order;
 using Core.Contracts;
@@ -51,6 +52,22 @@ namespace Api.Controllers
             var result = await _sender.Send(new CreateOrderCommand(hotelId, number, userId, request));
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        [HttpGet("user/orders")]
+        [Authorize]
+        [EnableRateLimiting("SlidingGet")]
+        public async Task<IActionResult> GetUserOrders([FromQuery] GetOrdersRequest request)
+        {
+            string? userId = null;
+
+            if (User.Identity!.IsAuthenticated)
+            {
+                userId = _contextAccessor.HttpContext!.User.GetUserId() ?? throw new ArgumentNullException();
+            }
+
+            var result = await _sender.Send(new GetUserOrdersQuery(userId!, request));
+
+            return Ok(result);
         }
     }
 }

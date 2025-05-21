@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import ApartmentSortAndSearchFilter from './ApartmentSortAndSearchFilter';
-import ApartmentFilter from './ApartmentFilter';
-import ApartmentCard from './ApartmentCard';
+import ApartmentSortAndSearchFilter from '../../components/apartment/ApartmentSortAndSearchFilter';
+import ApartmentFilter from '../../components/apartment/ApartmentFilter';
+import ApartmentCard from '../../components/apartment/ApartmentCard';
 import { fetchApartments } from '../../services/apartments';
 
 function Apartments() {

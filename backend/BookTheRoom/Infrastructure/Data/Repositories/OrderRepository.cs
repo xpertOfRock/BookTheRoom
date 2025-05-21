@@ -1,6 +1,4 @@
-﻿using Infrastructure.Exceptions;
-
-namespace Infrastructure.Data.Repositories
+﻿namespace Infrastructure.Data.Repositories
 {
     public class OrderRepository(
         ApplicationDbContext context,
@@ -43,35 +41,53 @@ namespace Infrastructure.Data.Repositories
             return await query.ToListAsync(token);
         }
 
-        public async Task<List<Order>?> GetAllUserOrders(string userId, GetDataRequest request, CancellationToken token = default)
-        {
-            var query = context.Orders
-                .Where(o => o.UserId == userId && (
-                            string.IsNullOrWhiteSpace(request.Search) ||                            
-                            o.Status.ToString().ToLower().Contains(request.Search.ToLower())
-                            )
-                       )
+        public async Task<Dictionary<Order, (Hotel, Room)>> GetAllUserOrders(string userId, GetOrdersRequest request, CancellationToken token = default)
+        {            
+            var ordersQuery = context.Orders
+                .Where(o => o.UserId == userId)
                 .AsNoTracking();
 
-            Expression<Func<Order, object>> selectorKey = request.SortItem?.ToLower() switch
-            {
-                "price" => order => order.OverallPrice,
-                "status" => order => order.Status.ToString(),
-                "date" => order => order.CreatedAt,
-                _ => order => order.Id,
-            };
+            var hotelsQuery = context.Hotels
+                .Include(h => h.Address)
+                .AsSplitQuery()
+                .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
+                    h.Name.ToLower().Contains(request.Search.ToLower()) ||
+                    (h.Address != null && (
+                        h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
+                        h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
+                        h.Address.City.ToLower().Contains(request.Search.ToLower())
+                    ))
+                )
+                .Select(h => h.Id);
 
-            if (request.SortOrder == "desc")
-            {
-                query = query.OrderByDescending(selectorKey);
-            }
-            else
-            {
-                query = query.OrderBy(selectorKey);
-            }
+            ordersQuery = ordersQuery.Where(o =>
+                (string.IsNullOrWhiteSpace(request.Search) || o.Status.ToString().ToLower().Contains(request.Search.ToLower()))
+                &&
+                hotelsQuery.Contains(o.HotelId)
+            );
 
+            var query = from o in ordersQuery
+                        join h in context.Hotels.Include(h => h.Address) on o.HotelId equals h.Id
+                        join r in context.Rooms on new { o.HotelId, Number = o.RoomNumber } equals new { r.HotelId, r.Number }
+                        select new { Order = o, Hotel = h, Room = r };
 
-            return await query.ToListAsync(token);
+            query = request.SortOrder == "desc"
+                ? request.SortItem?.ToLower() switch
+                {
+                    "price" => query.OrderByDescending(x => x.Order.OverallPrice),
+                    "status" => query.OrderByDescending(x => x.Order.Status.ToString()),
+                    "date" => query.OrderByDescending(x => x.Order.CreatedAt),
+                    _ => query.OrderByDescending(x => x.Order.Id),
+                }
+                : request.SortItem?.ToLower() switch
+                {
+                    "price" => query.OrderBy(x => x.Order.OverallPrice),
+                    "status" => query.OrderBy(x => x.Order.Status.ToString()),
+                    "date" => query.OrderBy(x => x.Order.CreatedAt),
+                    _ => query.OrderBy(x => x.Order.Id),
+                };
+
+            return await query.ToDictionaryAsync(x => x.Order, x => (x.Hotel, x.Room), token);
         }
 
         public async Task<Order> GetById(int orderId, CancellationToken token = default)

@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UseCases\Handlers\CommandHandlers\Services\" />
     <Folder Include="UseCases\Handlers\QueryHandlers\Chat\" />
     <Folder Include="UseCases\Queries\Chat\" />
     <Folder Include="UseCases\Validators\Order\" />

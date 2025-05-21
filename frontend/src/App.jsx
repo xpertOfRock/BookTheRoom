@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import CreateForm from './components/hotel/CreateForm';
+import CreateHotelForm from './components/hotel/CreateForm';
 import UpdateForm from './components/hotel/UpdateForm';
 import Hotels from './pages/Hotels/Hotels';
 import HotelDetails from './pages/HotelDetails/HotelDetails';
@@ -9,7 +9,7 @@ import CreateRoomForm from './components/rooms/CreateRoomForm';
 import UpdateRoomForm from './components/rooms/UpdateRoomForm';
 import Navbar from './components/Navbar'; 
 import Home from './components/Home'; 
-import Apartments from './components/apartment/Apartments';
+import Apartments from './pages/Apartment/Apartments';
 import FAQ from './components/FAQ';
 import Support from './components/Support';
 import Login from './components/authorization/Login';
@@ -32,7 +32,7 @@ function App() {
           <Route path="/hotels/:id/room/:number" element={<RoomDetails />}/>
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/checkout/success" element={<Success/>} />
-          <Route path="/admin/hotels/create" element={<CreateForm/> } />
+          <Route path="/admin/hotels/create" element={<CreateHotelForm/> } />
           <Route path="/admin/hotels/update/:id" element={<UpdateForm /> } />
           <Route path="/admin/hotels/:id/rooms/create" element={<CreateRoomForm /> } />
           <Route path="/admin/hotels/:id/rooms/update/:number" element={<UpdateRoomForm /> } />
