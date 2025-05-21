@@ -1,4 +1,4 @@
-function SortAndSearch({ filter, setFilter }) {
+function HotelSortAndSearchFilter({ filter, setFilter }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const parsedValue = name === "itemsCount" ? parseInt(value, 10) : value;
@@ -64,4 +64,4 @@ function SortAndSearch({ filter, setFilter }) {
   );
 }
 
-export default SortAndSearch;
+export default HotelSortAndSearchFilter;

@@ -1,0 +1,11 @@
+﻿global using Api.DTOs;
+global using Api.Extensions;
+global using Application.Interfaces;
+global using Core.Contracts;
+global using Core.Entities;
+global using Core.ValueObjects;
+global using Infrastructure.Identity;
+global using MediatR;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.RateLimiting;

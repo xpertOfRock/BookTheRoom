@@ -7,9 +7,10 @@
         IRoomRepository Rooms { get; }
         IOrderRepository Orders { get; }
         ICommentRepository Comments { get; }
+        IChatRepository Chats { get; }
         Task BeginTransactionAsync();
         Task CommitAsync();
         Task RollbackAsync();
-        Task SaveChangesAsync();
+        Task SaveChangesAsync(CancellationToken token = default);
     }
 }

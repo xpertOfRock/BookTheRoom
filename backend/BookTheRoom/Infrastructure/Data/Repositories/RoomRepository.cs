@@ -1,5 +1,4 @@
-﻿using Infrastructure.Exceptions;
-
+﻿
 namespace Infrastructure.Data.Repositories
 {
     public class RoomRepository
@@ -7,31 +6,30 @@ namespace Infrastructure.Data.Repositories
         IDistributedCache distributedCache,
         IPhotoService photoService) : IRoomRepository
     {
-        public async Task<IResult> Add(Room room)
+        public async Task<IResult> Add(Room room, CancellationToken token = default)
         {
-            Room? existingRoom = context.Rooms.AsNoTracking().FirstOrDefault(r => r.HotelId == room.HotelId && r.Number == room.Number);
+            var existingRoom = await context.Rooms
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.HotelId == room.HotelId && r.Number == room.Number, token);
 
             if (existingRoom is not null)
             {
                 return new Fail("Entity with this hotelId and number already exists.");
             }            
-            await context.Rooms.AddAsync(room);
+            await context.Rooms.AddAsync(room, token);
 
             return new Success("Entity 'Room' was created successfully.");
         }
 
-        public async Task<IResult> Delete(int hotelId, int number)
+        public async Task<IResult> Delete(int hotelId, int number, CancellationToken token = default)
         {
-            var room = await GetById(hotelId, number);
+            var room = await GetById(hotelId, number, token);
 
-            if(room == null)
-            {
-                return new Fail("Impossible to delete a non-existent entity.");
-            }
+            if (room == null) throw new EntityNotFoundException<Room>();
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            distributedCache.Remove(key);
+            await distributedCache.RemoveAsync(key, token);
 
             if (room.Images != null && room.Images.Count > 0)
             {
@@ -41,17 +39,21 @@ namespace Infrastructure.Data.Repositories
                 }
             }
 
-            context.Rooms.Remove(room);
+            var affectedRaws = await context.Rooms
+                .Where(x => x.HotelId == room.HotelId && x.Number == room.Number)
+                .ExecuteDeleteAsync(token);
+
+            if(affectedRaws == 0) throw new EntityNotFoundException<Room>();
 
             return new Success("Entity 'Room' was deleted successfully.");
         }
-        public async Task<List<Room>> GetAllRooms()
+        public async Task<List<Room>> GetAllRooms(CancellationToken token = default)
         {
             return await context.Rooms
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(token);
         }
-        public async Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request)
+        public async Task<List<Room>> GetAll(int hotelId, GetRoomsRequest request, CancellationToken token = default)
         {
             var query = context.Rooms
                 .Where(r => r.HotelId == hotelId && 
@@ -89,15 +91,15 @@ namespace Infrastructure.Data.Repositories
                  ? query = query.OrderByDescending(selectorKey)
                  : query = query.OrderBy(selectorKey);
 
-            return await query.ToListAsync();
+            return await query.ToListAsync(token);
         }
 
-        public async Task<Room?> GetById(int hotelId, int number, CancellationToken cancellationToken = default)
+        public async Task<Room?> GetById(int hotelId, int number, CancellationToken token = default)
         {
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            string? cachedHotel = await distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedHotel = await distributedCache.GetStringAsync(key, token);
 
             Room? room;
 
@@ -107,17 +109,14 @@ namespace Infrastructure.Data.Repositories
                     .AsNoTracking()
                     .FirstOrDefaultAsync(
                         r => r.HotelId == hotelId &&
-                        r.Number == number);
+                        r.Number == number, token);
 
-                if (room is null)
-                {
-                    throw new EntityNotFoundException<Room>();
-                }
+                if (room is null) throw new EntityNotFoundException<Room>();
 
                 await distributedCache.SetStringAsync(
                     key,
                     JsonConvert.SerializeObject(room),
-                    cancellationToken
+                    token
                 );
 
                 return room;
@@ -125,26 +124,20 @@ namespace Infrastructure.Data.Repositories
 
             room = JsonConvert.DeserializeObject<Room>(cachedHotel);
 
-            if (room is null)
-            {
-                throw new EntityNotFoundException<Room>();
-            }
+            if (room is null) throw new EntityNotFoundException<Room>();
 
             return room;
         }
 
-        public async Task<IResult> Update(int hotelId, int number, UpdateRoomRequest request)
+        public async Task<IResult> Update(int hotelId, int number, UpdateRoomRequest request, CancellationToken token = default)
         {
-            var room = await GetById(hotelId, number);
+            var room = await GetById(hotelId, number, token);
 
-            if (room == null)
-            {
-                return new Fail("Impossible to update a non-existent entity.");
-            }
+            if (room == null) throw new EntityNotFoundException<Room>();
 
             string key = $"hotel-{hotelId}-room-{number}";
 
-            distributedCache.Remove(key);
+            await distributedCache.RemoveAsync(key, token);
 
             if (request.Images is not null && request.Images.Count > 0)
             {
@@ -158,16 +151,20 @@ namespace Infrastructure.Data.Repositories
                 await context.Rooms
                         .Where(h => h.HotelId == hotelId && h.Number == number)
                         .ExecuteUpdateAsync(e => e
-                        .SetProperty(h => h.Images, request.Images));
+                        .SetProperty(h => h.Images, request.Images),
+                        token);
             }
 
-            await context.Rooms
+            var affectedRaws = await context.Rooms
                 .Where(r => r.HotelId == hotelId && r.Number == number)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(r => r.Name, request.Name)
                 .SetProperty(r => r.Description, request.Description)
                 .SetProperty(r => r.Price, request.Price)
-                .SetProperty(r => r.Category, request.Category));
+                .SetProperty(r => r.Category, request.Category),
+                token);
+
+            if(affectedRaws == 0) throw new EntityNotFoundException<Room>();
 
             return new Success("Entity 'Room' was updated successfully.");
         }

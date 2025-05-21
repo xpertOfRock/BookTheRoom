@@ -1,3 +1,4 @@
+using Api.Chat.Hubs;
 using Api.Exceptions.ExceptionHandler;
 using Api.Extensions;
 using Application.DependencyInjection;
@@ -111,6 +112,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -150,5 +153,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseExceptionHandler(options => { });
+
+app.MapHub<ApartmentChatHub>("/hubs/apartment/chat");
 
 app.Run();

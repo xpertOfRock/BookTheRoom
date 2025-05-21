@@ -1,5 +1,8 @@
 import axios from "axios"
 
+const API_URL = "https://localhost:6061/api/apartment";
+const HUB_URL = "https://localhost:6061/hubs/apartment/chat";
+
 export const fetchApartments = async (filter) => {
   try {
     const params = {
@@ -7,10 +10,13 @@ export const fetchApartments = async (filter) => {
       sortItem: filter?.sortItem || undefined,
       sortOrder: filter?.sortOrder || undefined,
       countries: filter?.countries.length > 0 ? filter.countries.join(",") : undefined,
-      prices: filter?.ratings.length > 0 ? filter.ratings.join(",") : undefined,
+      minPrice: filter?.minPrice || undefined,
+      maxPrice: filter?.maxPrice || undefined,
+      itemsCount: filter?.itemsCount || 9,
+      page: filter?.page || 1
     };
 
-    let result = await axios.get("https://localhost:5286/api/apartment", { params });
+    const result = await axios.get(`${API_URL}`, { params });
     return result.data.hotels;
   } catch (e) {
     console.error(e);
@@ -24,10 +30,13 @@ export const fetchUserApartments = async (filter) => {
         sortItem: filter?.sortItem || undefined,
         sortOrder: filter?.sortOrder || undefined,
         countries: filter?.countries.length > 0 ? filter.countries.join(",") : undefined,
-        prices: filter?.ratings.length > 0 ? filter.ratings.join(",") : undefined,
+        minPrice: filter?.minPrice || undefined,
+        maxPrice: filter?.maxPrice || undefined,
+        itemsCount: filter?.itemsCount || 9,
+        page: filter?.page || 1
       };
   
-      let result = await axios.get("https://localhost:5286/api/apartment/user", { params });
+      const result = await axios.get(`${API_URL}/user`, { params });
       return result.data.hotels;
     } catch (e) {
       console.error(e);
@@ -36,7 +45,7 @@ export const fetchUserApartments = async (filter) => {
 
 export const fetchApartment = async (id) => {  
   try{
-      let response = await axios.get("https://localhost:5286/api/apartment/" + id);
+      const response = await axios.get(`${API_URL}/${id}`);
       return response.data;
   }catch(e){
       console.error(e);
@@ -45,7 +54,7 @@ export const fetchApartment = async (id) => {
 
 export const postApartment = async (formData) => {
     try {
-      const response = await axios.post("https://localhost:5286/api/apartment", formData, {
+      const response = await axios.post(`${API_URL}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -59,7 +68,7 @@ export const postApartment = async (formData) => {
 
 export const putApartment = async (id, apartment) => {
   try{
-    const response = await axios.put("https://localhost:5286/api/apartment/"+ id, apartment);
+    const response = await axios.put(`${API_URL}/${id}`, apartment);
     return response.status;
   }catch(e){
     console.error(e);
@@ -68,9 +77,28 @@ export const putApartment = async (id, apartment) => {
 
 export const deleteApartment = async(id) => {
   try{
-    const response = await axios.delete("https://localhost:5286/api/hotel/" + id);
+    const response = await axios.delete(`${API_URL}/${id}`);
     return response.status;
   }catch(e){
     console.error(e);
   }
 };
+
+// const joinChat = async (userName, chatId) => {
+    
+//     const { id: id } = useParams();
+//     const navigate = useNavigate();
+
+//     var connection = new HubConnectionBuilder()
+//         .withUrl(`${HUB_URL}`)
+//         .withAutomaticReconnect()
+//         .build();
+
+//     try{
+//         await connection.start();
+//         await connection.invoke("JoinChat", { userName, chatId });
+//         navigate(`/Apartments/${id}/Chats/${chatId}`);
+//     }catch(error){
+//         console.error(error);
+//     }
+// }

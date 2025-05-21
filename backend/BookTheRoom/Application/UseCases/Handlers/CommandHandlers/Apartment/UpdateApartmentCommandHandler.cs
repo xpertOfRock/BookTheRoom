@@ -10,7 +10,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 
             try
             {
-                var result = await unitOfWork.Apartments.Update(command.Id, command.UserId, command.Request);
+                var result = await unitOfWork.Apartments.Update(command.Id, command.UserId, command.Request, cancellationToken);
 
                 if (!result.IsSuccess)
                 {

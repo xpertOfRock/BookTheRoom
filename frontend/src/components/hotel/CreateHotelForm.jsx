@@ -14,7 +14,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-function CreateForm() {
+function CreateHotelForm() {
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -227,4 +227,4 @@ function CreateForm() {
   );
 };
 
-export default CreateForm;
+export default CreateHotelForm;

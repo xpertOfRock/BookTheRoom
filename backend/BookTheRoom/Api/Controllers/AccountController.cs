@@ -1,12 +1,6 @@
 ﻿using Api.Contracts.Account;
 using Api.Contracts.Token;
-using Application.Interfaces;
-using Core.Entities;
-using Infrastructure.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -22,16 +16,13 @@ namespace Api.Controllers
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
             IEmailService emailService,
             IConfiguration configuration)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _emailService = emailService;
             _configuration = configuration;
         }

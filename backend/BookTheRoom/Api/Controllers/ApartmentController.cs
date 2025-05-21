@@ -1,18 +1,7 @@
 ﻿using Api.Contracts.Apartment;
-using Api.DTOs;
-using Api.Extensions;
-using Application.Interfaces;
 using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Queries.Apartment;
-using Core.Contracts;
-using Core.Entities;
-using Core.ValueObjects;
-using Infrastructure.Identity;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
@@ -48,7 +37,7 @@ namespace Api.Controllers
                 return BadRequest("You have to sign in to add an apartment for rent.");
             }
 
-            var thisUserId = _contextAccessor.HttpContext?.User.GetUserId();
+            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
 
             var apartments = await _sender.Send(new GetUsersApartmentsQuery(thisUserId, request));

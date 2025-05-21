@@ -1,8 +1,9 @@
-﻿using Core.Enums;
+﻿using Core.Abstractions;
+using Core.Enums;
 
 namespace Core.Entities
 {
-    public class Service
+    public class Service : IEntity
     {
         public int Id { get; set; }
         public int HotelId { get; set; }

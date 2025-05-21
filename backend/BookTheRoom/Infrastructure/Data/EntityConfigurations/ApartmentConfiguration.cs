@@ -60,6 +60,11 @@ namespace Infrastructure.Data.EntityConfigurations
                 .WithOne()
                 .HasForeignKey(c => c.ApartmentId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(h => h.Chats)
+                .WithOne()
+                .HasForeignKey(c => c.ApartmentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

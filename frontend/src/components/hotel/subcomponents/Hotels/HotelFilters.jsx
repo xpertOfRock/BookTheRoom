@@ -1,6 +1,6 @@
 import { Checkbox, CheckboxGroup } from "@chakra-ui/react";
 
-function Filters({ filter, setFilter }) {
+function HotelFilters({ filter, setFilter }) {
   const ratings = [1, 2, 3, 4, 5];
 
   const countries = [
@@ -70,4 +70,4 @@ function Filters({ filter, setFilter }) {
   );
 }
 
-export default Filters;
+export default HotelFilters;

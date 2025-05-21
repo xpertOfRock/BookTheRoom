@@ -1,8 +1,9 @@
-﻿using Core.Enums;
+﻿using Core.Abstractions;
+using Core.Enums;
 
 namespace Core.Entities
 {
-    public class Order
+    public class Order : IEntity
     {
         public int Id { get; set; }
         public decimal OverallPrice { get; set; }        

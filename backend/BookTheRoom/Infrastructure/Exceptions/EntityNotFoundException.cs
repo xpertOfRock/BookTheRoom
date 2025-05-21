@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Exceptions
 {
-    public class EntityNotFoundException<T> : Exception
+    public class EntityNotFoundException<T> : Exception where T : class
     {
         private readonly string typeName;
         public EntityNotFoundException() : base()

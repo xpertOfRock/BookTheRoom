@@ -9,6 +9,8 @@ namespace Infrastructure
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatMessage> Messages { get; set; }
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -21,6 +23,8 @@ namespace Infrastructure
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new ApartmentConfiguration());
+            modelBuilder.ApplyConfiguration(new ChatConfiguration());
+            modelBuilder.ApplyConfiguration(new ChatMessageConfiguration());
             modelBuilder.ApplyConfiguration(new CommentConfiguration());
             modelBuilder.ApplyConfiguration(new HotelConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());

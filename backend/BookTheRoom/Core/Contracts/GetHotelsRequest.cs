@@ -12,7 +12,6 @@ namespace Core.Contracts
         string? Services,
         float? UserScore,
         int ItemsCount = 9,
-        int Page = 1
-        
+        int Page = 1        
     );
 }

@@ -1,37 +1,30 @@
-﻿
-
-using Core.Entities;
-using Infrastructure.Exceptions;
-
-namespace Infrastructure.Data.Repositories
+﻿namespace Infrastructure.Data.Repositories
 {
     public class ApartmentRepository(
         ApplicationDbContext context,
         IDistributedCache distributedCache,
         IPhotoService photoService) : IApartmentRepository
     {
-        private const int MAX_PAGE_ITEMS = 15; // since apartment service is not implemented yet, I've left a constant value here
-
-        public async Task<IResult> Add(Apartment apartment)
+        public async Task<IResult> Add(Apartment apartment, CancellationToken token = default)
         {
             
             var existingApartment = context.Apartments
                 .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Address == apartment.Address);
+                .FirstOrDefaultAsync(a => a.Address == apartment.Address, token);
 
             if (existingApartment is not null) 
             { 
                 return new Fail("Entity with this address already exists.");
             }
 
-            await context.Apartments.AddAsync(apartment);
+            await context.Apartments.AddAsync(apartment, token);
 
             return new Success("New entity 'Apartment' created successfully.");
         }
 
-        public async Task<IResult> Delete(int id, string userId)
+        public async Task<IResult> Delete(int id, string userId, CancellationToken token = default)
         {
-            var apartment = await context.Apartments.FirstOrDefaultAsync(a => a.Id == id);
+            var apartment = await context.Apartments.FirstOrDefaultAsync(a => a.Id == id, token);
 
             if (apartment == null)
             {
@@ -39,7 +32,8 @@ namespace Infrastructure.Data.Repositories
             }
 
             var key = $"apartment-{id}";
-            distributedCache.Remove(key);
+
+            await distributedCache.RemoveAsync(key, token);
 
             if (apartment.Images != null && apartment.Images.Count > 0)
             {
@@ -49,11 +43,15 @@ namespace Infrastructure.Data.Repositories
                 }
             }
 
-            context.Apartments.Remove(apartment);
+            var rawsAffected = await context.Apartments
+                .Where(x => x.Id == id)
+                .ExecuteDeleteAsync(token);
+
+            if (rawsAffected == 0) throw new EntityNotFoundException<Apartment>();
 
             return new Success("Entity 'Apartment' was deleted successfully.");
         }
-        public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request)
+        public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request, CancellationToken token = default)
         {
             var query = context.Apartments
                 .Include(h => h.Address)
@@ -70,17 +68,14 @@ namespace Infrastructure.Data.Repositories
                 query = query.Where(h => countries.Contains(h.Address.Country));
             }
 
-            if (!string.IsNullOrWhiteSpace(request.Prices))
+            if (request.MinPrice is not null && request.MinPrice >= 0)
             {
-                var prices = request.Prices
-                    .Split(',')
-                    .Select(decimal.Parse)
-                    .ToList();
+                query = query.Where(x => x.PriceForNight >= request.MinPrice);
+            }
 
-                query = query
-                    .Where(h => 
-                        prices[0] < h.PriceForNight &&
-                        prices[1] < h.PriceForNight);
+            if (request.MaxPrice is not null && request.MinPrice >= 1m)
+            {
+                query = query.Where(x => x.PriceForNight <= request.MaxPrice);
             }
 
             Expression<Func<Apartment, object>> selectorKey = request.SortItem?.ToLower() switch
@@ -95,12 +90,12 @@ namespace Infrastructure.Data.Repositories
                 : query.OrderBy(selectorKey);
 
             query = query
-                .Skip((request.page - 1) * MAX_PAGE_ITEMS)
-                .Take(MAX_PAGE_ITEMS);
+                .Skip((request.Page - 1) * request.ItemsCount)
+                .Take(request.ItemsCount);
 
-            return await query.ToListAsync();
+            return await query.ToListAsync(token);
         }
-        public async Task<List<Apartment>> GetAll(GetApartmentsRequest request)
+        public async Task<List<Apartment>> GetAll(GetApartmentsRequest request, CancellationToken token = default)
         {
             var query = context.Apartments
                 .Include(h => h.Address)                
@@ -116,20 +111,14 @@ namespace Infrastructure.Data.Repositories
                 query = query.Where(h => countries.Contains(h.Address.Country));
             }
 
-            if 
-            (
-                !string.IsNullOrWhiteSpace(request.Prices) &&
-                request.Prices
-                .Split(',')
-                .Select(decimal.Parse)
-                .ToList().Count == 2
-            )
+            if (request.MinPrice is not null && request.MinPrice >= 0)
             {
-                var prices = request.Prices
-                    .Split(',')
-                    .Select(decimal.Parse)
-                    .ToList();
-                query = query.Where(h => prices[0] < h.PriceForNight && prices[1] < h.PriceForNight);
+                query = query.Where(x => x.PriceForNight >= request.MinPrice);
+            }
+
+            if (request.MaxPrice is not null && request.MinPrice >= 1m)
+            {
+                query = query.Where(x => x.PriceForNight <= request.MaxPrice);
             }
 
             Expression<Func<Apartment, object>> selectorKey = request.SortItem?.ToLower() switch
@@ -139,20 +128,19 @@ namespace Infrastructure.Data.Repositories
                 _ => apartment => apartment.Id
             };
 
-
             query = request.SortOrder == "desc"
                  ? query = query.OrderByDescending(selectorKey)
                  : query = query.OrderBy(selectorKey);
 
-            query = query.Skip((request.page - 1) * MAX_PAGE_ITEMS).Take(MAX_PAGE_ITEMS);
+            query = query.Skip((request.Page - 1) * request.ItemsCount).Take(request.ItemsCount);
 
             return await query.ToListAsync();
         }
 
-        public async Task<Apartment?> GetById(int id, CancellationToken cancellationToken = default)
+        public async Task<Apartment> GetById(int id, CancellationToken token = default)
         {
             string key = $"apartment-{id}";
-            string? cachedApartment = await distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedApartment = await distributedCache.GetStringAsync(key, token);
 
             Apartment? apartment;
 
@@ -163,7 +151,7 @@ namespace Infrastructure.Data.Repositories
                     .Include(h => h.Comments)
                     .AsSplitQuery()
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(h => h.Id == id);
+                    .FirstOrDefaultAsync(h => h.Id == id, token);
 
                 if (apartment is null)
                 {
@@ -173,7 +161,7 @@ namespace Infrastructure.Data.Repositories
                 await distributedCache.SetStringAsync(
                     key,
                     JsonConvert.SerializeObject(apartment),
-                    cancellationToken
+                    token
                 );
 
                 return apartment;
@@ -188,11 +176,11 @@ namespace Infrastructure.Data.Repositories
 
             return apartment;
         }
-        public async Task UpdateCache(Apartment apartment, CancellationToken cancellationToken = default)
+        public async Task UpdateCache(Apartment apartment, CancellationToken token = default)
         {
             string key = $"apartment-{apartment.Id}";
 
-            string? cachedApartment = await distributedCache.GetStringAsync(key, cancellationToken);
+            string? cachedApartment = await distributedCache.GetStringAsync(key, token);
 
             if (string.IsNullOrEmpty(cachedApartment)) return;
 
@@ -200,16 +188,16 @@ namespace Infrastructure.Data.Repositories
             (
                 key,
                 JsonConvert.SerializeObject(apartment),
-                cancellationToken
+                token
             );
         }
-        public async Task<IResult> Update(int id, string userId, UpdateApartmentRequest request)
+        public async Task<IResult> Update(int id, string userId, UpdateApartmentRequest request, CancellationToken token = default)
         {           
-            var apartment = await GetById(id);
+            var apartment = await GetById(id, token);
 
-            if(apartment == null)
+            if(apartment is null)
             {
-                return new Fail("Impossible to update a non-existent entity.");
+                throw new EntityNotFoundException<Apartment>();
             }
 
             if(apartment.OwnerId != userId)
@@ -219,7 +207,7 @@ namespace Infrastructure.Data.Repositories
 
             string key = $"apartment-{id}";
            
-            distributedCache.Remove(key);
+            await distributedCache.RemoveAsync(key, token);
 
             if (request.Images is not null)
             {
@@ -234,7 +222,7 @@ namespace Infrastructure.Data.Repositories
                 await context.Apartments
                         .Where(h => h.Id == id)
                         .ExecuteUpdateAsync(e => e
-                        .SetProperty(h => h.Images, request.Images));
+                        .SetProperty(h => h.Images, request.Images), token);
             }
 
             await context.Apartments
@@ -247,7 +235,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(h => h.Address.State, request.Address.State)
                 .SetProperty(h => h.Address.City, request.Address.City)
                 .SetProperty(h => h.Address.Street, request.Address.Street)
-                .SetProperty(h => h.Address.PostalCode, request.Address.PostalCode));
+                .SetProperty(h => h.Address.PostalCode, request.Address.PostalCode), token);
 
             return new Success("Entity 'Apartment' was updated successfully.");
         }

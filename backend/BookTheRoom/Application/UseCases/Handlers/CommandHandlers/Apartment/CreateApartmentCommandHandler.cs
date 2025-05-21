@@ -22,7 +22,8 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
                         Address = command.Address,
                         Images = command.Images,
                         Comments = new List<Core.Entities.Comment>()
-                    }
+                    },
+                    cancellationToken
                 );
 
                 if (!result.IsSuccess)
@@ -31,7 +32,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
                     return result;
                 }
 
-                await unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 await unitOfWork.CommitAsync();
 

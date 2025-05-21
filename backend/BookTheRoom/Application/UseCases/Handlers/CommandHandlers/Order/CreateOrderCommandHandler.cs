@@ -55,7 +55,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
                     Status = OrderStatus.Awaiting
                 };
 
-                await unitOfWork.Orders.Add(order);
+                await unitOfWork.Orders.Add(order, cancellationToken);
 
                 await unitOfWork.SaveChangesAsync();
 

@@ -76,24 +76,26 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import SortAndSearch from '../../components/hotel/subcomponents/Hotels/SortAndSearch';
-import Filters from '../../components/hotel/subcomponents/Hotels/Filters';
+import HotelSortAndSearchFilter from '../../components/hotel/subcomponents/Hotels/HotelSortAndSearchFilter';
+import HotelFilters from '../../components/hotel/subcomponents/Hotels/HotelFilters';
 import Card from '../../components/hotel/subcomponents/Hotels/Card';
 import { fetchHotels } from '../../services/hotels';
 
 function Hotels() {
   const [hotels, setHotels] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const [sortAndSearch, setSortAndSearch] = useState({
     search: '',
     sortItem: 'id',
     sortOrder: 'desc',
     itemsCount: 15,
   });
+
   const [filterBy, setFilterBy] = useState({
     countries: [],
     ratings: [],
-  });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  }); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,7 +136,7 @@ function Hotels() {
         `}
       >
         <h2 className="text-xl font-semibold mb-4">Filters</h2>
-        <Filters filter={filterBy} setFilter={setFilterBy} />
+        <HotelFilters filter={filterBy} setFilter={setFilterBy} />
       </aside>
 
       <main
@@ -144,7 +146,7 @@ function Hotels() {
       >
         <div className="mb-6">
           <div className="bg-indigo-100 p-6 rounded-lg shadow-md border border-indigo-300">
-            <SortAndSearch filter={sortAndSearch} setFilter={setSortAndSearch} />
+            <HotelSortAndSearchFilter filter={sortAndSearch} setFilter={setSortAndSearch} />
           </div>
         </div>
         <h2 className="text-xl font-semibold mb-4">Hotels</h2>
