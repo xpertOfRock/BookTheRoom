@@ -7,13 +7,18 @@
     {
         public async Task<IResult> Add(Apartment apartment, CancellationToken token = default)
         {
-            
-            var existingApartment = context.Apartments
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Address == apartment.Address, token);
 
-            if (existingApartment is not null) 
-            { 
+            var existingApartment = await context.Apartments
+                .AsNoTracking()
+                .Include(a => a.Address)
+                .FirstOrDefaultAsync(a => a.Address.Country == apartment.Address.Country &&
+                                          a.Address.State == apartment.Address.State &&
+                                          a.Address.City == apartment.Address.City &&
+                                          a.Address.Street == apartment.Address.Street &&
+                                          a.Address.PostalCode == apartment.Address.PostalCode, token);
+
+            if (existingApartment is not null)
+            {
                 return new Fail("Entity with this address already exists.");
             }
 
@@ -133,7 +138,6 @@
                  : query = query.OrderBy(selectorKey);
 
             query = query.Skip((request.Page - 1) * request.ItemsCount).Take(request.ItemsCount);
-
             return await query.ToListAsync();
         }
 

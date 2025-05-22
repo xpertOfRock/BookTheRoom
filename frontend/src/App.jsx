@@ -17,6 +17,8 @@ import Register from './components/authorization/Register';
 import Checkout from './pages/Checkout/Checkout';
 import Success from './components/checkout/Success';
 import Profile from './pages/Profile/Profile';
+import CreateApartmentForm from './components/apartment/CreateApartmentForm';
+
 
 function App() { 
   return (
@@ -36,8 +38,12 @@ function App() {
 
           <Route path="/admin/hotels/create" element={<CreateHotelForm /> } />
           <Route path="/admin/hotels/update/:id" element={<UpdateHotelForm /> } />
+
           <Route path="/admin/hotels/:id/rooms/create" element={<CreateRoomForm /> } />
           <Route path="/admin/hotels/:id/rooms/update/:number" element={<UpdateRoomForm /> } />
+
+          <Route path="/apartments/create" element={<CreateApartmentForm /> } />
+
 
           <Route path="/apartments" element={<Apartments />} />
 

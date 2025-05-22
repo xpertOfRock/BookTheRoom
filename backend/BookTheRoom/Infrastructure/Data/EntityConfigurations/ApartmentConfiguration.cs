@@ -12,17 +12,41 @@ namespace Infrastructure.Data.EntityConfigurations
             builder.HasKey(h => h.Id);
             builder.Property(h => h.Id).ValueGeneratedOnAdd();
 
-            builder.Property(h => h.Title)
+            builder.Property(a => a.OwnerId)
+                .IsRequired()
+                .HasMaxLength(450);
+
+            builder.Property(a => a.OwnerName)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(h => h.Description)
+            builder.Property(a => a.Title)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Property(a => a.Description)
                 .IsRequired()
                 .HasMaxLength(2000);
 
- 
-            builder.Property(h => h.OwnerId)               
-                .IsRequired();
+            builder.Property(a => a.PriceForNight)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(a => a.Email)
+                .IsRequired()
+                .HasMaxLength(60);
+
+            builder.Property(a => a.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            builder.Property(a => a.Telegram)
+                .HasMaxLength(50)
+                .IsRequired(false);
+
+            builder.Property(a => a.Instagram)
+                .HasMaxLength(100)
+                .IsRequired(false);
 
             builder.Property(h => h.Images)
                 .HasConversion(
@@ -56,8 +80,8 @@ namespace Infrastructure.Data.EntityConfigurations
                     .HasMaxLength(20);
             });
 
-            builder.HasMany(h => h.Comments)
-                .WithOne()
+            builder.HasMany(a => a.Comments)
+                .WithOne(c => c.Apartment)
                 .HasForeignKey(c => c.ApartmentId)
                 .OnDelete(DeleteBehavior.Cascade);
 

@@ -1,5 +1,5 @@
 import axios from "axios"
-
+import { getCurrentToken } from "./auth";
 const API_URL = "https://localhost:6061/api/apartment";
 const HUB_URL = "https://localhost:6061/hubs/apartment/chat";
 
@@ -17,7 +17,17 @@ export const fetchApartments = async (filter) => {
     };
 
     const result = await axios.get(`${API_URL}`, { params });
-    return result.data.hotels;
+    console.log(result.data);
+    if (result.status !== 200) {
+        if (result.status === 401) {
+          alert("Unauthorized: required authorization.");
+        } else if (result.status === 403) {
+          alert("You cannot add a new record.");
+        } else {
+          alert("An error occurred while creating new apartment.");
+        }
+      }
+    return result.data;
   } catch (e) {
     console.error(e);
   }
@@ -54,14 +64,17 @@ export const fetchApartment = async (id) => {
 
 export const postApartment = async (formData) => {
     try {
+      const token = getCurrentToken();
+
       const response = await axios.post(`${API_URL}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
+      },
       });      
       return response.status;
   } catch (error) {   
-    console.error('Error creating hotel:', error.response ? error.response.data : error.message);
+    console.error('Error occured while creating apartment:', error.response ? error.response.data : error.message);
   }
 };
 

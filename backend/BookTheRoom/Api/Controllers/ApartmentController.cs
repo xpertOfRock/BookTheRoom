@@ -42,14 +42,15 @@ namespace Api.Controllers
 
             var apartments = await _sender.Send(new GetUsersApartmentsQuery(thisUserId, request));
 
-            var apartmentsDTO = apartments.Select(h => new ApartmentsDTO(
-                h.Id,
-                h.Title,
-                h.PriceForNight,
-                h.Address.ToString(),
-                h.Images != null &&
-                    h.Images.Any()
-                    ? h.Images.First()
+            var apartmentsDTO = apartments.Select(a => new ApartmentsDTO(
+                a.Id,
+                a.Title,
+                a.PriceForNight,
+                a.Address.ToString(),
+                a.CreatedAt,
+                a.Images != null &&
+                    a.Images.Any()
+                    ? a.Images.First()
                     : "No Image"
                 )
             ).ToList();
@@ -63,16 +64,17 @@ namespace Api.Controllers
         {
             var apartments = await _sender.Send(new GetApartmentsQuery(request));
 
-            var apartmentsDTO = apartments.Select(h => new ApartmentsDTO(
-                h.Id,
-                h.Title,
-                h.PriceForNight,
-                h.Address.ToString(true),
-                h.Images != null &&
-                    h.Images.Any()
-                    ? h.Images.First()
+            var apartmentsDTO = apartments.Select(a => new ApartmentsDTO(
+                a.Id,
+                a.Title,
+                a.PriceForNight,
+                a.Address.ToString(true),
+                a.CreatedAt,
+                a.Images != null &&
+                    a.Images.Any()
+                    ? a.Images.First()
                     : "No Image"
-                )
+                )                           
             ).ToList();
 
             return Ok(new GetApartmentsResponse(apartmentsDTO));
@@ -129,8 +131,12 @@ namespace Api.Controllers
                 return BadRequest("You cannot add more than 20 files.");
             }
 
-            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
+            var ownerId = _contextAccessor.HttpContext!.User.GetUserId();
+            var fullName = _contextAccessor.HttpContext!.User.GetFullName();
+            var email = _contextAccessor.HttpContext!.User.GetEmail();
+            var phoneNumber = _contextAccessor.HttpContext!.User.GetPhoneNumber();
+
+
 
             var images = new List<string>();
 
@@ -149,9 +155,7 @@ namespace Api.Controllers
             (
                 form.Title,
                 form.Description,
-                thisUserId,
-                user.FirstName + " " + user.LastName,
-                form.PricePerNight,
+                form.PriceForNight,
                 new Address
                 (
                     form.Country,
@@ -159,14 +163,15 @@ namespace Api.Controllers
                     form.City,
                     form.Street,
                     form.PostalCode
-                ),
-                images
+                ),              
+                images,
+                form.Telegram,
+                form.Instagram
             );
 
-            var result = await _sender.Send(new CreateApartmentCommand(request));
+            var result = await _sender.Send(new CreateApartmentCommand(ownerId, fullName, email, phoneNumber, request));
 
             return !result.IsSuccess ? BadRequest(result) : Ok(result);                      
-
         }
 
         [HttpPut("{id}")]

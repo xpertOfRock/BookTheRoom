@@ -6,6 +6,7 @@
         string Title,
         decimal Price,
         string Address,
+        DateTime CreatedAt,
         string? Preview
     );
 }

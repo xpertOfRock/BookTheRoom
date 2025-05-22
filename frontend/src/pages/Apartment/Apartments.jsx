@@ -28,7 +28,7 @@ function Apartments() {
       try {
         const combinedFilters = { ...sortAndSearch, ...filterBy };
         const response = await fetchApartments(combinedFilters);
-        setApartments(response || []);
+        setApartments(response.apartments);
       } catch (error) {
         console.error('Error fetching apartments:', error);
         setApartments([]);
@@ -92,10 +92,10 @@ function Apartments() {
               <ApartmentCard
                 key={apt.id}
                 id={apt.id}
-                title={apt.title}
-                priceForNight={apt.priceForNight}
+                name={apt.title}
                 address={apt.address}
                 preview={apt.preview}
+                createdAt={apt.createdAt}
               />
             ))
           ) : (

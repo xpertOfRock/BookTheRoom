@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250522134248_UpdateEntityApartment")]
+    partial class UpdateEntityApartment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,9 +36,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -648,7 +648,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Entities.Comment", b =>
                 {
-                    b.HasOne("Core.Entities.Apartment", "Apartment")
+                    b.HasOne("Core.Entities.Apartment", null)
                         .WithMany("Comments")
                         .HasForeignKey("ApartmentId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -657,14 +657,10 @@ namespace Infrastructure.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("Core.Entities.Hotel", "Hotel")
+                    b.HasOne("Core.Entities.Hotel", null)
                         .WithMany("Comments")
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Apartment");
-
-                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("Core.Entities.Hotel", b =>

@@ -6,10 +6,10 @@ namespace Core.Contracts
     (
         string Title,
         string Description,
-        string OwnerId,
-        string OwnerName,
         decimal Price,
         Address Address,
-        List<string> Images
+        List<string> Images,
+        string? Telegram,
+        string? Instagram
     );
 }

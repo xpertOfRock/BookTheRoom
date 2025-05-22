@@ -7,13 +7,13 @@ namespace Application.UseCases.Validators.Apartment
     {
         public CreateApartmentCommandValidator()
         {
-            RuleFor(x => x.Title)
+            RuleFor(x => x.Request.Title)
                 .NotEmpty()
                     .WithMessage("Title is required.")
                 .Length(3, 100)
                     .WithMessage("Title must be between 3 and 100 characters.");
 
-            RuleFor(x => x.Description)
+            RuleFor(x => x.Request.Description)
                 .NotEmpty()
                     .WithMessage("Description is required.")
                 .MaximumLength(500)
@@ -29,16 +29,31 @@ namespace Application.UseCases.Validators.Apartment
                 .Length(3, 100)
                     .WithMessage("Owner name must be between 3 and 100 characters.");
 
-            RuleFor(x => x.Price)
+            RuleFor(x => x.Request.Price)
                 .GreaterThan(0)
                     .WithMessage("Price must be greater than 0.");
+            RuleFor(x => x.Request.Telegram)
+                .Must(x => x[0].ToString() is "@")
+                    .WithMessage("Enter valid telegram username.");
+                
+            RuleFor(x => x.Request.Instagram)
+                .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
+                    .WithMessage("Instagram URL must be a valid URL.");
 
-            RuleFor(x => x.Address)
+            RuleFor(x => x.Email)
+                .EmailAddress()
+                    .WithMessage("Email must be a valid Email.");
+
+            RuleFor(x => x.PhoneNumber)
+                .NotNull()
+                .WithMessage("Phone number can't be empty.");
+
+            RuleFor(x => x.Request.Address)
                 .NotNull()
                     .WithMessage("Address is required.")
                 .SetValidator(new AddressValidator());
 
-            RuleFor(x => x.Images)
+            RuleFor(x => x.Request.Images)
                 .NotNull()
                     .WithMessage("Images are required.")
                 .Must(images => images!.Count <= 20)

@@ -11,20 +11,22 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 
             try
             {
-                var result =  await unitOfWork.Apartments.Add
-                (
-                    new Core.Entities.Apartment
-                    {
-                        Title = command.Title,
-                        Description = command.Description,
-                        OwnerId = command.OwnerId,
-                        PriceForNight = command.Price,
-                        Address = command.Address,
-                        Images = command.Images,
-                        Comments = new List<Core.Entities.Comment>()
-                    },
-                    cancellationToken
-                );
+                var apartment = new Core.Entities.Apartment
+                {
+                    OwnerId = command.OwnerId,
+                    OwnerName = command.OwnerName,
+                    Email = command.Email,
+                    PhoneNumber = command.PhoneNumber,
+                    Telegram = command.Request.Telegram,
+                    Instagram = command.Request.Instagram,
+                    Title = command.Request.Title,
+                    Description = command.Request.Description,
+                    PriceForNight = command.Request.Price,
+                    Address = command.Request.Address,
+                    Images = command.Request.Images
+                };
+
+                var result = await unitOfWork.Apartments.Add(apartment, cancellationToken);
 
                 if (!result.IsSuccess)
                 {
@@ -33,15 +35,14 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
                 }
 
                 await unitOfWork.SaveChangesAsync(cancellationToken);
-
                 await unitOfWork.CommitAsync();
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await unitOfWork.RollbackAsync();
-                throw new InvalidOperationException("An error occurred while processing the apartment.", ex);
+                throw;
             }
         }
     }
