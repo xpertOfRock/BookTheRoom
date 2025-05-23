@@ -68,23 +68,31 @@ function CreateHotelForm() {
         postalCode: '',
         images: [],
       });
-      // if(response.status == 200){
-      //   toast({
-      //     title: 'Hotel Created!',
-      //     description: 'The hotel was successfully created.',
-      //     status: 'success',
-      //     duration: 5000,
-      //     isClosable: true,
-      //   });
-      // }else{
-      //   toast({
-      //     title: 'Error!',
-      //     description: 'An error occurred while creating the hotel.',
-      //     status: 'error',
-      //     duration: 5000,
-      //     isClosable: true,
-      //   });
-      // }
+      if (response === 200) {
+        toast({
+          title: 'Success',
+          description: 'Hotel was created successfully.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (response === 401) {
+        toast({
+          title: 'Unauthorized',
+          description: 'Required authorization.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (response === 403) {
+        toast({
+          title: 'Forbidden',
+          description: "You don't have rights to perform this action.",
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+      });
+    }
     } catch (error) {
       toast({
         title: 'Error!',

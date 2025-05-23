@@ -8,7 +8,8 @@ import {
   Textarea,
   NumberInput,
   NumberInputField,
-  VStack
+  VStack,
+  useToast
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { postApartment } from '../../services/apartments';
@@ -27,9 +28,10 @@ function CreateApartmentForm() {
     Telegram: '',
     Instagram: ''
   });
-
+  
   const navigate = useNavigate();
-
+  const toast = useToast();
+  
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === 'file') {
@@ -69,6 +71,47 @@ function CreateApartmentForm() {
 
     try {
       const response = await postApartment(formData);
+      if (response === 200) {
+        toast({
+          title: 'Success',
+          description: 'Apartment was created successfully.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+        } else if (response === 400) {
+        toast({
+          title: 'Error',
+          description: 'An error has occured.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (response === 401) {
+        toast({
+          title: 'Unauthorized',
+          description: 'Required authorization.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (response === 403) {
+        toast({
+          title: 'Forbidden',
+          description: 'You cannot add a new record.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+      });
+    } else {
+      toast({
+        title: 'Error',
+        description: 'An error occurred while creating new apartment.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
       navigate('/apartments');
     }catch(error){
       console.log(error);

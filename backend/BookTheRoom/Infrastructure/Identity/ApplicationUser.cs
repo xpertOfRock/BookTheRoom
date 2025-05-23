@@ -11,6 +11,8 @@ namespace Infrastructure.Identity
 
         public DateOnly BirthDate { get; set; }
         public DateTimeOffset RegisteredAt { get; set; } = DateTime.UtcNow;
+
+        public List<Chat>? Chats { get; set; }
         public List<Order>? Orders { get; set; }
         public List<Apartment>? Apartments { get; set; }
         public List<Comment>? Comments { get; set; }

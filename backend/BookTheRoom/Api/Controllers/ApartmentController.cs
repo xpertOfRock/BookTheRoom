@@ -1,6 +1,7 @@
 ﻿using Api.Contracts.Apartment;
 using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Queries.Apartment;
+using Core.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -92,26 +93,34 @@ namespace Api.Controllers
                 return NotFound($"Hotel with ID: {id} doesn't exist.");
             }
 
-            var thisUserId = _contextAccessor.HttpContext?.User.GetUserId();
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
-
             var apartmentDTO = new ApartmentDTO(
                 apartment.Id,
                 apartment.Title,
                 apartment.Description,
-                $"{user.FirstName} {user.LastName}",
+                apartment.OwnerName,
+                apartment.Email,
+                apartment.PhoneNumber,
+                apartment.Telegram ?? string.Empty,
+                apartment.Instagram ?? string.Empty,
                 apartment.Address.ToString(),
+                apartment.CreatedAt,
 
-                apartment.Images != null &&
+                apartment.Images is not null &&
                     apartment.Images.Any()
                     ? apartment.Images
                     : new List<string> { "" },
 
-                apartment.Comments != null &&
+                apartment.Comments is not null &&
                     apartment.Comments.Any()
                     ? apartment.Comments
-                    : new List<Comment> { }
-                );
+                    : new List<Comment> { },
+                
+
+                apartment.Chats is not null &&
+                    apartment.Chats.Any()
+                    ? apartment.Chats
+                    : new List<Core.Entities.Chat> { }
+            );
 
             return Ok(apartmentDTO);
         }
@@ -135,8 +144,6 @@ namespace Api.Controllers
             var fullName = _contextAccessor.HttpContext!.User.GetFullName();
             var email = _contextAccessor.HttpContext!.User.GetEmail();
             var phoneNumber = _contextAccessor.HttpContext!.User.GetPhoneNumber();
-
-
 
             var images = new List<string>();
 

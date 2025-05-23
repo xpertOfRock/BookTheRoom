@@ -16,18 +16,9 @@ export const fetchApartments = async (filter) => {
       page: filter?.page || 1
     };
 
-    const result = await axios.get(`${API_URL}`, { params });
-    console.log(result.data);
-    if (result.status !== 200) {
-        if (result.status === 401) {
-          alert("Unauthorized: required authorization.");
-        } else if (result.status === 403) {
-          alert("You cannot add a new record.");
-        } else {
-          alert("An error occurred while creating new apartment.");
-        }
-      }
-    return result.data;
+    const response = await axios.get(`${API_URL}`, { params });
+    console.log(response.data);
+    return response.data;
   } catch (e) {
     console.error(e);
   }
@@ -56,6 +47,7 @@ export const fetchUserApartments = async (filter) => {
 export const fetchApartment = async (id) => {  
   try{
       const response = await axios.get(`${API_URL}/${id}`);
+      console.log(response.data);
       return response.data;
   }catch(e){
       console.error(e);

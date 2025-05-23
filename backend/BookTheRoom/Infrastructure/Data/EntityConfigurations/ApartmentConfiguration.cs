@@ -81,7 +81,7 @@ namespace Infrastructure.Data.EntityConfigurations
             });
 
             builder.HasMany(a => a.Comments)
-                .WithOne(c => c.Apartment)
+                .WithOne()
                 .HasForeignKey(c => c.ApartmentId)
                 .OnDelete(DeleteBehavior.Cascade);
 

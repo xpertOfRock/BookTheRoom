@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 
@@ -13,14 +13,27 @@ import { fetchRooms } from "../../services/rooms";
 import { postComment } from "../../services/comments";
 import { getCurrentUserId } from "../../services/auth";
 import RoomsSection from "../../components/hotel/subcomponents/HotelDetails/RoomsSection";
-import CommentSection from "../../components/hotel/subcomponents/HotelDetails/CommentsSection";
+import CommentSection from "../../components/shared/CommentsSection";
 import ImagesSection from "../../components/shared/ImagesSection";
+
+import {
+  Box,
+  Button,
+  Grid,
+  Heading,
+  Text,
+  VStack,
+  HStack,
+  Flex,
+  Spacer,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 function HotelDetails() {
-  const { id: id } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   const sliderRef = useRef(null);
 
@@ -47,6 +60,10 @@ function HotelDetails() {
   const [redirectCheckOut, setCheckOut] = useState(defaultCheckOut);
   const currentUserId = getCurrentUserId();
 
+  const bg = useColorModeValue("indigo.50", "indigo.900");
+  const borderColor = useColorModeValue("indigo.400", "indigo.600");
+  const textColor = useColorModeValue("gray.800", "gray.200");
+
   useEffect(() => {
     const loadHotel = async () => {
       try {
@@ -60,7 +77,7 @@ function HotelDetails() {
     };
     loadHotel();
   }, [id]);
-  
+
   const handleFilterApply = async () => {
     try {
       setCheckIn(filter.checkIn);
@@ -96,128 +113,194 @@ function HotelDetails() {
     setIsLightboxOpen(true);
   };
 
-
-  const addComment = async ({description, propertyId, propertyType, userScore}) => {
-    try{
-      const response = await postComment({
-        description: description,
-        propertyId: propertyId,
-        propertyType: propertyType,
-        userScore: userScore,
+  const addComment = async ({ description, propertyId, propertyType, userScore }) => {
+    try {
+      await postComment({
+        description,
+        propertyId,
+        propertyType,
+        userScore,
       });
       const data = await fetchHotel(id);
       setHotel(data);
-    }
-    catch(error){
+    } catch (error) {
       console.error(error);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Box textAlign="center" py={20} color={textColor}>
+        Loading...
+      </Box>
+    );
   }
 
   if (!hotel) {
-    return <div>Hotel not found.</div>;
+    return (
+      <Box textAlign="center" py={20} color={textColor}>
+        Hotel not found.
+      </Box>
+    );
   }
 
   const { images = [], name, userScore, address, description } = hotel;
-
   const slides = images.map((src) => ({ src }));
 
   return (
-    <section>
-      <div className="container mx-auto px-4 w-full">
-        <h1 className="text-4xl font-bold my-6 text-gray-800">{name}</h1>
-
-        <button
-          className="bg-indigo-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-indigo-700 transition-all"
+    <Box maxW="7xl" mx="auto" px={{ base: 4, md: 8 }} py={8}>
+      <Flex
+        mb={8}
+        align="center"
+        position="relative"
+        minH="48px"
+      >
+        <Button
+          position="absolute"
+          left={0}
+          colorScheme="purple"
+          leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}
           onClick={() => navigate("/hotels")}
+          size="md"
+          _hover={{ bg: "purple.600" }}
         >
-          <FontAwesomeIcon icon={faChevronLeft} className="mr-2" /> Back
-        </button>
+          Back
+        </Button>
 
-        <div className="flex flex-col xl:flex-row items-center gap-6 p-6">
-          <div className="xl:w-1/2 w-full lg:h-[432px] relative group indent-auto">
-            <Slider {...sliderSettings} ref={sliderRef}>
-              {images.map((image, index) => (
-                <div key={index} className="w-full h-full">
-                  <img
-                    className="rounded-lg shadow-md w-auto h-[432px] object-cover mx-auto cursor-pointer"
-                    src={image}
-                    alt={`Hotel Image ${index + 1}`}
-                    loading="lazy"
-                    onClick={() => handleImageClick(index)}
-                  />
-                </div>
-              ))}
-            </Slider>
+        <Box mx="auto">
+          <Heading size="2xl" color={textColor} textAlign="center" noOfLines={1}>
+            {name}
+          </Heading>
+        </Box>
+      </Flex>
 
-            <button
-              className="absolute left-2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-              style={{ top: "50%", transform: "translateY(-50%)" }}
-              onClick={() => sliderRef.current.slickPrev()}
-            >
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </button>
+      <Grid
+        templateColumns={{ base: "1fr", xl: "1fr 1fr" }}
+        gap={8}
+        alignItems="center"
+        mb={10}
+      >
+        <Box position="relative" rounded="lg" overflow="hidden" boxShadow="lg" h="432px" role="region" aria-label="Hotel images slider">
+          <Slider {...sliderSettings} ref={sliderRef}>
+            {images.map((image, index) => (
+              <Box key={index} h="432px" overflow="hidden">
+                <img
+                  className="object-cover w-full h-full cursor-pointer transition-transform duration-300 hover:scale-105"
+                  src={image}
+                  alt={`Hotel Image ${index + 1}`}
+                  loading="lazy"
+                  onClick={() => handleImageClick(index)}
+                />
+              </Box>
+            ))}
+          </Slider>
+          <Button
+            position="absolute"
+            left={2}
+            top="50%"
+            transform="translateY(-50%)"
+            bg="gray.800"
+            bgOpacity="0.5"
+            color="white"
+            rounded="full"
+            p={2}
+            opacity={0}
+            _groupHover={{ opacity: 1 }}
+            _hover={{ bg: "gray.700" }}
+            onClick={() => sliderRef.current.slickPrev()}
+            aria-label="Previous slide"
+            zIndex={10}
+            transition="opacity 0.3s ease"
+          >
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </Button>
+          <Button
+            position="absolute"
+            right={2}
+            top="50%"
+            transform="translateY(-50%)"
+            bg="gray.800"
+            bgOpacity="0.5"
+            color="white"
+            rounded="full"
+            p={2}
+            opacity={0}
+            _groupHover={{ opacity: 1 }}
+            _hover={{ bg: "gray.700" }}
+            onClick={() => sliderRef.current.slickNext()}
+            aria-label="Next slide"
+            zIndex={10}
+            transition="opacity 0.3s ease"
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
+          </Button>
+        </Box>
 
-            <button
-              className="absolute right-2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-              style={{ top: "50%", transform: "translateY(-50%)" }}
-              onClick={() => sliderRef.current.slickNext()}
-            >
-              <FontAwesomeIcon icon={faChevronRight} />
-            </button>
-          </div>
-          <div className="xl:w-1/2 w-full bg-indigo-200 border-[3px] border-indigo-400 flex flex-col rounded-lg shadow-md my-auto">
-            <div className="bg-indigo-100 p-6 rounded-lg shadow-md align-middle my-3 mx-3">
-              <h3 className="text-2xl font-semibold text-gray-700">{name}</h3>
-              <h4>
-                {userScore !== undefined && userScore !== null && userScore >= 0
-                  ? `User score  ${userScore.toFixed(1)} ★`
-                  : "Has not been rated by users yet"}
-              </h4>
-              <h4>{address}</h4>
-              <p className="text-gray-600">{description}</p>
-            </div>
-          </div>
-          
-        </div>        
+        <Box
+          bg={bg}
+          border={`3px solid ${borderColor}`}
+          rounded="lg"
+          p={6}
+          shadow="md"
+          maxW="full"
+        >
+          <VStack align="start" spacing={4}>
+            <Heading size="xl" color={textColor}>
+              {name}
+            </Heading>
+            <Text fontSize="lg" color={textColor}>
+              {userScore !== undefined && userScore !== null && userScore >= 0
+                ? `User score ${userScore.toFixed(1)} ★`
+                : "Has not been rated by users yet"}
+            </Text>
+            <Text fontSize="md" color={textColor}>
+              {address}
+            </Text>
+            <Text fontSize="md" color="gray.600" whiteSpace="pre-line">
+              {description}
+            </Text>
+          </VStack>
+        </Box>
+      </Grid>
 
-        <ImagesSection images={images} onImageClick={handleImageClick} />
+      <ImagesSection images={images} onImageClick={handleImageClick} />
 
-        <div className="p-6 grid-cols-2 lg:flex-row gap-4 sm:grid-cols-2 flex flex-col">
-          <div className="lg:w-2/3">
-            <RoomsSection
-              hotelId={hotel.id}            
-              filter={filter}
-              setFilter={setFilter}
-              onApplyFilters={handleFilterApply}
-              rooms={rooms}
-              hotelName={name}
-              checkIn={redirectCheckIn}
-              checkOut={redirectCheckOut}
-            />
-          </div>
+      <Grid
+        templateColumns={{ base: "1fr", lg: "2fr 1fr" }}
+        gap={8}
+        mt={6}
+      >
+        <Box w="100%">
+          <RoomsSection
+            hotelId={hotel.id}
+            filter={filter}
+            setFilter={setFilter}
+            onApplyFilters={handleFilterApply}
+            rooms={rooms}
+            hotelName={name}
+            checkIn={redirectCheckIn}
+            checkOut={redirectCheckOut}
+          />
+        </Box>
 
-          <div className="lg:w-1/3">
-            <CommentSection
-              hotel={hotel}
-              hasRatedComments={hasRatedComments}
-              currentUserId={currentUserId}
-              onAddComment={addComment}
-            />
-          </div>       
-        </div>
+        <Box w="100%">
+          <CommentSection
+            property={hotel}
+            hasRatedComments={hasRatedComments}
+            currentUserId={currentUserId}
+            onAddComment={addComment}
+            propertyType={1}
+          />
+        </Box>
+      </Grid>
 
-        <Lightbox
-          open={isLightboxOpen}
-          close={() => setIsLightboxOpen(false)}
-          slides={slides}
-          index={photoIndex}
-        />
-      </div>
-    </section>
+      <Lightbox
+        open={isLightboxOpen}
+        close={() => setIsLightboxOpen(false)}
+        slides={slides}
+        index={photoIndex}
+      />
+    </Box>
   );
 }
 

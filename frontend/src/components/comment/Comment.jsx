@@ -1,20 +1,38 @@
 import React from "react";
+import { Box, Flex, Text, Heading, Spacer, useColorModeValue } from "@chakra-ui/react";
 
 function Comment({ username, description, createdAt, isCurrentUser, userScore }) {
+  const me = useColorModeValue("purple.100", "purple.700");
+  const notMe = useColorModeValue("white", "gray.700");
+  
+  const bg = isCurrentUser
+    ? me
+    : notMe;
+
+  const borderColor = useColorModeValue("indigo.300", "indigo.600");
+  const textColor = useColorModeValue("gray.800", "gray.200");
+  const dateColor = useColorModeValue("gray.500", "gray.400");
+
   return (
-    <div
-      className={`p-4 rounded-lg ${
-        isCurrentUser ? "bg-indigo-100" : "bg-white border-2 border-indigo-300"
-      } shadow-md`}
+    <Box
+      p={4}
+      bg={bg}
+      borderRadius="md"
+      borderWidth={isCurrentUser ? 0 : 2}
+      borderColor={borderColor}
+      boxShadow="md"
     >
-      <div className="flex justify-between items-center mb-2">
-        <h4 className="font-bold text-gray-800">
+      <Flex mb={2} align="center">
+        <Heading size="md" color={textColor}>
           {username}
-          {userScore !== undefined && userScore !== null && userScore > 1 && (
-            <span className="text-yellow-500 ml-2">{`${userScore.toFixed(1)} ★`}</span>
+          {userScore !== undefined && userScore !== null && userScore > 0 && (
+            <Text as="span" color="yellow.400" ml={2} fontWeight="semibold">
+              {userScore.toFixed(1)} ★
+            </Text>
           )}
-        </h4>
-        <span className="text-sm text-gray-500">
+        </Heading>
+        <Spacer />
+        <Text fontSize="sm" color={dateColor} whiteSpace="nowrap">
           {new Date(createdAt).toLocaleString("en-US", {
             year: "numeric",
             month: "long",
@@ -22,11 +40,10 @@ function Comment({ username, description, createdAt, isCurrentUser, userScore })
             hour: "2-digit",
             minute: "2-digit",
           })}
-        </span>
-      </div>
-      <p className="text-gray-700">{description}</p>
-    </div>
+        </Text>
+      </Flex>
+      <Text color={textColor}>{description}</Text>
+    </Box>
   );
 }
-
 export default Comment;

@@ -14,11 +14,13 @@ import {
   import { useEffect, useState } from "react";
   import { useParams, useNavigate } from "react-router-dom";
   import { fetchHotel, putHotel } from "../../services/hotels";
-  
+  import { useToast } from "@chakra-ui/react";
+
   function UpdateHotelForm() {
     const { id } = useParams();
     const navigate = useNavigate();
-  
+    const toast = useToast();
+
     const [hotelData, setHotelData] = useState({
       name: "",
       description: "",
@@ -98,13 +100,32 @@ import {
       }
   
       try {
-        const status = await putHotel(id, formData);
-        if (status === 200) {
-          alert("Hotel updated successfully!");
-          navigate(`/`);
-        } else {
-          alert("Failed to update hotel");
-        }
+        const response = await putHotel(id, formData);
+        if (response === 200) {
+        toast({
+          title: 'Success',
+          description: 'Hotel was updated successfully.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (response === 401) {
+        toast({
+          title: 'Unauthorized',
+          description: 'Required authorization.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (response === 403) {
+        toast({
+          title: 'Forbidden',
+          description: "You don't have rights to perform this action.",
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+      });
+    }
       } catch (e) {
         console.error("Error updating hotel", e);
       }
