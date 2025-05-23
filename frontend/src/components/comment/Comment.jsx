@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Flex, Text, Heading, Spacer, useColorModeValue } from "@chakra-ui/react";
 
 function Comment({ username, description, createdAt, isCurrentUser, userScore }) {

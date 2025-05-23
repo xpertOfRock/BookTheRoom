@@ -1,5 +1,7 @@
-﻿using Application.UseCases.Commands.Order;
+﻿using Api.Contracts.Order;
+using Application.UseCases.Commands.Order;
 using Application.UseCases.Queries.Order;
+using Core.Entities;
 
 
 namespace Api.Controllers
@@ -41,21 +43,33 @@ namespace Api.Controllers
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpGet("user/orders")]
+        [HttpGet("user-orders")]
         [Authorize]
         [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> GetUserOrders([FromQuery] GetOrdersRequest request)
         {
-            string? userId = null;
+            string? userId = _contextAccessor.HttpContext!.User.GetUserId() ?? string.Empty;
 
-            if (User.Identity!.IsAuthenticated)
-            {
-                userId = _contextAccessor.HttpContext!.User.GetUserId() ?? throw new ArgumentNullException();
-            }
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-            var result = await _sender.Send(new GetUserOrdersQuery(userId!, request));
+            var userOrders = await _sender.Send(new GetUserOrdersQuery(userId!, request));
 
-            return Ok(result);
+            var userOrdersDTO = userOrders.Select(x =>
+                new UserOrdersDTO
+                (
+                    x.OrderId,
+                    x.HotelName,
+                    x.RoomNumber,
+                    x.OverallPrice,
+                    x.MinimarIncluded,
+                    x.MealsIncluded,
+                    x.CheckIn,
+                    x.CheckOut,
+                    x.Address
+                )
+            ).ToList();
+
+            return Ok(new GetUserOrdersResponse(userOrdersDTO));
         }
     }
 }

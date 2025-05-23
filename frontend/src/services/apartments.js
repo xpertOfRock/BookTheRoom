@@ -17,8 +17,7 @@ export const fetchApartments = async (filter) => {
     };
 
     const response = await axios.get(`${API_URL}`, { params });
-    console.log(response.data);
-    return response.data;
+    return response.data.apartments;
   } catch (e) {
     console.error(e);
   }
@@ -26,6 +25,8 @@ export const fetchApartments = async (filter) => {
 
 export const fetchUserApartments = async (filter) => {
     try {
+      const token = getCurrentToken();
+      
       const params = {
         search: filter?.search || undefined,
         sortItem: filter?.sortItem || undefined,
@@ -37,8 +38,15 @@ export const fetchUserApartments = async (filter) => {
         page: filter?.page || 1
       };
   
-      const result = await axios.get(`${API_URL}/user`, { params });
-      return result.data.hotels;
+      const result = await axios.get(`${API_URL}/user-comments`, { params },
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+      return result.data.apartment;
     } catch (e) {
       console.error(e);
     }

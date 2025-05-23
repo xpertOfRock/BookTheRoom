@@ -15,6 +15,31 @@ export const getClientToken = async () => {
     }
 };
 
+export const fetchUserOrders = async (filter) => {
+
+  const token = getCurrentToken();
+
+  try {    
+      const params = {
+        search: filter?.search || undefined,
+        sortItem: filter?.sortItem || undefined,
+        sortOrder: filter?.sortOrder || undefined,
+        itemsCount: filter?.itemsCount || 9,
+        page: filter?.page || 1
+      };
+  
+      const result = await axios.get(`${API_URL}/user-orders`, { params,
+        headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+       }           
+      );
+      return result.data.orders;
+    } catch (e) {
+      console.error(e);
+    }
+}
+
 export const postOrder = async (hotelId, number, orderData) => {
     try {
         const token = isAuthorized ? getCurrentToken() : "";

@@ -1,6 +1,6 @@
 ﻿namespace Core.Contracts
 {
-    public record GetOrdersRequest
+    public record GetUserCommentsRequest
     (
         string? Search,
         string? SortItem,

@@ -36,7 +36,7 @@ function Apartments() {
       try {
         const combinedFilters = { ...sortAndSearch, ...filterBy };
         const response = await fetchApartments(combinedFilters);
-        setApartments(response.apartments || []);
+        setApartments(response || []);
       } catch (error) {
         console.error("Error fetching apartments:", error);
         setApartments([]);

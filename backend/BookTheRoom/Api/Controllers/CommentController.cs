@@ -1,5 +1,6 @@
 ﻿using Api.Contracts.Comment;
 using Application.UseCases.Commands.Comment;
+using Application.UseCases.Queries.Comment;
 
 namespace Api.Controllers
 {
@@ -36,5 +37,18 @@ namespace Api.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
+        [HttpGet("user-comments")]
+        [Authorize]
+        [EnableRateLimiting("SlidingGet")]
+        public async Task<IActionResult> GetUserComments([FromQuery] GetUserCommentsRequest request)
+        {
+            string? userId = _contextAccessor.HttpContext!.User.GetUserId() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await _sender.Send(new GetUserCommentsQuery(userId, request));
+
+            return Ok(result);
+        }
     }
 }

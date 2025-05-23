@@ -35,6 +35,10 @@ namespace Application.UseCases.Handlers.QueryHandlers.Order
                 );
             }).ToList();
 
+            dtos
+                .Skip((query.Filters.Page - 1) * query.Filters.ItemsCount)
+                .Take(query.Filters.ItemsCount);
+
             return dtos;
         }
     }

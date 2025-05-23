@@ -47,17 +47,45 @@ namespace Infrastructure.Data.Repositories
                     .Where(c => c.Id == id)
                     .ExecuteDeleteAsync(token);
             }
+
             return new Success("Entity 'Comment' was deleted successfully.");
+        }
+
+        public async Task<List<Comment>> GetUserComments(string userId, GetUserCommentsRequest request, CancellationToken token = default)
+        {
+            var query = context.Comments
+                .Where(c => c.UserId == userId &&
+                            string.IsNullOrWhiteSpace(request.Search) ||
+                            c.Description.ToLower().Contains(request.Search.ToLower()))
+                .AsNoTracking();            
+
+            Expression<Func<Comment, object>> selectorKey = request.SortItem?.ToLower() switch
+            {
+                "date" => comment => comment.CreatedAt,
+                _ => comment => comment.Id
+            };
+
+            query = request.SortOrder == "desc"
+                ? query.OrderByDescending(selectorKey)
+                : query.OrderBy(selectorKey);
+
+            query = query
+                .Skip((request.Page - 1) * request.ItemsCount)
+                .Take(request.ItemsCount);
+
+            return await query.ToListAsync(token);
         }
 
         public async Task<IResult> Update(int id, string description, CancellationToken token = default)
         {
-            await context.Comments
+            var affectedRows = await context.Comments
                 .Where(c => c.Id == id)
                 .ExecuteUpdateAsync(x => x
                 .SetProperty(c => c.Description, description)
                 .SetProperty(c => c.UpdatedAt, DateTime.UtcNow),
                 token);
+
+            if (affectedRows == 0) throw new EntityNotFoundException<Comment>();
 
             return new Success("Entity 'Comment' was updated successfully.");
         }

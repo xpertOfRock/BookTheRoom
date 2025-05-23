@@ -35,13 +35,14 @@ namespace Api.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return BadRequest("You have to sign in to add an apartment for rent.");
+                return Unauthorized();
             }
 
-            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
+            var userId = _contextAccessor.HttpContext!.User.GetUserId();
 
-            var apartments = await _sender.Send(new GetUsersApartmentsQuery(thisUserId, request));
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            var apartments = await _sender.Send(new GetUsersApartmentsQuery(userId, request));
 
             var apartmentsDTO = apartments.Select(a => new ApartmentsDTO(
                 a.Id,

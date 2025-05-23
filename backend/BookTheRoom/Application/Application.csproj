@@ -5,15 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="UseCases\Handlers\QueryHandlers\Comment\**" />
-    <Compile Remove="UseCases\Queries\Comment\**" />
-    <EmbeddedResource Remove="UseCases\Handlers\QueryHandlers\Comment\**" />
-    <EmbeddedResource Remove="UseCases\Queries\Comment\**" />
-    <None Remove="UseCases\Handlers\QueryHandlers\Comment\**" />
-    <None Remove="UseCases\Queries\Comment\**" />
-  </ItemGroup>
 	<ItemGroup>
     <PackageReference Include="Braintree" Version="5.23.0" />
     <PackageReference Include="CloudinaryDotNet" Version="1.26.0" />
