@@ -38,15 +38,13 @@ export const fetchUserApartments = async (filter) => {
         page: filter?.page || 1
       };
   
-      const result = await axios.get(`${API_URL}/user-comments`, { params },
-        {
+      const result = await axios.get(`${API_URL}/user-apartments`, { params,       
           headers: {
-            'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${token}`,
           },
         }
       );
-      return result.data.apartment;
+      return result.data.apartments;
     } catch (e) {
       console.error(e);
     }

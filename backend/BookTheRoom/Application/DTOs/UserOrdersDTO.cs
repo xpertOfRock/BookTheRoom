@@ -10,6 +10,7 @@
         bool MealsIncluded,
         DateTimeOffset CheckIn,
         DateTimeOffset CheckOut,
-        string Address
+        string Address,
+        OrderStatus Status
     );
 }

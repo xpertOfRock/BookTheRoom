@@ -65,7 +65,8 @@ namespace Api.Controllers
                     x.MealsIncluded,
                     x.CheckIn,
                     x.CheckOut,
-                    x.Address
+                    x.Address,
+                    x.Status
                 )
             ).ToList();
 

@@ -62,6 +62,7 @@ namespace Infrastructure.Data.Repositories
             Expression<Func<Comment, object>> selectorKey = request.SortItem?.ToLower() switch
             {
                 "date" => comment => comment.CreatedAt,
+                "rating" => comment => comment.UserScore,
                 _ => comment => comment.Id
             };
 

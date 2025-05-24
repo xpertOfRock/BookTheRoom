@@ -1,4 +1,6 @@
-﻿namespace Api.DTOs
+﻿using Core.Enums;
+
+namespace Api.DTOs
 {
     public record UserOrdersDTO
     (
@@ -10,6 +12,7 @@
         bool MealsIncluded,
         DateTimeOffset CheckIn,
         DateTimeOffset CheckOut,
-        string Address
+        string Address,
+        OrderStatus Status
     );
 }

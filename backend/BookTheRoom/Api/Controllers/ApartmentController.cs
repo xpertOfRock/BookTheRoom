@@ -28,17 +28,17 @@ namespace Api.Controllers
             _contextAccessor = contextAccessor;
         }
 
-        [HttpGet("user")]
+        [HttpGet("user-apartments")]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> GetAllUsersApartments([FromQuery] GetApartmentsRequest request)
         {
-            if (!User.Identity.IsAuthenticated)
+            var userId = _contextAccessor.HttpContext!.User.GetUserId() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized();
             }
-
-            var userId = _contextAccessor.HttpContext!.User.GetUserId();
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 

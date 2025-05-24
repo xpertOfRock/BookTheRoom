@@ -48,7 +48,7 @@ namespace Api.Controllers
 
             var result = await _sender.Send(new GetUserCommentsQuery(userId, request));
 
-            return Ok(result);
+            return Ok(new GetUserCommentsResponse(result));
         }
     }
 }

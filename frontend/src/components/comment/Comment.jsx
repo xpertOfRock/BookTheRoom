@@ -30,6 +30,7 @@ function Comment({ username, description, createdAt, isCurrentUser, userScore })
             </Text>
           )}
         </Heading>
+        <br />
         <Spacer />
         <Text fontSize="sm" color={dateColor} whiteSpace="nowrap">
           {new Date(createdAt).toLocaleString("en-US", {

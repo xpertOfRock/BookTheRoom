@@ -34,7 +34,8 @@ export const getUserComments = async ( filter ) => {
       search: filter?.search,
       sortItem: filter?.sortItem,
       sortOrder: filter?.sortOrder,
-      itemsCount: filter?.itemsCount
+      itemsCount: filter?.itemsCount,
+      page: filter?.page
     };
 
     const result = await axios.get(`${API_URL}/user-comments`, { params,
@@ -43,8 +44,7 @@ export const getUserComments = async ( filter ) => {
           },
        },
     );
-    console.log(result.data.apartments);
-    return result.data.apartments;
+    return result.data.comments;
   } catch (e) {
     console.error(e);
   }

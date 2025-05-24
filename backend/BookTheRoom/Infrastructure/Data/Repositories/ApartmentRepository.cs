@@ -59,18 +59,19 @@
         public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request, CancellationToken token = default)
         {
             var query = context.Apartments
-                .Include(h => h.Address)
-                .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
-                            h.Title.ToLower().Contains(request.Search.ToLower()) ||
-                            h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
-                            h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
-                            h.Address.City.ToLower().Contains(request.Search.ToLower()))
+                .Include(a => a.Address)
+                .Where(a => a.OwnerId == userId)
+                .Where(a => string.IsNullOrWhiteSpace(request.Search) ||
+                            a.Title.ToLower().Contains(request.Search.ToLower()) ||
+                            a.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
+                            a.Address.State.ToLower().Contains(request.Search.ToLower()) ||
+                            a.Address.City.ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(request.Countries))
             {
                 var countries = request.Countries.Split(',');
-                query = query.Where(h => countries.Contains(h.Address.Country));
+                query = query.Where(a => countries.Contains(a.Address.Country));
             }
 
             if (request.MinPrice is not null && request.MinPrice >= 0)
