@@ -54,8 +54,8 @@ namespace Infrastructure.Data.Repositories
         public async Task<List<Comment>> GetUserComments(string userId, GetUserCommentsRequest request, CancellationToken token = default)
         {
             var query = context.Comments
-                .Where(c => c.UserId == userId &&
-                            string.IsNullOrWhiteSpace(request.Search) ||
+                .Where(c => c.UserId == userId)
+                .Where(c => string.IsNullOrWhiteSpace(request.Search) ||
                             c.Description.ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();            
 
