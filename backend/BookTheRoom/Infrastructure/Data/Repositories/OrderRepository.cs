@@ -75,14 +75,14 @@
                 ? request.SortItem?.ToLower() switch
                 {
                     "price" => query.OrderByDescending(x => x.Order.OverallPrice),
-                    "status" => query.OrderByDescending(x => x.Order.Status.ToString()),
+                    "status" => query.OrderByDescending(x => (int)x.Order.Status),
                     "date" => query.OrderByDescending(x => x.Order.CreatedAt),
                     _ => query.OrderByDescending(x => x.Order.Id),
                 }
                 : request.SortItem?.ToLower() switch
                 {
                     "price" => query.OrderBy(x => x.Order.OverallPrice),
-                    "status" => query.OrderBy(x => x.Order.Status.ToString()),
+                    "status" => query.OrderBy(x => (int)x.Order.Status),
                     "date" => query.OrderBy(x => x.Order.CreatedAt),
                     _ => query.OrderBy(x => x.Order.Id),
                 };

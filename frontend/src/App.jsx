@@ -10,6 +10,7 @@ import UpdateRoomForm from './components/rooms/UpdateRoomForm';
 import Navbar from './components/Navbar'; 
 import Home from './components/Home'; 
 import Apartments from './pages/Apartment/Apartments';
+import ApartmentDetails from './pages/ApartmentDetails/ApartmentDetails';
 import FAQ from './components/FAQ';
 import Support from './components/Support';
 import Login from './components/authorization/Login';
@@ -17,6 +18,8 @@ import Register from './components/authorization/Register';
 import Checkout from './pages/Checkout/Checkout';
 import Success from './components/checkout/Success';
 import Profile from './pages/Profile/Profile';
+import CreateApartmentForm from './components/apartment/CreateApartmentForm';
+
 
 function App() { 
   return (
@@ -30,16 +33,19 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/hotels/:id" element={<HotelDetails />} />
-          <Route path="/hotels/:id/room/:number" element={<RoomDetails />}/>
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/checkout/success" element={<Success/>} />
-
           <Route path="/admin/hotels/create" element={<CreateHotelForm /> } />
           <Route path="/admin/hotels/update/:id" element={<UpdateHotelForm /> } />
+
+          <Route path="/hotels/:id/room/:number" element={<RoomDetails />}/>
           <Route path="/admin/hotels/:id/rooms/create" element={<CreateRoomForm /> } />
           <Route path="/admin/hotels/:id/rooms/update/:number" element={<UpdateRoomForm /> } />
 
           <Route path="/apartments" element={<Apartments />} />
+          <Route path="/apartments/:id" element={<ApartmentDetails />} />
+          <Route path="/apartments/create" element={<CreateApartmentForm /> } />
+
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/success" element={<Success/>} />     
 
           <Route path="/profile" element={<Profile />}/>
 

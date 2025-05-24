@@ -4,12 +4,14 @@
     (
         string Title,
         string Description,
-        decimal PricePerNight,
+        decimal PriceForNight,
         string Country,
         string State,
         string City,
         string Street,
         string PostalCode,
-        List<IFormFile> Images
+        List<IFormFile> Images,
+        string? Telegram,
+        string? Instagram
     );
 }

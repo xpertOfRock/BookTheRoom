@@ -1,5 +1,5 @@
 import axios from "axios"
-
+import { getCurrentToken } from "./auth";
 const API_URL = "https://localhost:6061/api/apartment";
 const HUB_URL = "https://localhost:6061/hubs/apartment/chat";
 
@@ -16,8 +16,8 @@ export const fetchApartments = async (filter) => {
       page: filter?.page || 1
     };
 
-    const result = await axios.get(`${API_URL}`, { params });
-    return result.data.hotels;
+    const response = await axios.get(`${API_URL}`, { params });
+    return response.data.apartments;
   } catch (e) {
     console.error(e);
   }
@@ -25,6 +25,8 @@ export const fetchApartments = async (filter) => {
 
 export const fetchUserApartments = async (filter) => {
     try {
+      const token = getCurrentToken();
+      
       const params = {
         search: filter?.search || undefined,
         sortItem: filter?.sortItem || undefined,
@@ -36,8 +38,13 @@ export const fetchUserApartments = async (filter) => {
         page: filter?.page || 1
       };
   
-      const result = await axios.get(`${API_URL}/user`, { params });
-      return result.data.hotels;
+      const result = await axios.get(`${API_URL}/user-apartments`, { params,       
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+      return result.data.apartments;
     } catch (e) {
       console.error(e);
     }
@@ -46,6 +53,7 @@ export const fetchUserApartments = async (filter) => {
 export const fetchApartment = async (id) => {  
   try{
       const response = await axios.get(`${API_URL}/${id}`);
+      console.log(response.data);
       return response.data;
   }catch(e){
       console.error(e);
@@ -54,14 +62,17 @@ export const fetchApartment = async (id) => {
 
 export const postApartment = async (formData) => {
     try {
+      const token = getCurrentToken();
+
       const response = await axios.post(`${API_URL}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
+      },
       });      
       return response.status;
   } catch (error) {   
-    console.error('Error creating hotel:', error.response ? error.response.data : error.message);
+    console.error('Error occured while creating apartment:', error.response ? error.response.data : error.message);
   }
 };
 

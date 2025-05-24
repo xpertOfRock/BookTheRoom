@@ -1,14 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Textarea,
+  Text,
+  HStack,
+  IconButton,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { isAuthorized } from "../../services/auth";
 
-function CreateCommentForm({ hotelId, hasRatedComments, onAddComment }) {
+function CreateCommentForm({ propertyId, hasRatedComments, onAddComment, propertyType }) {
   const [description, setDescription] = useState("");
   const [rating, setRating] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const textColor = useColorModeValue("gray.800", "gray.200");
 
   const handleRatingClick = (value) => {
     if (!hasRatedComments) {
@@ -29,10 +41,11 @@ function CreateCommentForm({ hotelId, hasRatedComments, onAddComment }) {
 
     try {
       await onAddComment({
-        description: description,
-        propertyId: hotelId,
-        propertyType: 1,
-        userScore: rating,})
+        description,
+        propertyId,
+        propertyType,
+        userScore: rating,
+      });
       setDescription("");
       setRating(0);
     } catch (err) {
@@ -44,67 +57,96 @@ function CreateCommentForm({ hotelId, hasRatedComments, onAddComment }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-2 bg-indigo-100 p-4 rounded-lg shadow-md border-2 border-indigo-300">
-      <div className="mb-4">
-        <label htmlFor="comment" className="block text-gray-700 font-medium">
-          Your Comment:
-        </label>
-        <textarea
-          id="comment"
-          rows="4"
+    <Box
+      as="form"
+      onSubmit={handleSubmit}
+      mt={2}
+      bg={useColorModeValue("indigo.100", "indigo.900")}
+      p={4}
+      borderRadius="lg"
+      boxShadow="md"
+      borderWidth={2}
+      borderColor={useColorModeValue("indigo.300", "indigo.600")}
+      color={textColor}
+    >
+      <FormControl mb={4}>
+        <FormLabel>Your Comment:</FormLabel>
+        <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Write your comment here..."
-        ></textarea>
-      </div>
+          rows={4}
+          focusBorderColor="purple.400"
+          resize="vertical"
+        />
+      </FormControl>
 
       {!hasRatedComments ? (
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium">Your Rating:</label>
-          <div className="flex items-center space-x-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => (
-              <button
-                type="button"
-                key={value}
-                onClick={() => handleRatingClick(value)}
-                className={`text-xl ${
-                  value <= rating ? "text-yellow-400" : "text-gray-300"
-                } hover:text-yellow-500`}
-              >
-                ★
-              </button>
-            ))}
-          </div>
-        </div>
+        <FormControl mb={4}>
+          <FormLabel>Your Rating:</FormLabel>
+          <HStack spacing={1}>
+            {[...Array(10)].map((_, i) => {
+              const value = i + 1;
+              return (
+                <IconButton
+                  key={value}
+                  aria-label={`Rate ${value} star${value > 1 ? "s" : ""}`}
+                  icon={
+                    <Text
+                      fontSize="2xl"
+                      color={value <= rating ? "yellow.400" : "gray.300"}
+                      _hover={{ color: "yellow.500" }}
+                      cursor="pointer"
+                    >
+                      ★
+                    </Text>
+                  }
+                  onClick={() => handleRatingClick(value)}
+                  variant="ghost"
+                  size="sm"
+                />
+              );
+            })}
+          </HStack>
+        </FormControl>
       ) : (
-        <p className="text-gray-500 text-sm">You have already rated this hotel</p>
+        <Text color="gray.500" fontSize="sm" mb={4}>
+          You have already rated this hotel
+        </Text>
       )}
 
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-      
-      <div className="flex justify-end">
+      {error && (
+        <Text color="red.500" mb={4}>
+          {error}
+        </Text>
+      )}
+
+      <Box textAlign="right">
         {isAuthorized() ? (
-          <button
+          <Button
             type="submit"
-            className="bg-indigo-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 hover:text-white transition-all disabled:opacity-50"
-            disabled={loading}
+            colorScheme="purple"
+            isLoading={loading}
+            loadingText="Posting..."
           >
-            {loading ? "Posting..." : "Comment"}
-          </button>
+            Comment
+          </Button>
         ) : (
-          <p className="text-gray-700">
+          <Text color={textColor}>
             You need to be logged in to leave a comment.{" "}
-            <span
+            <Text
+              as="span"
+              color="purple.500"
+              cursor="pointer"
+              textDecoration="underline"
               onClick={() => navigate("/login")}
-              className="text-blue-500 cursor-pointer underline"
             >
               Log in here
-            </span>
-          </p>
+            </Text>
+          </Text>
         )}
-      </div>
-    </form>
+      </Box>
+    </Box>
   );
 }
 

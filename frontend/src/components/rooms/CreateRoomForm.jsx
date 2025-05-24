@@ -265,21 +265,37 @@ function CreateRoomForm() {
       });
       if (response === 200) {
         toast({
-          title: "Success!",
-          description: "The room was successfully created.",
-          status: "success",
+          title: 'Success',
+          description: 'Room was created successfully.',
+          status: 'success',
           duration: 5000,
           isClosable: true,
         });
-        } else {
-          toast({
-            title: "Error!",
-            description: "An error occurred while processing your order.",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });        
-      }
+        } else if (response === 400) {
+        toast({
+          title: 'Error',
+          description: 'An error has occured.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (response === 401) {
+        toast({
+          title: 'Unauthorized',
+          description: 'Required authorization.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else if (response === 403) {
+        toast({
+          title: 'Forbidden',
+          description: "You don't have rights to perform this action.",
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+      });
+    }
       navigate(`/hotels/${hotelId}`);
     } catch (error) {
       console.error(error);

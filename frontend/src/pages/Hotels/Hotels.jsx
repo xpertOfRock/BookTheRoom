@@ -1,101 +1,34 @@
-// import SortAndSearch from './subcomponents/Hotels/SortAndSearch';
-// import Filters from './subcomponents/Hotels/Filters';
-// import Card from './subcomponents/Hotels/Card';
-// import { fetchHotels } from '../../services/hotels';
-// import { useEffect, useState } from 'react';
-
-// function Hotels() {
-//     const [hotels, setHotels] = useState([]);
-//     const [sortAndSearch, setSortAndSearch] = useState({
-//       search: '',
-//       sortItem: 'id',
-//       sortOrder: 'desc',
-//       itemsCount: 15,
-//     });
-  
-//     const [filterBy, setFilterBy] = useState({
-//       countries: [],
-//       ratings: [],
-//     });
-  
-//     useEffect(() => {
-//       const fetchData = async () => {
-//         try {
-//           const combinedFilters = { ...sortAndSearch, ...filterBy };
-//           let response = await fetchHotels(combinedFilters);
-//           setHotels(response || []);
-//         } catch (error) {
-//           console.error('Error fetching hotels:', error);
-//           setHotels([]);
-//         }
-//       };
-  
-//       fetchData();
-//     }, [sortAndSearch, filterBy]);
-  
-//     return (
-//       <section className="flex flex-col items-center justify-center p-8 gap-8">
-//         <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl">
-
-//           <div className="w-full lg:w-1/4 bg-indigo-100 p-6 rounded-lg shadow-md border-[3px] border-indigo-300">
-//             <h2 className="text-xl font-semibold mb-4">Filters</h2>
-//             <Filters filter={filterBy} setFilter={setFilterBy} />
-//           </div>
-
-//           <div className="w-full lg:w-3/4 flex flex-col gap-6">
-//             <div className="bg-indigo-100 p-6 rounded-lg shadow-md border-[3px] border-indigo-300">
-//               <SortAndSearch filter={sortAndSearch} setFilter={setSortAndSearch} />
-//             </div>
-
-//             <h2 className="text-xl font-semibold">Hotels</h2>
-//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-indigo-100 p-6 rounded-lg shadow-md border-[3px] border-indigo-300">
-//               {hotels && hotels.length > 0 ? (
-//                 hotels.slice(0, sortAndSearch.itemsCount).map((hotel) => (
-//                   <Card
-//                     key={hotel.id}
-//                     id={hotel.id}
-//                     name={hotel.name}
-//                     preview={hotel.preview}
-//                     rating={hotel.rating}
-//                     address={hotel.address}
-//                     userScore={hotel.userScore}
-//                   />
-//                 ))
-//               ) : (
-//                 <p className="text-gray-500">No hotels found.</p>
-//               )}
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-//     );
-//   }
-  
-//   export default Hotels;
-
-import { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import HotelSortAndSearchFilter from '../../components/hotel/subcomponents/Hotels/HotelSortAndSearchFilter';
-import HotelFilters from '../../components/hotel/subcomponents/Hotels/HotelFilters';
-import Card from '../../components/hotel/subcomponents/Hotels/Card';
-import { fetchHotels } from '../../services/hotels';
+import React, { useEffect, useState } from "react";
+import HotelSortAndSearchFilter from "../../components/hotel/subcomponents/Hotels/HotelSortAndSearchFilter";
+import HotelFilters from "../../components/hotel/subcomponents/Hotels/HotelFilters";
+import Card from "../../components/hotel/subcomponents/Hotels/Card";
+import { fetchHotels } from "../../services/hotels";
+import {
+  Box,
+  Heading,
+  SimpleGrid,
+  VStack,
+  Stack,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
 function Hotels() {
   const [hotels, setHotels] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const [sortAndSearch, setSortAndSearch] = useState({
-    search: '',
-    sortItem: 'id',
-    sortOrder: 'desc',
+    search: "",
+    sortItem: "id",
+    sortOrder: "desc",
     itemsCount: 15,
   });
 
   const [filterBy, setFilterBy] = useState({
     countries: [],
     ratings: [],
-  }); 
+  });
+
+  const bg = useColorModeValue("purple.50", "purple.900");
+  const borderColor = useColorModeValue("purple.300", "purple.600");
+  const textColor = useColorModeValue("gray.800", "gray.200");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,71 +37,97 @@ function Hotels() {
         const response = await fetchHotels(combinedFilters);
         setHotels(response || []);
       } catch (error) {
-        console.error('Error fetching hotels:', error);
+        console.error("Error fetching hotels:", error);
         setHotels([]);
       }
     };
-
     fetchData();
   }, [sortAndSearch, filterBy]);
 
   return (
-    <div className="relative min-h-screen bg-gray-50 pt-16">
-      <button
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="absolute top-4 left-4 z-50 flex items-center px-3 py-2 text-indigo-700 bg-white rounded-md shadow-md"
+    <Box bg="white" minH="100vh" p={{ base: 4, md: 8 }}>
+      <Stack
+        maxW="7xl"
+        mx="auto"
+        spacing={8}
+        direction={{ base: "column", md: "row" }}
+        align={{ md: "flex-start" }}
       >
-        <FontAwesomeIcon icon={isSidebarOpen ? faTimes : faBars} size="lg" />
-        <span className="ml-2">Filters</span>
-      </button>
+        <Stack
+          spacing={6}
+          w={{ base: "full", md: "320px" }}
+          order={{ base: 0, md: 0 }}
+        >
+          <Box
+            bg={bg}
+            p={6}
+            rounded="lg"
+            shadow="md"
+            borderWidth="3px"
+            borderColor={borderColor}
+          >
+            <Heading size="lg" mb={6} color={textColor}>
+              Filters
+            </Heading>
+            <HotelFilters filter={filterBy} setFilter={setFilterBy} />
+          </Box>
+        </Stack>
 
-      {isSidebarOpen && (
-        <div
-          className="absolute inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+        <Stack
+          spacing={6}
+          w={{ base: "full", md: "calc(100% - 320px)" }}
+          order={{ base: 1, md: 1 }}
+        >
+          <Box
+            bg={bg}
+            p={6}
+            rounded="lg"
+            shadow="md"
+            borderWidth="3px"
+            borderColor={borderColor}
+          >
+            <HotelSortAndSearchFilter
+              filter={sortAndSearch}
+              setFilter={setSortAndSearch}
+            />
+          </Box>
 
-      <aside
-        className={`absolute top-0 left-0 bottom-0 w-64 bg-indigo-100 p-6 rounded-r-lg shadow-md border border-indigo-300
-          transform transition-transform duration-300 z-50
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}
-      >
-        <h2 className="text-xl font-semibold mb-4">Filters</h2>
-        <HotelFilters filter={filterBy} setFilter={setFilterBy} />
-      </aside>
-
-      <main
-        className={`transition-all duration-300 ${
-          isSidebarOpen ? 'opacity-90' : 'opacity-100'
-        } p-8`}
-      >
-        <div className="mb-6">
-          <div className="bg-indigo-100 p-6 rounded-lg shadow-md border border-indigo-300">
-            <HotelSortAndSearchFilter filter={sortAndSearch} setFilter={setSortAndSearch} />
-          </div>
-        </div>
-        <h2 className="text-xl font-semibold mb-4">Hotels</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {hotels && hotels.length > 0 ? (
-            hotels.slice(0, sortAndSearch.itemsCount).map((hotel) => (
-              <Card
-                key={hotel.id}
-                id={hotel.id}
-                name={hotel.name}
-                preview={hotel.preview}
-                rating={hotel.rating}
-                address={hotel.address}
-                userScore={hotel.userScore}
-              />
-            ))
-          ) : (
-            <p className="text-gray-500">No hotels found.</p>
-          )}
-        </div>
-      </main>
-    </div>
+          <Box
+            bg={bg}
+            p={6}
+            rounded="lg"
+            shadow="md"
+            borderWidth="3px"
+            borderColor={borderColor}
+          >
+            <Heading size="lg" mb={4} color={textColor}>
+              Hotels
+            </Heading>
+            {hotels.length > 0 ? (
+              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
+                {hotels
+                  .slice(0, sortAndSearch.itemsCount)
+                  .map((hotel) => (
+                    <Card
+                      key={hotel.id}
+                      id={hotel.id}
+                      name={hotel.name}
+                      preview={hotel.preview}
+                      rating={hotel.rating}
+                      address={hotel.address}
+                      userScore={hotel.userScore}
+                    />
+                  ))}
+              </SimpleGrid>
+            ) : (
+              <Box color="gray.500" textAlign="center" py={10}>
+                No hotels found.
+              </Box>
+            )}
+          </Box>
+        </Stack>
+      </Stack>
+    </Box>
   );
 }
 

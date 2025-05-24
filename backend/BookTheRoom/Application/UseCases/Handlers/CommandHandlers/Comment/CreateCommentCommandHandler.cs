@@ -22,7 +22,11 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
                     UpdatedAt = request.UpdatedAt
                 };                                   
 
-                var result = await unitOfWork.Comments.Add(comment);
+                var result = await unitOfWork.Comments.Add(comment, cancellationToken);
+
+                await unitOfWork.SaveChangesAsync();
+
+                await unitOfWork.CommitAsync();
 
                 if (result is null) 
                 {
@@ -43,11 +47,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Comment
 
                     apartment!.Comments?.Add(comment);
                     await unitOfWork.Apartments.UpdateCache(apartment);
-                }
-
-                await unitOfWork.SaveChangesAsync();
-
-                await unitOfWork.CommitAsync();
+                }                              
 
                 return result;
             }

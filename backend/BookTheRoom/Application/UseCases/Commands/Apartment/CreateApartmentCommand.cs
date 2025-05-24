@@ -2,23 +2,24 @@
 {
     public class CreateApartmentCommand : ICommand<IResult>
     {
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string OwnerId { get; set; }
-        public string OwnerName { get; set; }
-        public decimal Price { get; set; }
+        public string OwnerId { get; }
+        public string OwnerName { get; }
+        public string Email { get; }
+        public string PhoneNumber { get; }
+        public CreateApartmentRequest Request { get; }
 
-        public Address Address { get; set; }
-        public List<string> Images { get; set; }
-        public CreateApartmentCommand(CreateApartmentRequest request)
+        public CreateApartmentCommand(
+            string ownerId,
+            string ownerName,
+            string email,
+            string phoneNumber,
+            CreateApartmentRequest request)
         {
-            Title = request.Title;
-            Description = request.Description;
-            OwnerId = request.OwnerId;
-            OwnerName = request.OwnerName;
-            Price = request.Price;
-            Address = request.Address;
-            Images = request.Images;
+            OwnerId = ownerId;
+            OwnerName = ownerName;
+            Email = email;
+            PhoneNumber = phoneNumber;           
+            Request = request;
         }
     }
 }

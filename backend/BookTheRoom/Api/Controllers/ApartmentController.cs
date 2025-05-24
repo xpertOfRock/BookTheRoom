@@ -1,6 +1,7 @@
 ﻿using Api.Contracts.Apartment;
 using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Queries.Apartment;
+using Core.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,29 +28,31 @@ namespace Api.Controllers
             _contextAccessor = contextAccessor;
         }
 
-        [HttpGet("user")]
+        [HttpGet("user-apartments")]
         [AllowAnonymous]
         [EnableRateLimiting("SlidingGet")]
         public async Task<IActionResult> GetAllUsersApartments([FromQuery] GetApartmentsRequest request)
         {
-            if (!User.Identity.IsAuthenticated)
+            var userId = _contextAccessor.HttpContext!.User.GetUserId() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest("You have to sign in to add an apartment for rent.");
+                return Unauthorized();
             }
 
-            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-            var apartments = await _sender.Send(new GetUsersApartmentsQuery(thisUserId, request));
+            var apartments = await _sender.Send(new GetUsersApartmentsQuery(userId, request));
 
-            var apartmentsDTO = apartments.Select(h => new ApartmentsDTO(
-                h.Id,
-                h.Title,
-                h.PriceForNight,
-                h.Address.ToString(),
-                h.Images != null &&
-                    h.Images.Any()
-                    ? h.Images.First()
+            var apartmentsDTO = apartments.Select(a => new ApartmentsDTO(
+                a.Id,
+                a.Title,
+                a.PriceForNight,
+                a.Address.ToString(),
+                a.CreatedAt,
+                a.Images != null &&
+                    a.Images.Any()
+                    ? a.Images.First()
                     : "No Image"
                 )
             ).ToList();
@@ -63,16 +66,17 @@ namespace Api.Controllers
         {
             var apartments = await _sender.Send(new GetApartmentsQuery(request));
 
-            var apartmentsDTO = apartments.Select(h => new ApartmentsDTO(
-                h.Id,
-                h.Title,
-                h.PriceForNight,
-                h.Address.ToString(true),
-                h.Images != null &&
-                    h.Images.Any()
-                    ? h.Images.First()
+            var apartmentsDTO = apartments.Select(a => new ApartmentsDTO(
+                a.Id,
+                a.Title,
+                a.PriceForNight,
+                a.Address.ToString(true),
+                a.CreatedAt,
+                a.Images != null &&
+                    a.Images.Any()
+                    ? a.Images.First()
                     : "No Image"
-                )
+                )                           
             ).ToList();
 
             return Ok(new GetApartmentsResponse(apartmentsDTO));
@@ -90,26 +94,34 @@ namespace Api.Controllers
                 return NotFound($"Hotel with ID: {id} doesn't exist.");
             }
 
-            var thisUserId = _contextAccessor.HttpContext?.User.GetUserId();
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
-
             var apartmentDTO = new ApartmentDTO(
                 apartment.Id,
                 apartment.Title,
                 apartment.Description,
-                $"{user.FirstName} {user.LastName}",
+                apartment.OwnerName,
+                apartment.Email,
+                apartment.PhoneNumber,
+                apartment.Telegram ?? string.Empty,
+                apartment.Instagram ?? string.Empty,
                 apartment.Address.ToString(),
+                apartment.CreatedAt,
 
-                apartment.Images != null &&
+                apartment.Images is not null &&
                     apartment.Images.Any()
                     ? apartment.Images
                     : new List<string> { "" },
 
-                apartment.Comments != null &&
+                apartment.Comments is not null &&
                     apartment.Comments.Any()
                     ? apartment.Comments
-                    : new List<Comment> { }
-                );
+                    : new List<Comment> { },
+                
+
+                apartment.Chats is not null &&
+                    apartment.Chats.Any()
+                    ? apartment.Chats
+                    : new List<Core.Entities.Chat> { }
+            );
 
             return Ok(apartmentDTO);
         }
@@ -129,8 +141,10 @@ namespace Api.Controllers
                 return BadRequest("You cannot add more than 20 files.");
             }
 
-            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == thisUserId);
+            var ownerId = _contextAccessor.HttpContext!.User.GetUserId();
+            var fullName = _contextAccessor.HttpContext!.User.GetFullName();
+            var email = _contextAccessor.HttpContext!.User.GetEmail();
+            var phoneNumber = _contextAccessor.HttpContext!.User.GetPhoneNumber();
 
             var images = new List<string>();
 
@@ -149,9 +163,7 @@ namespace Api.Controllers
             (
                 form.Title,
                 form.Description,
-                thisUserId,
-                user.FirstName + " " + user.LastName,
-                form.PricePerNight,
+                form.PriceForNight,
                 new Address
                 (
                     form.Country,
@@ -159,14 +171,15 @@ namespace Api.Controllers
                     form.City,
                     form.Street,
                     form.PostalCode
-                ),
-                images
+                ),              
+                images,
+                form.Telegram,
+                form.Instagram
             );
 
-            var result = await _sender.Send(new CreateApartmentCommand(request));
+            var result = await _sender.Send(new CreateApartmentCommand(ownerId, fullName, email, phoneNumber, request));
 
             return !result.IsSuccess ? BadRequest(result) : Ok(result);                      
-
         }
 
         [HttpPut("{id}")]

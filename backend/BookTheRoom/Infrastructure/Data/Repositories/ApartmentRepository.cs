@@ -7,13 +7,18 @@
     {
         public async Task<IResult> Add(Apartment apartment, CancellationToken token = default)
         {
-            
-            var existingApartment = context.Apartments
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Address == apartment.Address, token);
 
-            if (existingApartment is not null) 
-            { 
+            var existingApartment = await context.Apartments
+                .AsNoTracking()
+                .Include(a => a.Address)
+                .FirstOrDefaultAsync(a => a.Address.Country == apartment.Address.Country &&
+                                          a.Address.State == apartment.Address.State &&
+                                          a.Address.City == apartment.Address.City &&
+                                          a.Address.Street == apartment.Address.Street &&
+                                          a.Address.PostalCode == apartment.Address.PostalCode, token);
+
+            if (existingApartment is not null)
+            {
                 return new Fail("Entity with this address already exists.");
             }
 
@@ -54,18 +59,19 @@
         public async Task<List<Apartment>> GetAllUsersApartments(string userId, GetApartmentsRequest request, CancellationToken token = default)
         {
             var query = context.Apartments
-                .Include(h => h.Address)
-                .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
-                            h.Title.ToLower().Contains(request.Search.ToLower()) ||
-                            h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
-                            h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
-                            h.Address.City.ToLower().Contains(request.Search.ToLower()))
+                .Include(a => a.Address)
+                .Where(a => a.OwnerId == userId)
+                .Where(a => string.IsNullOrWhiteSpace(request.Search) ||
+                            a.Title.ToLower().Contains(request.Search.ToLower()) ||
+                            a.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
+                            a.Address.State.ToLower().Contains(request.Search.ToLower()) ||
+                            a.Address.City.ToLower().Contains(request.Search.ToLower()))
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(request.Countries))
             {
                 var countries = request.Countries.Split(',');
-                query = query.Where(h => countries.Contains(h.Address.Country));
+                query = query.Where(a => countries.Contains(a.Address.Country));
             }
 
             if (request.MinPrice is not null && request.MinPrice >= 0)
@@ -133,7 +139,6 @@
                  : query = query.OrderBy(selectorKey);
 
             query = query.Skip((request.Page - 1) * request.ItemsCount).Take(request.ItemsCount);
-
             return await query.ToListAsync();
         }
 

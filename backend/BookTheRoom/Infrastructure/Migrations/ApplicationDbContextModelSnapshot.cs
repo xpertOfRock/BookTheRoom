@@ -34,21 +34,48 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
                     b.Property<string>("Images")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Instagram")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("OwnerName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<decimal>("PriceForNight")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Telegram")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -71,6 +98,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("ApartmentId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("text");
+
                     b.Property<List<string>>("UsersId")
                         .IsRequired()
                         .HasColumnType("text[]");
@@ -78,6 +108,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApartmentId");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Chats", (string)null);
                 });
@@ -132,6 +164,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("ApartmentId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ApartmentId1")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
 
@@ -146,6 +181,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<int?>("HotelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("HotelId1")
                         .HasColumnType("integer");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
@@ -167,9 +205,13 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ApartmentId");
 
+                    b.HasIndex("ApartmentId1");
+
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("HotelId");
+
+                    b.HasIndex("HotelId1");
 
                     b.HasIndex("UserId");
 
@@ -608,6 +650,10 @@ namespace Infrastructure.Migrations
                         .WithMany("Chats")
                         .HasForeignKey("ApartmentId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("Chats")
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("Core.Entities.ChatMessage", b =>
@@ -626,6 +672,10 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("ApartmentId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Core.Entities.Apartment", "Apartment")
+                        .WithMany()
+                        .HasForeignKey("ApartmentId1");
+
                     b.HasOne("Infrastructure.Identity.ApplicationUser", null)
                         .WithMany("Comments")
                         .HasForeignKey("ApplicationUserId");
@@ -634,6 +684,14 @@ namespace Infrastructure.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Core.Entities.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId1");
+
+                    b.Navigation("Apartment");
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("Core.Entities.Hotel", b =>
@@ -780,6 +838,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("Apartments");
+
+                    b.Navigation("Chats");
 
                     b.Navigation("Comments");
 

@@ -13,16 +13,13 @@ namespace Tests.ControllersTests
     {
         private readonly Mock<IPhotoService> _mockPhotoService;
         private readonly Mock<IMediator> _mockMediator;
-        private readonly Mock<IHttpContextAccessor> _mockContextAccessor;
         private readonly HotelController _controller;
 
         public HotelControllerTests()
         {
             _mockPhotoService = new Mock<IPhotoService>();
             _mockMediator = new Mock<IMediator>();
-            _mockContextAccessor = new Mock<IHttpContextAccessor>();
-
-            _controller = new HotelController(_mockMediator.Object, _mockPhotoService.Object, _mockContextAccessor.Object);
+            _controller = new HotelController(_mockMediator.Object, _mockPhotoService.Object);
         }
         [Fact]
         public async Task Put_WithInvalidData_ReturnsBadRequest()

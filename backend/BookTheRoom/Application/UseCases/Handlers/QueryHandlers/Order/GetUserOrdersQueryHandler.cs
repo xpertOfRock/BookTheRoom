@@ -31,11 +31,18 @@ namespace Application.UseCases.Handlers.QueryHandlers.Order
                     MealsIncluded: order.MealsIncluded,
                     CheckIn: order.CheckIn.ToUniversalTime(),
                     CheckOut: order.CheckOut,
-                    Address: address
+                    Address: address,
+                    Status: order.Status
+                    
                 );
             }).ToList();
 
-            return dtos;
+            var result = dtos
+                    .Skip((query.Filters.Page - 1) * query.Filters.ItemsCount)
+                    .Take(query.Filters.ItemsCount)
+                    .ToList();
+
+            return result;
         }
     }
 }
