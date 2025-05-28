@@ -1,5 +1,6 @@
 ﻿using Api.Contracts.Account;
 using Api.Contracts.Token;
+using Application.UseCases.Commands.Apartment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,20 +14,82 @@ namespace Api.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly ISender _sender;
         private readonly IEmailService _emailService;
+        private readonly IPhotoService _photoService;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _contextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
+            ISender sender,
             IEmailService emailService,
-            IConfiguration configuration)
+            IPhotoService photoService,
+            IConfiguration configuration,
+            IHttpContextAccessor contextAccessor)
         {
+            _sender = sender;
             _userManager = userManager;
             _emailService = emailService;
             _configuration = configuration;
+            _photoService = photoService;
+            _contextAccessor = contextAccessor;
         }
+        [HttpPut("Edit")]
+        [Authorize]
+        [EnableRateLimiting("SlidingModify")]
+        public async Task<IActionResult> Edit([FromForm] EditProfileRequest request)
+        {
+            var userId = _contextAccessor.HttpContext!.User.GetUserId();
 
+            if (userId is null) return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null) return BadRequest();
+
+            string imageUrl = string.Empty;
+
+            if (request.Image is not null)
+            {
+                if(user.Image is null) await _photoService.DeletePhotoAsync(user.Image);
+
+                using var stream = request.Image.OpenReadStream();
+
+                var resultImage = await _photoService
+                    .AddPhotoAsync(request.Image.Name, stream);
+
+                imageUrl = resultImage.Url.ToString();
+                user.Image = imageUrl;
+            }
+
+
+            user.Image = imageUrl == string.Empty ? user.Image : imageUrl;
+            user.Email = request.Email;
+            user.PhoneNumber = request.PhoneNumber;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+
+            try
+            {
+                var updateUserResult = await _userManager.UpdateAsync(user);
+                if (!updateUserResult.Succeeded) return BadRequest("Could not update the user.");
+            }
+            catch (Exception)
+            {
+                if(imageUrl != string.Empty) await _photoService.DeletePhotoAsync(imageUrl);
+                throw;
+            }      
+
+            var fullName = $"{user.FirstName} {user.LastName}".Trim();
+
+            var updateUserDataInApartmentsRequest = new UpdateUserDataInUserApartmentsRequest(fullName, user.Email, user.PhoneNumber);       
+            
+            var updateUserApartmentsResult = await _sender.Send(new UpdateUserDataInUserApartmentsCommand(userId, updateUserDataInApartmentsRequest));
+
+            return Ok(user);
+        }
         [HttpPost("Login")]
         [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Login([FromBody] AuthorizeRequest request)
@@ -108,9 +171,10 @@ namespace Api.Controllers
         public async Task<IActionResult> Logout()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user != null)
             {
-                await RemoveRefreshToken(user);
+                await RemoveTokens(user);
             }
             return Ok(new { message = "Successfully logged out." });
         }
@@ -223,6 +287,7 @@ namespace Api.Controllers
             var refreshToken = GenerateRefreshToken();
 
             var result = await _userManager.SetAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken", refreshToken);
+
             if (!result.Succeeded)
             {
                 throw new Exception("Failed to save refresh token.");
@@ -245,11 +310,10 @@ namespace Api.Controllers
             return refreshToken;
         }
 
-        private async Task RemoveRefreshToken(ApplicationUser user)
+        private async Task RemoveTokens(ApplicationUser user)
         {
-            var refresh = _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken");
-            var expireTime = _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime");
-            await Task.WhenAll(refresh, expireTime);
+            var refresh = await _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken");
+            var expireTime = await _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime");
         }
     }
 }

@@ -11,8 +11,6 @@ namespace Core.Entities
         public float? UserScore { get; set; }
         public int? HotelId { get; set; } = null;
         public int? ApartmentId { get; set; } = null;
-        public Apartment? Apartment { get; set; }
-        public Hotel? Hotel { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; } = null;
     }

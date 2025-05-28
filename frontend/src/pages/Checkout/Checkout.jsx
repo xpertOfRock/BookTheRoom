@@ -143,7 +143,6 @@ function Checkout() {
       };
 
       const result = await postOrder(hotelId, roomNumber, createOrderRequest);
-      console.log(result.isSuccess)
       if (result.isSuccess === true) {
         toast({
             title: "Success!",

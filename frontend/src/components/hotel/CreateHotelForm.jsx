@@ -55,7 +55,6 @@ function CreateHotelForm() {
   const onCreate = async (hotelForm) => {
     try {
       const response = await postHotel(hotelForm);
-      console.log(response.status);
       setForm({
         name: '',
         description: '',

@@ -115,7 +115,9 @@ function Apartments() {
                       name={apt.title}
                       address={apt.address}
                       preview={apt.preview}
+                      userScore={apt.userScore}
                       createdAt={apt.createdAt}
+                      price={apt.price}
                     />
                   ))}
               </SimpleGrid>

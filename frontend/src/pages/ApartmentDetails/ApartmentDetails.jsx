@@ -87,27 +87,14 @@ function ApartmentDetails() {
   if (loading) return <Text textAlign="center" py={20} color={textColor}>Loading apartment details...</Text>;
   if (!apartment) return <Text textAlign="center" py={20} color={textColor}>Apartment not found.</Text>;
 
-  const {
-    images = [],
-    title,
-    name,
-    userScore,
-    address,
-    description,
-    owner,
-    email,
-    phoneNumber,
-    telegram,
-  } = apartment;
-
-  const slides = images.map((src) => ({ src }));
-  const isOwner = owner === currentUserId;
+  const slides = apartment.images.map((src) => ({ src }));
+  const isOwner = apartment.owner === currentUserId;
 
   return (
     <Box maxW="7xl" mx="auto" px={{ base: 4, md: 8 }} py={8}>
       <VStack spacing={2} mb={8}>
-        <Heading size="lg" color={textColor}>{title}</Heading>
-        <Heading size="md" color={textColor}>{name}</Heading>
+        <Heading size="lg" color={textColor}>{apartment.title}</Heading>
+        <Heading size="md" color={textColor}>{apartment.name}</Heading>
       </VStack>
 
       <Grid
@@ -118,7 +105,7 @@ function ApartmentDetails() {
       >
         <Box position="relative" rounded="lg" overflow="hidden" boxShadow={boxShadow}>
           <Slider {...sliderSettings} ref={sliderRef}>
-            {images.map((image, index) => (
+            {apartment.images.map((image, index) => (
               <Box key={index} h="432px" overflow="hidden">
                 <img
                   className="object-cover w-full h-full cursor-pointer transition-transform duration-300 hover:scale-105"
@@ -173,15 +160,17 @@ function ApartmentDetails() {
           align="start"
           spacing={6}
         >
-          <Heading size="md" color={textColor}>{title}</Heading>
+          <Heading size="md" color={textColor}>{apartment.title}</Heading>
           <Text fontWeight="semibold" color="purple.600">
-            {userScore != null ? `Rating: ${userScore.toFixed(1)} ★` : "Not rated yet"}
+            {apartment.userScore != null ? `Rating: ${apartment.userScore.toFixed(1)} ★` : "Not rated yet"}
           </Text>
-          <Text color={textColor}>{address}</Text>
-          <Text color="gray.500" fontSize="md" whiteSpace="pre-line">
-            {description}
+          <Text color={textColor}>{apartment.address}</Text>
+          <Text color="gray.700" fontSize="md" whiteSpace="pre-line">
+            {apartment.description}
           </Text>
-
+          <Text color="gray.700" fontSize="md" whiteSpace="pre-line">
+            Price: {apartment.price}$
+          </Text>
           <Box
             w="100%"
             p={4}
@@ -195,15 +184,16 @@ function ApartmentDetails() {
             </Heading>
             <Stack spacing={1} fontSize="sm" color={textColor}>
               <Text>
-                <strong>Owner:</strong> {owner} {isOwner && (
+                <strong>Owner:</strong> {apartment.owner} {isOwner && (
                   <Box as="span" ml={2} px={2} py={0.5} bg={ownerBg} color={ownerTextColor} rounded="md" fontWeight="bold" fontSize="xs">
                     (you)
                   </Box>
                 )}
               </Text>
-              {email && <Text><strong>Email:</strong> {email}</Text>}
-              {phoneNumber && <Text><strong>Phone:</strong> {phoneNumber}</Text>}
-              {telegram && <Text><strong>Telegram:</strong> {telegram}</Text>}
+              {apartment.email && <Text><strong>Email:</strong> {apartment.email}</Text>}
+              {apartment.phoneNumber && <Text><strong>Phone:</strong> {apartment.phoneNumber}</Text>}
+              {apartment.telegram && <Text><strong>Telegram:</strong> {apartment.telegram}</Text>}
+              {apartment.instagram && <Text><strong>Instagram:</strong> {apartment.instagram}</Text>}
             </Stack>
           </Box>
 
@@ -224,7 +214,7 @@ function ApartmentDetails() {
         gap={8}
       >
         <Box>
-          <ImagesSection images={images} onImageClick={handleImageClick} />
+          <ImagesSection images={apartment.images} onImageClick={handleImageClick} />
         </Box>
 
         <Box>
