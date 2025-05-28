@@ -27,7 +27,7 @@ namespace Application.UseCases.Handlers.QueryHandlers.Order
                     HotelName: hotel.Name,
                     RoomNumber: room.Number,
                     OverallPrice: order.OverallPrice,
-                    MinimarIncluded: order.MinibarIncluded,
+                    MinibarIncluded: order.MinibarIncluded,
                     MealsIncluded: order.MealsIncluded,
                     CheckIn: order.CheckIn.ToUniversalTime(),
                     CheckOut: order.CheckOut,

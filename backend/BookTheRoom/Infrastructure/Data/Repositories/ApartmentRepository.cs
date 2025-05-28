@@ -154,7 +154,6 @@
                 apartment = await context.Apartments
                     .Include(h => h.Address)
                     .Include(h => h.Comments)
-                    .AsSplitQuery()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(h => h.Id == id, token);
 
