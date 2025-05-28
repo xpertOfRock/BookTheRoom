@@ -85,15 +85,40 @@ export const register = async (userData) => {
 
 export const logout = async () => {
   try {
+    const token = getCurrentToken();
+
+    await axios.post(
+      `${API_URL}/Logout`, {},
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
     Cookies.remove('user');
-    await axios.post(`${API_URL}/Logout`);
   } catch (error) {
     console.error('Logout failed:', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Logout failed. Please try again.');
   }
 };
+
+export const updateUser = async (formData) => {
+  try{
+    
+    const response = axios.put(`${API_URL}/Edit`, data, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    Cookies.set('user', JSON.stringify(response.data), cookieOptions)
+  }catch(error){
+    console.error(error);
+  }
+}
 
 export const getCurrentToken = () => {
   const token = Cookies.get('accessToken');

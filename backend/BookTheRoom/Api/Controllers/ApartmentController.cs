@@ -4,6 +4,7 @@ using Application.UseCases.Queries.Apartment;
 using Core.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Controllers
 {
@@ -40,7 +41,7 @@ namespace Api.Controllers
                 return Unauthorized();
             }
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.FindByIdAsync(userId);
 
             var apartments = await _sender.Send(new GetUsersApartmentsQuery(userId, request));
 
@@ -154,11 +155,10 @@ namespace Api.Controllers
                 {
                     using var stream = file.OpenReadStream();                    
                     var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                    images.Add(resultForList.Url.ToString());
-                    
+                    images.Add(resultForList.Url.ToString());                   
                 }
             }
-
+        
             var request = new CreateApartmentRequest
             (
                 form.Title,
@@ -205,13 +205,22 @@ namespace Api.Controllers
             {
                 foreach (var file in form.Images)
                 {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
-                        images.Add(resultForList.Url.ToString());
-                    }
+                    using var stream = file.OpenReadStream();
+                    var resultForList = await _photoService.AddPhotoAsync(file.Name, stream);
+                    images.Add(resultForList.Url.ToString());
                 }
             }
+            //string Title,
+            //string Description,
+            //decimal PriceForNight,
+            //string Country,
+            //string State,
+            //string City,
+            //string Street,
+            //string PostalCode,
+            //List< IFormFile > Images,
+            //string? Telegram,
+            //string? Instagram
 
             var request = new UpdateApartmentRequest
             (
@@ -236,13 +245,13 @@ namespace Api.Controllers
         }
 
         //[HttpDelete("{id}")]
-        ////[Authorize(Roles = UserRole.Admin)]
+        //[Authorize(Roles = UserRole.Admin)]
         //public async Task<IActionResult> Delete(int id)
         //{
-        //    var result = await _mediator.Send(new DeleteHotelCommand(id));
+        //    var result = await _sender.Send(new DeleteApartmentCommand(id));
 
         //    if (!result.IsSuccess) return BadRequest(result);
-        //    
+
         //    return Ok(result);
         //}
     }

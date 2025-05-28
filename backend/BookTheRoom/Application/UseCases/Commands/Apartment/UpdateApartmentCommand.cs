@@ -3,8 +3,7 @@
     public class UpdateApartmentCommand : ICommand<IResult>
     {
         public int Id { get; }
-        public string UserId { get; set; }
-
+        public string UserId { get; }
         public UpdateApartmentRequest Request { get; }
         public UpdateApartmentCommand(int id, string userId, UpdateApartmentRequest request)
         {

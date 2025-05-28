@@ -224,24 +224,50 @@
                 }
 
                 await context.Apartments
-                        .Where(h => h.Id == id)
+                        .Where(a => a.Id == id)
                         .ExecuteUpdateAsync(e => e
-                        .SetProperty(h => h.Images, request.Images), token);
+                        .SetProperty(a => a.Images, request.Images), token);
             }
 
             await context.Apartments
-                .Where(h => h.Id == id)
+                .Where(a => a.Id == id)
                 .ExecuteUpdateAsync(e => e
-                .SetProperty(h => h.Title, request.Title)
-                .SetProperty(h => h.Description, request.Description)
-                .SetProperty(h => h.PriceForNight, request.Price)
-                .SetProperty(h => h.Address.Country, request.Address.Country)
-                .SetProperty(h => h.Address.State, request.Address.State)
-                .SetProperty(h => h.Address.City, request.Address.City)
-                .SetProperty(h => h.Address.Street, request.Address.Street)
-                .SetProperty(h => h.Address.PostalCode, request.Address.PostalCode), token);
+                .SetProperty(a => a.Title, request.Title)
+                .SetProperty(a => a.Description, request.Description)
+                .SetProperty(a => a.PriceForNight, request.Price)
+                .SetProperty(a => a.Address.Country, request.Address.Country)
+                .SetProperty(a => a.Address.State, request.Address.State)
+                .SetProperty(a => a.Address.City, request.Address.City)
+                .SetProperty(a => a.Address.Street, request.Address.Street)
+                .SetProperty(a => a.Address.PostalCode, request.Address.PostalCode), token);
 
             return new Success("Entity 'Apartment' was updated successfully.");
+        }
+
+        public async Task<IResult> UpdateUserDataInUserApartments(string userId, UpdateUserDataInUserApartmentsRequest request, CancellationToken token = default)
+        {
+            var affectedRows = await context.Apartments
+                .Where(x => x.OwnerId == userId)
+                .ExecuteUpdateAsync(e => e
+                .SetProperty(x => x.PhoneNumber, request.PhoneNumber)
+                .SetProperty(x => x.Email, request.Email)
+                .SetProperty(x => x.OwnerName, request.OwnerName), token);
+
+            var apartmentIds = await context.Apartments
+                .AsNoTracking()
+                .Where(x => x.OwnerId == userId)
+                .Select(x => x.Id)              
+                .ToListAsync(token);
+
+            foreach(var apartmentId in apartmentIds)
+            {
+                string key = $"apartment-{apartmentId}";
+                await distributedCache.RemoveAsync(key);
+            }         
+
+            string message = affectedRows == 0 ? "There are no apartments to update." : $"{affectedRows} apartment(-s) updated.";
+
+            return new Success(message);
         }
     }
 }

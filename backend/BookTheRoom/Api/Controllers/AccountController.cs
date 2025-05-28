@@ -1,11 +1,14 @@
 ﻿using Api.Contracts.Account;
 using Api.Contracts.Token;
+using Application.UseCases.Commands.Apartment;
+using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Controllers
 {
@@ -13,20 +16,63 @@ namespace Api.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly ISender _sender;
         private readonly IEmailService _emailService;
+        private readonly IPhotoService _photoService;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _contextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
+            ISender sender,
             IEmailService emailService,
-            IConfiguration configuration)
+            IPhotoService photoService,
+            IConfiguration configuration,
+            IHttpContextAccessor contextAccessor)
         {
+            _sender = sender;
             _userManager = userManager;
             _emailService = emailService;
             _configuration = configuration;
+            _photoService = photoService;
+            _contextAccessor = contextAccessor;
         }
+        [HttpPut("Edit")]
+        [Authorize]
+        [EnableRateLimiting("SlidingModify")]
+        public async Task<IActionResult> Edit([FromBody] EditProfileRequest request)
+        {
+            var userId = _contextAccessor.HttpContext!.User.GetUserId();
 
+            if (userId is null) return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null) return BadRequest();
+
+            using var stream = request.Image.OpenReadStream();
+            var resultImage = await _photoService
+                .AddPhotoAsync(request.Image.Name, stream);
+
+            user.Image = resultImage.Url.ToString();
+            user.Email = request.Email;
+            user.PhoneNumber = request.PhoneNumber;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            if (!updateUserResult.Succeeded) return BadRequest("Could not update the user.");
+
+            var fullName = $"{user.FirstName} {user.LastName}".Trim();
+
+            var updateUserDataInApartmentsRequest = new UpdateUserDataInUserApartmentsRequest(fullName, user.Email, user.PhoneNumber);       
+            
+            var updateUserApartmentsResult = await _sender.Send(new UpdateUserDataInUserApartmentsCommand(userId, updateUserDataInApartmentsRequest));
+
+            return Ok(user);
+        }
         [HttpPost("Login")]
         [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Login([FromBody] AuthorizeRequest request)
@@ -110,7 +156,7 @@ namespace Api.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
-                await RemoveRefreshToken(user);
+                await RemoveTokens(user);
             }
             return Ok(new { message = "Successfully logged out." });
         }
@@ -223,6 +269,7 @@ namespace Api.Controllers
             var refreshToken = GenerateRefreshToken();
 
             var result = await _userManager.SetAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken", refreshToken);
+
             if (!result.Succeeded)
             {
                 throw new Exception("Failed to save refresh token.");
@@ -245,7 +292,7 @@ namespace Api.Controllers
             return refreshToken;
         }
 
-        private async Task RemoveRefreshToken(ApplicationUser user)
+        private async Task RemoveTokens(ApplicationUser user)
         {
             var refresh = _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken");
             var expireTime = _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime");
