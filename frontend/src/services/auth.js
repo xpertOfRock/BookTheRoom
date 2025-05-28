@@ -107,8 +107,8 @@ export const logout = async () => {
 
 export const updateUser = async (formData) => {
   try{
-    
-    const response = axios.put(`${API_URL}/Edit`, data, {
+    const token = getCurrentToken();
+    const response = axios.put(`${API_URL}/Edit`, formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

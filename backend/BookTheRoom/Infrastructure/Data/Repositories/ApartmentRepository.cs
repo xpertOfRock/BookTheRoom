@@ -60,6 +60,7 @@
         {
             var query = context.Apartments
                 .Include(a => a.Address)
+                .Include(a => a.Comments)
                 .Where(a => a.OwnerId == userId)
                 .Where(a => string.IsNullOrWhiteSpace(request.Search) ||
                             a.Title.ToLower().Contains(request.Search.ToLower()) ||
@@ -104,7 +105,8 @@
         public async Task<List<Apartment>> GetAll(GetApartmentsRequest request, CancellationToken token = default)
         {
             var query = context.Apartments
-                .Include(h => h.Address)                
+                .Include(h => h.Address)               
+                .Include(h => h.Comments)
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||                            
                             h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.State.ToLower().Contains(request.Search.ToLower()) ||

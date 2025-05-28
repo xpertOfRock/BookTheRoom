@@ -11,6 +11,7 @@
         string Telegram,
         string Instagram,
         string Address,
+        float? UserScore,
         DateTime CreatedAt,
         List<string>? Images,
         List<Comment>? Comments,

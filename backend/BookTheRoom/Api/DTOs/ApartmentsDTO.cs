@@ -7,6 +7,7 @@
         decimal Price,
         string Address,
         DateTime CreatedAt,
-        string? Preview
+        string? Preview,
+        float? UserScore
     );
 }

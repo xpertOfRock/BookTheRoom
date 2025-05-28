@@ -2,6 +2,7 @@
 using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Queries.Apartment;
 using Core.Abstractions;
+using Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using static System.Net.Mime.MediaTypeNames;
@@ -51,11 +52,18 @@ namespace Api.Controllers
                 a.PriceForNight,
                 a.Address.ToString(),
                 a.CreatedAt,
+
                 a.Images != null &&
                     a.Images.Any()
                     ? a.Images.First()
-                    : "No Image"
-                )
+                    : "No Image",
+
+                a.Comments != null && a.Comments.Any()
+                    ? a.Comments
+                            .Where(c => c.UserScore != null && c.UserScore > 0)
+                            .Average(c => c.UserScore)
+                    : -1f
+                )       
             ).ToList();
 
             return Ok(new GetApartmentsResponse(apartmentsDTO));
@@ -73,13 +81,20 @@ namespace Api.Controllers
                 a.PriceForNight,
                 a.Address.ToString(true),
                 a.CreatedAt,
+
                 a.Images != null &&
                     a.Images.Any()
                     ? a.Images.First()
-                    : "No Image"
+                    : "No Image",
+
+                a.Comments != null && a.Comments.Any()
+                    ? a.Comments
+                            .Where(c => c.UserScore != null && c.UserScore > 0)
+                            .Average(c => c.UserScore)
+                    : -1f
                 )                           
             ).ToList();
-
+            
             return Ok(new GetApartmentsResponse(apartmentsDTO));
         }
 
@@ -105,6 +120,13 @@ namespace Api.Controllers
                 apartment.Telegram ?? string.Empty,
                 apartment.Instagram ?? string.Empty,
                 apartment.Address.ToString(),
+
+                apartment.Comments != null && apartment.Comments.Any()
+                        ? apartment.Comments
+                            .Where(c => c.UserScore != null && c.UserScore > 0)
+                            .Average(c => c.UserScore)
+                        : -1f,
+
                 apartment.CreatedAt,
 
                 apartment.Images is not null &&
@@ -116,13 +138,14 @@ namespace Api.Controllers
                     apartment.Comments.Any()
                     ? apartment.Comments
                     : new List<Comment> { },
-                
+
 
                 apartment.Chats is not null &&
                     apartment.Chats.Any()
                     ? apartment.Chats
                     : new List<Core.Entities.Chat> { }
             );
+
 
             return Ok(apartmentDTO);
         }

@@ -1,14 +1,12 @@
 ﻿using Api.Contracts.Account;
 using Api.Contracts.Token;
 using Application.UseCases.Commands.Apartment;
-using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Controllers
 {
@@ -154,6 +152,7 @@ namespace Api.Controllers
         public async Task<IActionResult> Logout()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user != null)
             {
                 await RemoveTokens(user);
@@ -294,9 +293,8 @@ namespace Api.Controllers
 
         private async Task RemoveTokens(ApplicationUser user)
         {
-            var refresh = _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken");
-            var expireTime = _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime");
-            await Task.WhenAll(refresh, expireTime);
+            var refresh = await _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshToken");
+            var expireTime = await _userManager.RemoveAuthenticationTokenAsync(user, "BookTheRoomWeb", "RefreshTokenExpiryTime");
         }
     }
 }

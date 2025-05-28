@@ -47,7 +47,7 @@ function CreateCommentForm({ propertyId, hasRatedComments, onAddComment, propert
         userScore: rating,
       });
       setDescription("");
-      setRating(0);
+      setRating(-1);
     } catch (err) {
       console.error("Error posting comment:", err);
       setError("Failed to post comment. Please try again.");
