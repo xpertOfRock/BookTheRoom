@@ -108,7 +108,8 @@ function Profile() {
     if (formData.image) data.append("Image", formData.image);
 
     try {
-      await updateUser(data);
+      const response = await updateUser(data);
+      console.log(response);
       window.location.reload();
     } catch (error) {
       console.error(error);

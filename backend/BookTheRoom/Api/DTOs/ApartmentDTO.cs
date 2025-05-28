@@ -8,6 +8,7 @@
         string Owner,
         string Email,
         string PhoneNumber,
+        decimal Price,
         string Telegram,
         string Instagram,
         string Address,

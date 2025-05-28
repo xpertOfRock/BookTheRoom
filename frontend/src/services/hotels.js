@@ -24,7 +24,6 @@ export const fetchHotels = async (filter) => {
 export const fetchHotel = async (id) => {  
   try {
     let response = await axios.get(`${API_URL}/${id}`);  
-    console.log(response.data);
     return response.data;
   } catch (e) {
     console.error(e);
@@ -49,7 +48,6 @@ export const postHotel = async (formData) => {
 export const putHotel = async (id, formData) => {
   try {
     const token = getCurrentToken();
-    console.log(token);
     const response = await axios.put(`${API_URL}/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

@@ -53,7 +53,6 @@ export const fetchUserApartments = async (filter) => {
 export const fetchApartment = async (id) => {  
   try{
       const response = await axios.get(`${API_URL}/${id}`);
-      console.log(response.data);
       return response.data;
   }catch(e){
       console.error(e);

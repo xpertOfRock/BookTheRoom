@@ -83,7 +83,7 @@ const UserOrders = ({ orderFilter, setOrderFilter, orders, statuses, statusColor
                   </Flex>
                   <Text fontSize="sm">Hotel: {o.hotelName}</Text>
                   <Text fontSize="sm">Room: {o.roomNumber}</Text>
-                  <Text fontSize="sm">Price: ${o.overallPrice}</Text>
+                  <Text fontSize="sm">Total price: {o.overallPrice}$</Text>
                   <Text fontSize="sm">Check-In: {formatDate(o.checkIn)}</Text>
                   <Text fontSize="sm">Check-Out: {formatDate(o.checkOut)}</Text>
                 </Box>

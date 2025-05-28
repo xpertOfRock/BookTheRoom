@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function ApartmentCard({ id, name, preview, address, userScore, createdAt }) {
+function ApartmentCard({ id, name, preview, address, userScore, createdAt, price }) {
   const navigate = useNavigate();
 
   const handleViewClick = () => {
@@ -34,6 +34,7 @@ function ApartmentCard({ id, name, preview, address, userScore, createdAt }) {
       <div className="p-4 flex flex-col flex-grow">
         <h5 className="text-lg font-semibold text-gray-800">{name}</h5>
         <p className="text-gray-500 mt-3 text-sm">Location: {address}</p>
+        <p className="text-gray-500 mt-3 text-sm">Price: {price}$</p>
         <div className="flex items-center justify-end mt-auto pt-4 border-t border-gray-200">
           <button
             onClick={handleViewClick}

@@ -9,7 +9,6 @@ function Success() {
   const redirected = location.state || undefined;
 
   useEffect(() => {
-    console.log(redirected);
     if(redirected === null || redirected === undefined || !redirected){      
       navigate("/");     
     }

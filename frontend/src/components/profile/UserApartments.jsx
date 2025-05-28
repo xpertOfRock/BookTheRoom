@@ -51,7 +51,7 @@ const UserApartments = ({ aptFilter, setAptFilter, apartments, formatDate }) => 
                 <Box>
                   <Text fontWeight="bold">{apt.title}</Text>
                   <Text fontSize="sm">{apt.address}</Text>
-                  <Text fontSize="sm">Price per night: ${apt.priceForNight}</Text>
+                  <Text fontSize="sm">Price per night: {apt.price}$</Text>
                   <Text fontSize="sm">Created: {formatDate(apt.createdAt)}</Text>
                 </Box>
                 <Button size="sm" colorScheme="purple" onClick={() => navigate(`/apartments/${apt.id}`)}>

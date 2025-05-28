@@ -117,6 +117,7 @@ namespace Api.Controllers
                 apartment.OwnerName,
                 apartment.Email,
                 apartment.PhoneNumber,
+                apartment.PriceForNight,
                 apartment.Telegram ?? string.Empty,
                 apartment.Instagram ?? string.Empty,
                 apartment.Address.ToString(),

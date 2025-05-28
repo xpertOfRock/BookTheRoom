@@ -6,6 +6,6 @@
         string PhoneNumber,
         string FirstName,
         string LastName,
-        IFormFile Image
+        IFormFile? Image
     );
 }

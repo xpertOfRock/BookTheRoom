@@ -36,7 +36,6 @@ function Apartments() {
       try {
         const combinedFilters = { ...sortAndSearch, ...filterBy };
         const response = await fetchApartments(combinedFilters);
-        console.log(response);
         setApartments(response || []);
       } catch (error) {
         console.error("Error fetching apartments:", error);
@@ -118,6 +117,7 @@ function Apartments() {
                       preview={apt.preview}
                       userScore={apt.userScore}
                       createdAt={apt.createdAt}
+                      price={apt.price}
                     />
                   ))}
               </SimpleGrid>

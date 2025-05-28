@@ -69,7 +69,7 @@ export const login = async (emailOrUsername, password) => {
 export const register = async (userData) => {
   try {
     const response = await axios.post(`${API_URL}/Register`, userData);
-
+ 
     if (response.data.token && response.data.refreshToken && response.data.newUser) {
       Cookies.set('accessToken', response.data.token, cookieOptions);
       Cookies.set('refreshToken', response.data.refreshToken, cookieOptions);
@@ -108,7 +108,7 @@ export const logout = async () => {
 export const updateUser = async (formData) => {
   try{
     const token = getCurrentToken();
-    const response = axios.put(`${API_URL}/Edit`, formData, {
+    const response = await axios.put(`${API_URL}/Edit`, formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

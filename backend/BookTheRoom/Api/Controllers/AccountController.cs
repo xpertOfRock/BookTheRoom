@@ -39,7 +39,7 @@ namespace Api.Controllers
         [HttpPut("Edit")]
         [Authorize]
         [EnableRateLimiting("SlidingModify")]
-        public async Task<IActionResult> Edit([FromBody] EditProfileRequest request)
+        public async Task<IActionResult> Edit([FromForm] EditProfileRequest request)
         {
             var userId = _contextAccessor.HttpContext!.User.GetUserId();
 
@@ -49,19 +49,38 @@ namespace Api.Controllers
 
             if (user is null) return BadRequest();
 
-            using var stream = request.Image.OpenReadStream();
-            var resultImage = await _photoService
-                .AddPhotoAsync(request.Image.Name, stream);
+            string imageUrl = string.Empty;
 
-            user.Image = resultImage.Url.ToString();
+            if (request.Image is not null)
+            {
+                if(user.Image is null) await _photoService.DeletePhotoAsync(user.Image);
+
+                using var stream = request.Image.OpenReadStream();
+
+                var resultImage = await _photoService
+                    .AddPhotoAsync(request.Image.Name, stream);
+
+                imageUrl = resultImage.Url.ToString();
+                user.Image = imageUrl;
+            }
+
+
+            user.Image = imageUrl == string.Empty ? user.Image : imageUrl;
             user.Email = request.Email;
             user.PhoneNumber = request.PhoneNumber;
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
-            
-            var updateUserResult = await _userManager.UpdateAsync(user);
 
-            if (!updateUserResult.Succeeded) return BadRequest("Could not update the user.");
+            try
+            {
+                var updateUserResult = await _userManager.UpdateAsync(user);
+                if (!updateUserResult.Succeeded) return BadRequest("Could not update the user.");
+            }
+            catch (Exception)
+            {
+                if(imageUrl != string.Empty) await _photoService.DeletePhotoAsync(imageUrl);
+                throw;
+            }      
 
             var fullName = $"{user.FirstName} {user.LastName}".Trim();
 
