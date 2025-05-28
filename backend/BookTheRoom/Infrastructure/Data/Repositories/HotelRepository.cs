@@ -51,7 +51,6 @@
             var query = context.Hotels
                 .Include(h => h.Address)
                 .Include(h => h.Comments)
-                .AsSplitQuery()
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
                             h.Name.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.Country.ToLower().Contains(request.Search.ToLower()) ||

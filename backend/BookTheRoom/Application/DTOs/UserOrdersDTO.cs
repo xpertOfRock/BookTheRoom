@@ -6,7 +6,7 @@
         string HotelName,
         int RoomNumber,
         decimal OverallPrice,
-        bool MinimarIncluded,
+        bool MinibarIncluded,
         bool MealsIncluded,
         DateTimeOffset CheckIn,
         DateTimeOffset CheckOut,

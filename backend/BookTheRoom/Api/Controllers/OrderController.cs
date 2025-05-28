@@ -61,7 +61,7 @@ namespace Api.Controllers
                     x.HotelName,
                     x.RoomNumber,
                     x.OverallPrice,
-                    x.MinimarIncluded,
+                    x.MinibarIncluded,
                     x.MealsIncluded,
                     x.CheckIn,
                     x.CheckOut,

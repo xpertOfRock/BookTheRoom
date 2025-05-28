@@ -49,7 +49,6 @@
 
             var hotelsQuery = context.Hotels
                 .Include(h => h.Address)
-                .AsSplitQuery()
                 .Where(h => string.IsNullOrWhiteSpace(request.Search) ||
                     h.Name.ToLower().Contains(request.Search.ToLower()) ||
                     (h.Address != null && (
