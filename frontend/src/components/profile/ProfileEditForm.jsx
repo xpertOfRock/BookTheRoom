@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Avatar,
@@ -25,13 +25,24 @@ const ProfileEditForm = ({ user, onCancel, onSave, formatDate }) => {
     lastName: user.lastName || "",
     image: null,
   });
-
+  const [preview, setPreview] = useState(user.image || "");
   const [isHover, setIsHover] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      if (preview && preview !== user.image) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview, user.image]);
+
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "image") {
-      setFormData((prev) => ({ ...prev, image: files[0] }));
+    const { name, files, value } = e.target;
+    if (name === "image" && files && files[0]) {
+      const file = files[0];
+      setFormData((prev) => ({ ...prev, image: file }));
+      const url = URL.createObjectURL(file);
+      setPreview(url);
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -73,8 +84,8 @@ const ProfileEditForm = ({ user, onCancel, onSave, formatDate }) => {
       >
         <Avatar
           size="2xl"
-          src={formData.image ? URL.createObjectURL(formData.image) : user.image}
-          alt={`${formData.firstName} ${formData.lastName}`}
+          src={preview}
+          alt={`${formData.firstName || user.firstName} ${formData.lastName || user.lastName}`}
           borderWidth="4px"
           borderColor={mainColor}
         />

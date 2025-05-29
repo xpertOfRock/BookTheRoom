@@ -6,14 +6,14 @@ const HUB_URL = "https://localhost:6061/hubs/apartment/chat";
 export const fetchApartments = async (filter) => {
   try {
     const params = {
-      search: filter?.search || undefined,
-      sortItem: filter?.sortItem || undefined,
-      sortOrder: filter?.sortOrder || undefined,
-      countries: filter?.countries.length > 0 ? filter.countries.join(",") : undefined,
-      minPrice: filter?.minPrice || undefined,
-      maxPrice: filter?.maxPrice || undefined,
-      itemsCount: filter?.itemsCount || 9,
-      page: filter?.page || 1
+      search:     filter?.search    ?? undefined,
+      sortItem:   filter?.sortItem  ?? undefined,
+      sortOrder:  filter?.sortOrder ?? undefined,
+      countries:  filter?.countries?.length > 0 ? filter.countries.join(",") : undefined,
+      minPrice:   filter?.minPrice  ?? undefined,
+      maxPrice:   filter?.maxPrice  ?? undefined,
+      itemsCount: filter?.itemsCount ?? 9,
+      page:       filter?.page       ?? 1,
     };
 
     const response = await axios.get(`${API_URL}`, { params });
@@ -28,14 +28,14 @@ export const fetchUserApartments = async (filter) => {
       const token = getCurrentToken();
       
       const params = {
-        search: filter?.search || undefined,
-        sortItem: filter?.sortItem || undefined,
-        sortOrder: filter?.sortOrder || undefined,
+        search: filter?.search ?? undefined,
+        sortItem: filter?.sortItem ?? undefined,
+        sortOrder: filter?.sortOrder ?? undefined,
         countries: filter?.countries.length > 0 ? filter.countries.join(",") : undefined,
-        minPrice: filter?.minPrice || undefined,
-        maxPrice: filter?.maxPrice || undefined,
-        itemsCount: filter?.itemsCount || 9,
-        page: filter?.page || 1
+        minPrice: filter?.minPrice ?? undefined,
+        maxPrice: filter?.maxPrice ?? undefined,
+        itemsCount: filter?.itemsCount ?? 9,
+        page: filter?.page ?? 1
       };
   
       const result = await axios.get(`${API_URL}/user-apartments`, { params,       

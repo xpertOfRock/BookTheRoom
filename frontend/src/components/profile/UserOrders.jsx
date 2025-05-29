@@ -96,7 +96,11 @@ const UserOrders = ({ orderFilter, setOrderFilter, orders, statuses, statusColor
               colorScheme="purple"          
               variant="outline"
               disabled={orderFilter.page <= 1}
-              onClick={() => setOrderFilter({ ...orderFilter, page: orderFilter.page - 1 })}
+              onClick={() => {
+                if (orderFilter.page > 1) {
+                  setOrderFilter({ ...orderFilter, page: orderFilter.page - 1 });
+                }
+              }}
             >
               Prev
             </Button>

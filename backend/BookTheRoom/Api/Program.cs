@@ -154,6 +154,8 @@ app.MapControllers();
 
 app.UseExceptionHandler(options => { });
 
+app.UseMigration();
+
 app.MapHub<ApartmentChatHub>("/hubs/apartment/chat");
 
 app.Run();
