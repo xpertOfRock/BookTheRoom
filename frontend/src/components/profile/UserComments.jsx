@@ -105,7 +105,11 @@ const UserComments = ({ commentFilter, setCommentFilter, comments, formatDate })
               colorScheme="purple"          
               variant="outline"
               disabled={commentFilter.page <= 1}
-              onClick={() => setCommentFilter({ ...commentFilter, page: commentFilter.page - 1 })}
+              onClick={() => {
+                if (commentFilter.page > 1) {
+                  setCommentFilter({ ...commentFilter, page: commentFilter.page - 1 });
+                }
+              }}
             >
               Prev
             </Button>

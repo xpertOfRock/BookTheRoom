@@ -1,5 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Box, Flex } from '@chakra-ui/react';
+
 import CreateHotelForm from './components/hotel/CreateHotelForm';
 import UpdateHotelForm from './components/hotel/UpdateHotelForm';
 import Hotels from './pages/Hotels/Hotels';
@@ -19,42 +21,48 @@ import Checkout from './pages/Checkout/Checkout';
 import Success from './components/checkout/Success';
 import Profile from './pages/Profile/Profile';
 import CreateApartmentForm from './components/apartment/CreateApartmentForm';
-
+import Footer from './components/Footer';
 
 function App() { 
   return (
     <Router>
-      <>
-        <header>
+      <Flex direction="column" minHeight="100vh">
+        <Box as="header">
           <Navbar />
-        </header>
+        </Box>
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/hotels" element={<Hotels />} />
-          <Route path="/hotels/:id" element={<HotelDetails />} />
-          <Route path="/admin/hotels/create" element={<CreateHotelForm /> } />
-          <Route path="/admin/hotels/update/:id" element={<UpdateHotelForm /> } />
+        <Box as="main" flex="1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/hotels" element={<Hotels />} />
+            <Route path="/hotels/:id" element={<HotelDetails />} />
+            <Route path="/admin/hotels/create" element={<CreateHotelForm />} />
+            <Route path="/admin/hotels/update/:id" element={<UpdateHotelForm />} />
 
-          <Route path="/hotels/:id/room/:number" element={<RoomDetails />}/>
-          <Route path="/admin/hotels/:id/rooms/create" element={<CreateRoomForm /> } />
-          <Route path="/admin/hotels/:id/rooms/update/:number" element={<UpdateRoomForm /> } />
+            <Route path="/hotels/:id/room/:number" element={<RoomDetails />} />
+            <Route path="/admin/hotels/:id/rooms/create" element={<CreateRoomForm />} />
+            <Route path="/admin/hotels/:id/rooms/update/:number" element={<UpdateRoomForm />} />
 
-          <Route path="/apartments" element={<Apartments />} />
-          <Route path="/apartments/:id" element={<ApartmentDetails />} />
-          <Route path="/apartments/create" element={<CreateApartmentForm /> } />
+            <Route path="/apartments" element={<Apartments />} />
+            <Route path="/apartments/:id" element={<ApartmentDetails />} />
+            <Route path="/apartments/create" element={<CreateApartmentForm />} />
 
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/checkout/success" element={<Success/>} />     
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/checkout/success" element={<Success />} />     
 
-          <Route path="/profile" element={<Profile />}/>
+            <Route path="/profile" element={<Profile />} />
 
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>        
-      </>
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </Box>
+
+        <Box as="footer">
+          <Footer />
+        </Box>
+      </Flex>
     </Router>
   );
 }

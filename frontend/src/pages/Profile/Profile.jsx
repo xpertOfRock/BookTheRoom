@@ -109,7 +109,6 @@ function Profile() {
 
     try {
       const response = await updateUser(data);
-      console.log(response);
       window.location.reload();
     } catch (error) {
       console.error(error);

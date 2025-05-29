@@ -63,19 +63,24 @@ const UserApartments = ({ aptFilter, setAptFilter, apartments, formatDate }) => 
           <Flex justify="space-between" align="center" mt={2}>
             <Button
               size="sm"
-              colorScheme="purple"          
+              colorScheme="purple"
               variant="outline"
               disabled={aptFilter.page <= 1}
-              onClick={() => setAptFilter({ ...aptFilter, page: aptFilter.page - 1 })}
+              onClick={() => {
+                if (aptFilter.page > 1) {
+                  setAptFilter({ ...aptFilter, page: aptFilter.page - 1 });
+                }
+              }}
             >
               Prev
             </Button>
             <Text>Page {aptFilter.page}</Text>
-            <Button 
+            <Button
               size="sm"
-              colorScheme="purple"          
+              colorScheme="purple"
               variant="outline"
-              onClick={() => setAptFilter({ ...aptFilter, page: aptFilter.page + 1 })}>
+              onClick={() => setAptFilter({ ...aptFilter, page: aptFilter.page + 1 })}
+            >
               Next
             </Button>
           </Flex>

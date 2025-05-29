@@ -67,9 +67,6 @@ function Apartments() {
             borderWidth="3px"
             borderColor={borderColor}
           >
-            <Heading size="lg" mb={6} color={textColor}>
-              Filters
-            </Heading>
             <ApartmentFilter filter={filterBy} setFilter={setFilterBy} />
           </Box>
         </Stack>
