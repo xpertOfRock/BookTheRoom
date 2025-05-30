@@ -21,8 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UseCases\Handlers\QueryHandlers\Chat\" />
-    <Folder Include="UseCases\Queries\Chat\" />
     <Folder Include="UseCases\Validators\Order\" />
     <Folder Include="UseCases\Validators\Comment\" />
   </ItemGroup>

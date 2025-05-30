@@ -21,13 +21,13 @@ namespace Application.UseCases.Handlers.CommandHandlers.Chat
                     CreatedAt = DateTime.UtcNow,
                 };
 
-                var result = await unitOfWork.Chats.AddMessage(message);
+                await unitOfWork.Chats.AddMessage(message);
 
                 await unitOfWork.SaveChangesAsync();
 
                 await unitOfWork.CommitAsync();
 
-                return result;
+                return message;
             }
             catch (Exception ex)
             {

@@ -1,11 +1,9 @@
 using Api.Chat.Hubs;
 using Api.Exceptions.ExceptionHandler;
-using Api.Extensions;
 using Application.DependencyInjection;
 using Application.Settings;
 using Infrastructure;
 using Infrastructure.DependencyInjection;
-using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

@@ -93,7 +93,7 @@ function HotelDetails() {
         <Box bg={bg} border={`3px solid ${borderColor}`} rounded="lg" p={6} shadow="md">
           <VStack align="start" spacing={4}>
             <Heading size="xl" color={textColor}>{name}</Heading>
-            <Text fontSize="lg" color={textColor}>{userScore != null ? `User score ${userScore.toFixed(1)} ★` : "Has not been rated"}</Text>
+            <Text fontSize="lg" color={textColor}>{userScore != null && userScore > 0 ? `User score ${userScore.toFixed(1)} ★` : "Has not been rated"}</Text>
             <Text fontSize="md" color={textColor}>{address}</Text>
             <Text fontSize="md" color="gray.600" whiteSpace="pre-line">{description}</Text>
           </VStack>
