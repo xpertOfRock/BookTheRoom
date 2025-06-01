@@ -22,6 +22,7 @@ import Success from './components/checkout/Success';
 import Profile from './pages/Profile/Profile';
 import CreateApartmentForm from './components/apartment/CreateApartmentForm';
 import Footer from './components/Footer';
+import Chat from './components/chat/Chat';
 
 function App() { 
   return (
@@ -46,6 +47,8 @@ function App() {
             <Route path="/apartments" element={<Apartments />} />
             <Route path="/apartments/:id" element={<ApartmentDetails />} />
             <Route path="/apartments/create" element={<CreateApartmentForm />} />
+
+            <Route path="/apartments/:id/chats/:chatId" element={<Chat />} />
 
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/checkout/success" element={<Success />} />     

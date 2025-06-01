@@ -1,11 +1,9 @@
 using Api.Chat.Hubs;
 using Api.Exceptions.ExceptionHandler;
-using Api.Extensions;
 using Application.DependencyInjection;
 using Application.Settings;
 using Infrastructure;
 using Infrastructure.DependencyInjection;
-using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -78,6 +76,21 @@ builder.Services.AddAuthentication(options =>
             ValidIssuer = builder.Configuration["Jwt:Issuer"],       
             ValidAudience = builder.Configuration["Jwt:Audience"],       
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!))  
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chat"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -156,6 +169,6 @@ app.UseExceptionHandler(options => { });
 
 app.UseMigration();
 
-app.MapHub<ApartmentChatHub>("/hubs/apartment/chat");
+app.MapHub<ApartmentChatHub>("/chat");
 
 app.Run();

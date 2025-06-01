@@ -11,6 +11,8 @@ namespace Application.UseCases.Handlers.CommandHandlers.Chat
 
             try
             {
+                var chat = await unitOfWork.Chats.GetChatById(command.ChatId, cancellationToken);
+
                 var message = new ChatMessage
                 {
                     ChatId = command.ChatId,
@@ -21,13 +23,17 @@ namespace Application.UseCases.Handlers.CommandHandlers.Chat
                     CreatedAt = DateTime.UtcNow,
                 };
 
-                var result = await unitOfWork.Chats.AddMessage(message);
+                await unitOfWork.Chats.AddMessage(message);
 
                 await unitOfWork.SaveChangesAsync();
 
                 await unitOfWork.CommitAsync();
 
-                return result;
+                chat.Messages?.Add(message);
+
+                await unitOfWork.Chats.UpdateCache(chat);
+
+                return message;
             }
             catch (Exception ex)
             {

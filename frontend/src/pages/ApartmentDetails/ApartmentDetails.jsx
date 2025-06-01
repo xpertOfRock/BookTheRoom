@@ -1,19 +1,17 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
-
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
-
 import { fetchApartment } from "../../services/apartments";
 import { postComment } from "../../services/comments";
+import { fetchChatByApartmentId, postChat } from "../../services/chats";
 import { getCurrentUserId } from "../../services/auth";
 import ImagesSection from "../../components/shared/ImagesSection";
 import CommentsSection from "../../components/shared/CommentsSection";
-
+import ChatList from "../../components/chat/ChatList";
 import {
   Box,
   Button,
@@ -23,8 +21,8 @@ import {
   VStack,
   Stack,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
-
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -32,7 +30,6 @@ function ApartmentDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const sliderRef = useRef(null);
-
   const [apartment, setApartment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -46,7 +43,10 @@ function ApartmentDetails() {
   const ownerBg = useColorModeValue("purple.100", "purple.900");
   const ownerTextColor = useColorModeValue("purple.800", "purple.200");
 
+  const toast = useToast();
+
   useEffect(() => {
+    
     const load = async () => {
       try {
         const data = await fetchApartment(id);
@@ -56,7 +56,7 @@ function ApartmentDetails() {
       } finally {
         setLoading(false);
       }
-    }
+    };
     load();
   }, [id]);
 
@@ -64,6 +64,67 @@ function ApartmentDetails() {
     setPhotoIndex(idx);
     setIsLightboxOpen(true);
   };
+
+  const startOrGetChat = async () => {
+    const currentUserId = getCurrentUserId();
+
+    if (!id || !apartment) {
+      console.error("Apartment is null.");
+      return;
+    }
+
+    const existingChat = await fetchChatByApartmentId(id);
+
+    if (!existingChat) {
+      const payload = {
+        userIds: [currentUserId, apartment.ownerId],
+        apartmentId: id,
+      };
+
+      try {
+        const result = await postChat(payload);
+
+        if (result && result.status === 200) {
+          toast({
+            title: "Success",
+            description: "You've created new chat with the owner.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          navigate(`/apartments/${id}/chats/${result.data.id}`);
+        } else if (result && result.status === 401) {
+          toast({
+            title: "Unauthorized",
+            description: "Required authorization.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: `Unexpected status code: ${result ? result.status : "no response"}`,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Error!",
+          description: "An error occurred while creating the chat.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        console.error(error);
+      }
+    } else {
+      navigate(`/apartments/${id}/chats/${existingChat.id}`);
+    }
+  };
+
 
   const addComment = async ({ description, propertyId, propertyType, userScore }) => {
     try {
@@ -74,7 +135,7 @@ function ApartmentDetails() {
       console.error(err);
     }
   };
-  
+
   const sliderSettings = {
     dots: true,
     infinite: true,
@@ -88,7 +149,7 @@ function ApartmentDetails() {
   if (!apartment) return <Text textAlign="center" py={20} color={textColor}>Apartment not found.</Text>;
 
   const slides = apartment.images.map((src) => ({ src }));
-  const isOwner = apartment.owner === currentUserId;
+  const isOwner = apartment.ownerId === currentUserId;
 
   return (
     <Box maxW="7xl" mx="auto" px={{ base: 4, md: 8 }} py={8}>
@@ -162,7 +223,7 @@ function ApartmentDetails() {
         >
           <Heading size="md" color={textColor}>{apartment.title}</Heading>
           <Text fontWeight="semibold" color="purple.600">
-            {apartment.userScore != null ? `Rating: ${apartment.userScore.toFixed(1)} ★` : "Not rated yet"}
+            {apartment.userScore != null && apartment.userScore > 0 ? `Rating: ${apartment.userScore.toFixed(1)} ★` : "Not rated yet"}
           </Text>
           <Text color={textColor}>{apartment.address}</Text>
           <Text color="gray.700" fontSize="md" whiteSpace="pre-line">
@@ -186,7 +247,7 @@ function ApartmentDetails() {
               <Text>
                 <strong>Owner:</strong> {apartment.owner} {isOwner && (
                   <Box as="span" ml={2} px={2} py={0.5} bg={ownerBg} color={ownerTextColor} rounded="md" fontWeight="bold" fontSize="xs">
-                    (you)
+                    You
                   </Box>
                 )}
               </Text>
@@ -197,26 +258,25 @@ function ApartmentDetails() {
             </Stack>
           </Box>
 
-          <Button
-            colorScheme="purple"
-            variant="outline"
-            alignSelf="stretch"
-            size="md"
-            onClick={() => alert("Start chatting clicked")}
-          >
-            Start chatting
-          </Button>
+          {!isOwner  ? (
+            <Button
+              colorScheme="purple"
+              alignSelf="stretch"
+              size="md"
+              onClick={startOrGetChat}
+            >
+              Chat
+            </Button>
+          ) : null}
         </VStack>
       </Grid>
 
-      <Grid
-        templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
-        gap={8}
-      >
+      <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={8}>
         <Box>
           <ImagesSection images={apartment.images} onImageClick={handleImageClick} />
+          {isOwner ? <ChatList chats={apartment.chats || []} /> : null}
+          
         </Box>
-
         <Box>
           <CommentsSection
             property={apartment}

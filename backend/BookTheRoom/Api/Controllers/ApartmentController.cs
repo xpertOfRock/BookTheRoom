@@ -114,6 +114,7 @@ namespace Api.Controllers
                 apartment.Id,
                 apartment.Title,
                 apartment.Description,
+                apartment.OwnerId,
                 apartment.OwnerName,
                 apartment.Email,
                 apartment.PhoneNumber,

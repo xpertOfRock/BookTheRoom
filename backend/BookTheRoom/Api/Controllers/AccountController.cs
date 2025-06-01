@@ -2,11 +2,13 @@
 using Api.Contracts.Token;
 using Application.UseCases.Commands.Apartment;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Api.Controllers
 {
@@ -36,6 +38,20 @@ namespace Api.Controllers
             _photoService = photoService;
             _contextAccessor = contextAccessor;
         }
+        [HttpGet("{userId}")]
+        [Authorize]
+        [EnableRateLimiting("SlidingGet")]
+        public async Task<IActionResult> GetUsersById(string userId)
+        {
+            var requestingUser = _contextAccessor.HttpContext!.User.GetUserId();
+
+            if (requestingUser is null) return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            return Ok(user);
+        }
+
         [HttpPut("Edit")]
         [Authorize]
         [EnableRateLimiting("SlidingModify")]

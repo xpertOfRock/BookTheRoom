@@ -5,6 +5,7 @@
         int Id,
         string Title,
         string Description,
+        string OwnerId,
         string Owner,
         string Email,
         string PhoneNumber,

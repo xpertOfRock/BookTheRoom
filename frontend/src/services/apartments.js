@@ -1,7 +1,6 @@
 import axios from "axios"
 import { getCurrentToken } from "./auth";
 const API_URL = "https://localhost:6061/api/apartment";
-const HUB_URL = "https://localhost:6061/hubs/apartment/chat";
 
 export const fetchApartments = async (filter) => {
   try {
