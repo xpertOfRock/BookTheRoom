@@ -21,11 +21,12 @@ export const postChat = async (data) => {
 export const fetchChatByApartmentId = async (apartmentId) => {  
   try {
     const token = getCurrentToken();
-    const response = await axios.get(`${API_URL}/apartment-chats/${apartmentId}`, {}, {
+    const response = await axios.get(`${API_URL}/apartment-chats/${apartmentId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
     });  
+    console.log(response);
     return response.data;
   } catch (e) {
     console.error(e);
@@ -35,7 +36,7 @@ export const fetchChatByApartmentId = async (apartmentId) => {
 export const fetchChatById = async (id) => {  
   try {
     const token = getCurrentToken();
-    const response = await axios.get(`${API_URL}/${id}`, {}, {
+    const response = await axios.get(`${API_URL}/${id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

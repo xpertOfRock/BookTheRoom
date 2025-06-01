@@ -49,6 +49,23 @@ export const isAuthorized = () => {
   return Boolean(user);
 };
 
+export const getUserById = async (userId) => {
+  try{
+    console.log(userId);
+    const token = getCurrentToken();
+    const response = await axios.get(`${API_URL}/${userId}`,
+      {
+        headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export const login = async (emailOrUsername, password) => {
   try {
     const response = await axios.post(`${API_URL}/Login`, { emailOrUsername, password });

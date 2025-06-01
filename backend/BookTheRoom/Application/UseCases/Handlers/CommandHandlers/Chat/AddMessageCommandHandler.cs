@@ -11,6 +11,8 @@ namespace Application.UseCases.Handlers.CommandHandlers.Chat
 
             try
             {
+                var chat = await unitOfWork.Chats.GetChatById(command.ChatId, cancellationToken);
+
                 var message = new ChatMessage
                 {
                     ChatId = command.ChatId,
@@ -26,6 +28,10 @@ namespace Application.UseCases.Handlers.CommandHandlers.Chat
                 await unitOfWork.SaveChangesAsync();
 
                 await unitOfWork.CommitAsync();
+
+                chat.Messages?.Add(message);
+
+                await unitOfWork.Chats.UpdateCache(chat);
 
                 return message;
             }

@@ -46,6 +46,7 @@ function ApartmentDetails() {
   const toast = useToast();
 
   useEffect(() => {
+    
     const load = async () => {
       try {
         const data = await fetchApartment(id);
@@ -65,67 +66,64 @@ function ApartmentDetails() {
   };
 
   const startOrGetChat = async () => {
-  const currentUserId = getCurrentUserId();
+    const currentUserId = getCurrentUserId();
 
-  if (!id || !apartment) {
-    console.error("Apartment id или apartment объект отсутствует");
-    return;
-  }
-
-  const existingChat = await fetchChatByApartmentId(id);
-
-  if (!existingChat) {
-    const payload = {
-      userIds: [currentUserId, apartment.ownerId],
-      apartmentId: id,
-    };
-
-    try {
-      const result = await postChat(payload);
-
-      if (result && result.status === 200) {
-        toast({
-          title: "Success",
-          description: "You've created new chat with the owner.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-
-        navigate(`/apartments/${id}/chats/${result.data.id}`);
-
-      } else if (result && result.status === 401) {
-        toast({
-          title: "Unauthorized",
-          description: "Required authorization.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-
-      } else {
-        toast({
-          title: "Error",
-          description: `Unexpected status code: ${result ? result.status : "no response"}`,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error!",
-        description: "An error occurred while creating the chat.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      console.error(error);
+    if (!id || !apartment) {
+      console.error("Apartment is null.");
+      return;
     }
-  } else {
-    navigate(`/apartments/${id}/chats/${existingChat.id}`);
-  }
-};
+
+    const existingChat = await fetchChatByApartmentId(id);
+
+    if (!existingChat) {
+      const payload = {
+        userIds: [currentUserId, apartment.ownerId],
+        apartmentId: id,
+      };
+
+      try {
+        const result = await postChat(payload);
+
+        if (result && result.status === 200) {
+          toast({
+            title: "Success",
+            description: "You've created new chat with the owner.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          navigate(`/apartments/${id}/chats/${result.data.id}`);
+        } else if (result && result.status === 401) {
+          toast({
+            title: "Unauthorized",
+            description: "Required authorization.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: `Unexpected status code: ${result ? result.status : "no response"}`,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Error!",
+          description: "An error occurred while creating the chat.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        console.error(error);
+      }
+    } else {
+      navigate(`/apartments/${id}/chats/${existingChat.id}`);
+    }
+  };
 
 
   const addComment = async ({ description, propertyId, propertyType, userScore }) => {
@@ -249,7 +247,7 @@ function ApartmentDetails() {
               <Text>
                 <strong>Owner:</strong> {apartment.owner} {isOwner && (
                   <Box as="span" ml={2} px={2} py={0.5} bg={ownerBg} color={ownerTextColor} rounded="md" fontWeight="bold" fontSize="xs">
-                    (you)
+                    You
                   </Box>
                 )}
               </Text>
@@ -260,9 +258,7 @@ function ApartmentDetails() {
             </Stack>
           </Box>
 
-          {isOwner ? (
-            <ChatList chats={apartment.chats} />
-          ) : (
+          {!isOwner  ? (
             <Button
               colorScheme="purple"
               alignSelf="stretch"
@@ -271,13 +267,15 @@ function ApartmentDetails() {
             >
               Chat
             </Button>
-          )}
+          ) : null}
         </VStack>
       </Grid>
 
       <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={8}>
         <Box>
           <ImagesSection images={apartment.images} onImageClick={handleImageClick} />
+          {isOwner ? <ChatList chats={apartment.chats || []} /> : null}
+          
         </Box>
         <Box>
           <CommentsSection

@@ -7,7 +7,7 @@ namespace Infrastructure.Data.EntityConfigurations
         public void Configure(EntityTypeBuilder<ChatMessage> builder)
         {
             builder
-                .ToTable("ChatMessages");
+                .ToTable("ChatMessages");           
 
             builder
                 .HasKey(x => x.Id);

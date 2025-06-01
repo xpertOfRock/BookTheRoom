@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  Button,
-  Input,
-  HStack,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Button, Input, HStack, useColorModeValue } from "@chakra-ui/react";
 
 function CreateMessageForm({ onSend, isSending }) {
   const [text, setText] = useState("");
@@ -26,7 +21,7 @@ function CreateMessageForm({ onSend, isSending }) {
   return (
     <HStack mt={4} spacing={2}>
       <Input
-        placeholder="Введите сообщение..."
+        placeholder="Enter your message..."
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
@@ -34,12 +29,7 @@ function CreateMessageForm({ onSend, isSending }) {
         _focus={{ borderColor: "purple.500" }}
         isDisabled={isSending}
       />
-      <Button
-        colorScheme="purple"
-        onClick={handleSend}
-        isLoading={isSending}
-        loadingText="Отправка"
-      >
+      <Button colorScheme="purple" onClick={handleSend} isLoading={isSending} loadingText="Sending">
         Send
       </Button>
     </HStack>

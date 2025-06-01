@@ -10,11 +10,10 @@ namespace Api.Chat.Hubs
     {
         public async Task JoinChat(UserConnection connection)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, connection.ChatId);
 
-            await Clients
-                .Group(connection.ChatId)
-                .RecieveMessage("System", $"{connection.UserName} has joined the chat.");
+            var username = Context.User!.GetUsername() ?? throw new ArgumentNullException();
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, connection.ChatId);
         }
  
         public async Task SendMessage(SendMessageRequest request)
@@ -25,11 +24,11 @@ namespace Api.Chat.Hubs
 
             Guid.TryParse(request.ChatId, out var resultId);
 
-            var message = await sender.Send(new AddMessageCommand(resultId, Context.ConnectionId, userId, username, request.Message));            
+            var message = await sender.Send(new AddMessageCommand(resultId, Context.ConnectionId, userId, username, request.Message.Trim()));            
 
             await Clients
                 .Group(request.ChatId)
-                .RecieveMessage(username, request.Message);
+                .ReceiveMessage(message.Id ,userId, username, request.Message.Trim(), message.CreatedAt, Context.ConnectionId);
         }
     }
 }

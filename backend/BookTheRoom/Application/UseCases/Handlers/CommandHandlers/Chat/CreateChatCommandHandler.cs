@@ -9,12 +9,19 @@ namespace Application.UseCases.Handlers.CommandHandlers.Chat
             await unitOfWork.BeginTransactionAsync();
 
             try
-            {
+            {                
                 var result = await unitOfWork.Chats.CreateChat(request.UsersId, request.ApartmentId);
 
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 await unitOfWork.CommitAsync();
+                
+                if(request.ApartmentId is not null)
+                {
+                    var apartment = await unitOfWork.Apartments.GetById((int)request.ApartmentId);
+
+                    await unitOfWork.Apartments.UpdateCache(apartment);
+                }
 
                 return result;
             }

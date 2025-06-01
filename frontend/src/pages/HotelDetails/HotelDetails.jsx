@@ -45,8 +45,18 @@ function HotelDetails() {
   const textColor = useColorModeValue("gray.800", "gray.200");
 
   useEffect(() => {
-    (async () => {
-      try { setHotel(await fetchHotel(id)); } catch { } finally { setLoading(false); }
+    (
+      async () => {
+      try { 
+        setHotel(
+          await fetchHotel(id)
+        ); 
+      }catch(error) { 
+        console.log(error);
+      } 
+      finally { 
+        setLoading(false); 
+      }
     })();
   }, [id]);
 
@@ -102,8 +112,27 @@ function HotelDetails() {
 
       <ImagesSection images={images} onImageClick={handleImageClick} />
       <Grid templateColumns={{ base: "1fr", lg: "2fr 1fr" }} gap={8} mt={6}>
-        <Box><RoomsSection hotelId={hotel.id} filter={filter} setFilter={setFilter} onApplyFilters={handleFilterApply} rooms={rooms} hotelName={name} checkIn={redirectCheckIn} checkOut={redirectCheckOut} /></Box>
-        <Box><CommentSection property={hotel} hasRatedComments={hasRatedComments} currentUserId={currentUserId} onAddComment={addComment} propertyType={1} /></Box>
+        <Box>
+          <RoomsSection
+           hotelId={hotel.id}
+            filter={filter} 
+            setFilter={setFilter} 
+            onApplyFilters={handleFilterApply} 
+            rooms={rooms} 
+            hotelName={name} 
+            checkIn={redirectCheckIn} 
+            checkOut={redirectCheckOut} 
+          />
+          </Box>
+        <Box>
+          <CommentSection
+            property={hotel} 
+            hasRatedComments={hasRatedComments} 
+            currentUserId={currentUserId} 
+            onAddComment={addComment} 
+            propertyType={1} 
+          />
+          </Box>
       </Grid>
       <Lightbox open={isLightboxOpen} close={() => setIsLightboxOpen(false)} slides={slides} index={photoIndex} />
     </Box>

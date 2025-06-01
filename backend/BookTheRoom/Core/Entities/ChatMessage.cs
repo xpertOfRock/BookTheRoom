@@ -4,7 +4,7 @@ namespace Core.Entities
 {
     public class ChatMessage : IEntity
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public Guid ChatId { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
