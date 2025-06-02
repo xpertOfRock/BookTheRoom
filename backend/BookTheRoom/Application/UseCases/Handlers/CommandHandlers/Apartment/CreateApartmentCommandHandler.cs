@@ -39,10 +39,10 @@ namespace Application.UseCases.Handlers.CommandHandlers.Apartment
 
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await unitOfWork.RollbackAsync();
-                throw;
+                throw new InvalidOperationException("An error occurred while processing the apartment.", ex);
             }
         }
     }

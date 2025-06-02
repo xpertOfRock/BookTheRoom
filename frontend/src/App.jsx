@@ -11,7 +11,7 @@ import CreateRoomForm from './components/rooms/CreateRoomForm';
 import UpdateRoomForm from './components/rooms/UpdateRoomForm';
 import Navbar from './components/Navbar'; 
 import Home from './components/Home'; 
-import Apartments from './pages/Apartment/Apartments';
+import Apartments from './pages/Apartments/Apartments';
 import ApartmentDetails from './pages/ApartmentDetails/ApartmentDetails';
 import FAQ from './components/FAQ';
 import Support from './components/Support';
@@ -22,7 +22,7 @@ import Success from './components/checkout/Success';
 import Profile from './pages/Profile/Profile';
 import CreateApartmentForm from './components/apartment/CreateApartmentForm';
 import Footer from './components/Footer';
-import Chat from './components/chat/Chat';
+import Chat from './pages/Chat/Chat';
 
 function App() { 
   return (

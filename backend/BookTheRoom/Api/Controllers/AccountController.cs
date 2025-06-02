@@ -1,6 +1,7 @@
 ﻿using Api.Contracts.Account;
 using Api.Contracts.Token;
 using Application.UseCases.Commands.Apartment;
+using Application.UseCases.Commands.Comment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -100,7 +101,7 @@ namespace Api.Controllers
 
             var fullName = $"{user.FirstName} {user.LastName}".Trim();
 
-            var updateUserDataInApartmentsRequest = new UpdateUserDataInUserApartmentsRequest(fullName, user.Email, user.PhoneNumber);       
+            var updateUserDataInApartmentsRequest = new UpdateUserDataInUserApartmentsRequest(fullName, user.Email, user.PhoneNumber);
             
             var updateUserApartmentsResult = await _sender.Send(new UpdateUserDataInUserApartmentsCommand(userId, updateUserDataInApartmentsRequest));
 

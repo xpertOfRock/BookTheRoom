@@ -51,7 +51,6 @@ export const isAuthorized = () => {
 
 export const getUserById = async (userId) => {
   try{
-    console.log(userId);
     const token = getCurrentToken();
     const response = await axios.get(`${API_URL}/${userId}`,
       {
@@ -184,7 +183,6 @@ export const getCurrentUserId = () => {
   const userCookie = Cookies.get('user');
 
     if (!userCookie) {
-        console.error("Cookie was not found.");
         return null;
     }
 

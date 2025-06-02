@@ -9,6 +9,8 @@ namespace Core.Contracts
         string Description,
         decimal Price,
         Address Address,
-        List<string>? Images
+        List<string>? Images,
+        string? Telegram,
+        string? Instagram
     );
 }

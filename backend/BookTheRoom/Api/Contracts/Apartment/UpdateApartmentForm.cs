@@ -10,6 +10,8 @@
         string City,
         string Street,
         string PostalCode,
-        List<IFormFile>? Images
+        List<IFormFile>? Images,
+        string? Telegram,
+        string? Instagram
     );
 }

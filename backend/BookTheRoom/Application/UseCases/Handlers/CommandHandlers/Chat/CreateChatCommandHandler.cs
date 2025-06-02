@@ -20,6 +20,8 @@ namespace Application.UseCases.Handlers.CommandHandlers.Chat
                 {
                     var apartment = await unitOfWork.Apartments.GetById((int)request.ApartmentId);
 
+                    apartment.Chats?.Add(result);
+
                     await unitOfWork.Apartments.UpdateCache(apartment);
                 }
 

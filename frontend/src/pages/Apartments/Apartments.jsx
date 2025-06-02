@@ -7,10 +7,12 @@ import {
   Box,
   Heading,
   SimpleGrid,
-  VStack,
   Stack,
+  Flex,
+  Button,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 function Apartments() {
   const [apartments, setApartments] = useState([]);
@@ -20,12 +22,13 @@ function Apartments() {
     sortOrder: "desc",
     itemsCount: 15,
   });
-
   const [filterBy, setFilterBy] = useState({
     countries: [],
     minPrice: undefined,
     maxPrice: undefined,
   });
+
+  const navigate = useNavigate();
 
   const bg = useColorModeValue("purple.50", "purple.900");
   const borderColor = useColorModeValue("purple.300", "purple.600");
@@ -98,9 +101,18 @@ function Apartments() {
             borderWidth="3px"
             borderColor={borderColor}
           >
-            <Heading size="lg" mb={4} color={textColor}>
-              Apartments
-            </Heading>
+            <Flex justify="space-between" align="center" mb={4}>
+              <Heading size="lg" color={textColor}>
+                Apartments
+              </Heading>
+              <Button
+                colorScheme="purple"
+                onClick={() => navigate("/apartments/create")}
+              >
+                Create
+              </Button>
+            </Flex>
+
             {apartments.length > 0 ? (
               <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
                 {apartments

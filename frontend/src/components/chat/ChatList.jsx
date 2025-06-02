@@ -12,7 +12,7 @@ function ChatList({ chats }) {
       <VStack align="start" spacing={2}>
         {chats.map((chat) => {
           return (
-            <ChatCard chat={chat} />
+            <ChatCard key={chat.id} chat={chat} />
           );
         })}
       </VStack>

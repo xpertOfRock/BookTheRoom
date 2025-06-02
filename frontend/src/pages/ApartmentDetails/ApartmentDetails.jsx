@@ -8,7 +8,7 @@ import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons
 import { fetchApartment } from "../../services/apartments";
 import { postComment } from "../../services/comments";
 import { fetchChatByApartmentId, postChat } from "../../services/chats";
-import { getCurrentUserId } from "../../services/auth";
+import { getCurrentUserId, isAuthorized } from "../../services/auth";
 import ImagesSection from "../../components/shared/ImagesSection";
 import CommentsSection from "../../components/shared/CommentsSection";
 import ChatList from "../../components/chat/ChatList";
@@ -22,6 +22,7 @@ import {
   Stack,
   useColorModeValue,
   useToast,
+  Flex
 } from "@chakra-ui/react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -34,6 +35,7 @@ function ApartmentDetails() {
   const [loading, setLoading] = useState(true);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [authorized, setAuthorized] = useState(null);
   const currentUserId = getCurrentUserId();
 
   const bg = useColorModeValue("white", "gray.700");
@@ -44,9 +46,10 @@ function ApartmentDetails() {
   const ownerTextColor = useColorModeValue("purple.800", "purple.200");
 
   const toast = useToast();
-
   useEffect(() => {
-    
+    const result = isAuthorized();
+    setAuthorized(result);
+
     const load = async () => {
       try {
         const data = await fetchApartment(id);
@@ -150,13 +153,16 @@ function ApartmentDetails() {
 
   const slides = apartment.images.map((src) => ({ src }));
   const isOwner = apartment.ownerId === currentUserId;
+ 
 
   return (
     <Box maxW="7xl" mx="auto" px={{ base: 4, md: 8 }} py={8}>
-      <VStack spacing={2} mb={8}>
-        <Heading size="lg" color={textColor}>{apartment.title}</Heading>
-        <Heading size="md" color={textColor}>{apartment.name}</Heading>
-      </VStack>
+      <Flex mb={8} align="center" position="relative" minH="48px">
+        <Button position="absolute" left={0} colorScheme="purple" leftIcon={<FontAwesomeIcon icon={faChevronLeft} />} onClick={() => navigate("/apartments")} size="md" _hover={{ bg: "purple.600" }}>Back</Button>
+        <Box mx="auto">
+          <Heading size="lg" color={textColor}>{apartment.title}</Heading>
+        </Box>
+      </Flex>
 
       <Grid
         templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
@@ -258,7 +264,7 @@ function ApartmentDetails() {
             </Stack>
           </Box>
 
-          {!isOwner  ? (
+          {(!isOwner && authorized) || authorized ? (
             <Button
               colorScheme="purple"
               alignSelf="stretch"

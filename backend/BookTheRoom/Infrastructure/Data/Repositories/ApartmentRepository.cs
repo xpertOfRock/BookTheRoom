@@ -147,7 +147,6 @@
         public async Task<Apartment> GetById(int id, CancellationToken token = default)
         {
             string key = $"apartment-{id}";
-            if (key == $"apartment-2") await distributedCache.RemoveAsync(key, token);
             string? cachedApartment = await distributedCache.GetStringAsync(key, token);
 
             Apartment? apartment;

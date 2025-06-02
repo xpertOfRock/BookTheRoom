@@ -1,11 +1,8 @@
 ﻿using Api.Contracts.Apartment;
 using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Queries.Apartment;
-using Core.Abstractions;
-using Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Controllers
 {
@@ -262,7 +259,9 @@ namespace Api.Controllers
                     form.PostalCode
                 ),
                 
-                images
+                images,
+                form.Telegram,
+                form.Instagram
             );
 
             var result = await _sender.Send(new UpdateApartmentCommand(id, thisUserId, request));

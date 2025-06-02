@@ -1,6 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import CreateMessageForm from "./CreateMessageForm";
-import Message from "./Message";
 import {
   Flex,
   Box,
@@ -12,20 +10,24 @@ import {
   useColorModeValue,
   useToast,
   Divider,
+  Button,               // <-- импортируем Button
 } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { HubConnectionBuilder } from "@microsoft/signalr";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";    // <-- импорт для иконки
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";   // <-- импорт иконки
 import { fetchChatByApartmentId, fetchChatById } from "../../services/chats";
 import { fetchApartment } from "../../services/apartments";
-import { HubConnectionBuilder } from "@microsoft/signalr";
 import {
   getCurrentToken,
   getCurrentUserId,
   getCurrentUsername,
 } from "../../services/auth";
+import Message from "../../components/chat/Message";
+import CreateMessageForm from "../../components/chat/CreateMessageForm";
 
 function Chat() {
   const { id: apartmentId, chatId: paramChatId } = useParams();
-
   const [apartment, setApartment] = useState(null);
   const [chatId, setChatId] = useState(paramChatId || null);
   const [messages, setMessages] = useState([]);
@@ -34,6 +36,7 @@ function Chat() {
   const [loadingApartment, setLoadingApartment] = useState(false);
   const [sending, setSending] = useState(false);
 
+  const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const toast = useToast();
 
@@ -108,7 +111,8 @@ function Chat() {
       .build();
 
     conn.on(
-      "ReceiveMessage", (id, userId, username, messageText, createdAt, connectionId) => {
+      "ReceiveMessage",
+      (id, userId, username, messageText, createdAt, connectionId) => {
         const newMsg = {
           id: id,
           userId: userId,
@@ -124,14 +128,14 @@ function Chat() {
     const startConnection = async () => {
       try {
         await conn.start();
-      
+
         await conn.invoke("JoinChat", {
           username: getCurrentUsername(),
           chatId,
         });
 
         setConnection(conn);
-      } catch (error){
+      } catch (error) {
         console.log(error);
       }
     };
@@ -200,6 +204,7 @@ function Chat() {
       >
         {apartment && (
           <Box
+            position="relative"
             w={{ base: "100%", md: "40%" }}
             h={{ base: "auto", md: "100%" }}
             overflowY="auto"
@@ -215,10 +220,24 @@ function Chat() {
               },
             }}
           >
-            <Stack spacing={4}>
+            <Button
+              position="absolute"
+              top="16px"
+              left="16px"
+              colorScheme="purple"
+              leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}
+              size="md"
+              onClick={() => navigate(`/apartments/${apartmentId}`)}
+              _hover={{ bg: "purple.600" }}
+            >
+              Back
+            </Button>
+
+            <Stack spacing={4} mt="40px">
               <Heading size="lg" textAlign="center">
                 {apartment.title}
               </Heading>
+
               <Text fontSize="sm" color="gray.500">
                 {apartment.description}
               </Text>
