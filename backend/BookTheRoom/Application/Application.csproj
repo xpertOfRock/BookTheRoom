@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UseCases\Validators\Order\" />
     <Folder Include="UseCases\Validators\Comment\" />
   </ItemGroup>
 
