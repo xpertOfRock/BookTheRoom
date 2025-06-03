@@ -32,13 +32,14 @@ namespace Application.UseCases.Validators.Apartment
             RuleFor(x => x.Request.Price)
                 .GreaterThan(0)
                     .WithMessage("Price must be greater than 0.");
+
             RuleFor(x => x.Request.Telegram)
-                .Must(x => x[0].ToString() is "@")
+                .Must(s => string.IsNullOrEmpty(s) || s.StartsWith("@"))
                     .WithMessage("Enter valid telegram username.");
-                
+
             RuleFor(x => x.Request.Instagram)
-                .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-                    .WithMessage("Instagram URL must be a valid URL.");
+                .Must(s => string.IsNullOrEmpty(s) || s.StartsWith("@"))
+                    .WithMessage("Enter valid Instagram username.");
 
             RuleFor(x => x.Email)
                 .EmailAddress()

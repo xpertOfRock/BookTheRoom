@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Flex,
@@ -11,16 +11,23 @@ import {
   NumberInputField,
   VStack,
   Heading,
-  Text,
   useToast,
   useColorModeValue,
   Stack,
+  Text,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
-import { postApartment } from '../../services/apartments';
+import { useParams, useNavigate } from 'react-router-dom';
+import { fetchApartment, putApartment } from '../../services/apartments';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { getCurrentUserId } from '../../services/auth';
 import ImagesSection from '../shared/ImagesSection';
 
-function CreateApartmentForm() {
+function UpdateApartmentForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const toast = useToast();
+
   const [form, setForm] = useState({
     Title: '',
     Description: '',
@@ -30,26 +37,56 @@ function CreateApartmentForm() {
     City: '',
     Street: '',
     PostalCode: '',
-    Images: [],
     Telegram: '',
     Instagram: '',
   });
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
-  const toast = useToast();
+
+  useEffect(() => {
+    const loadApartment = async () => {
+      try {
+        const data = await fetchApartment(id);
+        if (getCurrentUserId() !== data.ownerId) {
+          navigate(`/apartments/${id}`);
+          return;
+        }
+        let parsedAddress = {};
+        if (data.jsonAddress) {
+          try {
+            parsedAddress = JSON.parse(data.jsonAddress.trim());
+          } catch {}
+        }
+        setForm({
+          Title: data.title || '',
+          Description: data.description || '',
+          PriceForNight: data.price || 0,
+          Country: parsedAddress.Country || '',
+          State: parsedAddress.State || '',
+          City: parsedAddress.City || '',
+          Street: parsedAddress.Street || '',
+          PostalCode: parsedAddress.PostalCode || '',
+          Telegram: data.telegram || '',
+          Instagram: data.instagram || '',
+        });
+        setImagePreviews(Array.isArray(data.images) ? data.images : []);
+      } catch {
+        toast({
+          title: 'Error',
+          description: 'Failed to load apartment data.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    };
+    loadApartment();
+  }, [id, navigate, toast]);
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === 'file') {
-      const fileList = files ? Array.from(files) : [];
-      setForm((prev) => ({ ...prev, Images: fileList }));
-
-      const previews = fileList.map((file) => URL.createObjectURL(file));
-      setImagePreviews(previews);
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
-    }
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePriceChange = (valueString) => {
@@ -57,90 +94,93 @@ function CreateApartmentForm() {
     setForm((prev) => ({ ...prev, PriceForNight: value }));
   };
 
+  const handleFileChange = (e) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    setSelectedFiles(files);
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews(previews);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     const formData = new FormData();
-
-    [
-      'Title',
-      'Description',
-      'Country',
-      'State',
-      'City',
-      'Street',
-      'PostalCode',
-      'Telegram',
-      'Instagram',
-    ].forEach((field) => {
-      if (form[field] !== undefined) {
-        formData.append(field, form[field]);
-      }
+    formData.append('Title', form.Title);
+    formData.append('Description', form.Description);
+    formData.append('Price', form.PriceForNight.toString());
+    formData.append('Country', form.Country);
+    formData.append('State', form.State);
+    formData.append('City', form.City);
+    formData.append('Street', form.Street);
+    formData.append('PostalCode', form.PostalCode);
+    formData.append('Telegram', form.Telegram);
+    formData.append('Instagram', form.Instagram);
+    selectedFiles.forEach((file) => {
+      formData.append('Images', file);
     });
-
-    formData.append('PriceForNight', form.PriceForNight.toString());
-    form.Images.forEach((file) => formData.append('Images', file));
-
     try {
-      const response = await postApartment(formData);
-      if (response === 200) {
+      const status = await putApartment(id, formData);
+      if (status === 200) {
         toast({
           title: 'Success',
-          description: 'Apartment was created successfully.',
+          description: 'Apartment was successfully updated.',
           status: 'success',
           duration: 5000,
           isClosable: true,
         });
-      } else if (response === 400) {
+        navigate(`/apartments/${id}`);
+      } else if (status === 400) {
         toast({
           title: 'Error',
-          description: 'An error has occurred. Check the input data.',
+          description: 'Invalid data provided. Check the input data.',
           status: 'error',
           duration: 5000,
           isClosable: true,
         });
         setIsSubmitting(false);
-        return;
-      } else if (response === 401) {
+      } else if (status === 401) {
         toast({
           title: 'Unauthorized',
-          description: 'Required authorization.',
+          description: 'Please sign in to continue.',
           status: 'error',
           duration: 5000,
           isClosable: true,
         });
         setIsSubmitting(false);
-        return;
-      } else if (response === 403) {
+      } else if (status === 403) {
         toast({
           title: 'Forbidden',
-          description: 'You cannot add a new record.',
+          description: 'You do not have permission for this action.',
           status: 'error',
           duration: 5000,
           isClosable: true,
         });
         setIsSubmitting(false);
-        return;
       } else {
         toast({
           title: 'Error',
-          description: 'An error occurred while creating new apartment. Check the input data.',
+          description: 'An unexpected error occurred. Check the input data.',
           status: 'error',
           duration: 5000,
           isClosable: true,
         });
         setIsSubmitting(false);
-        return;
       }
-      navigate('/apartments');
-    } catch (error) {
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to update apartment.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
       setIsSubmitting(false);
     }
   };
 
-  const previewBg = useColorModeValue('gray.50', 'gray.700');
   const formBg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const previewBg = useColorModeValue('gray.50', 'gray.700');
 
   return (
     <Flex
@@ -149,6 +189,7 @@ function CreateApartmentForm() {
       mx="auto"
       p={{ base: 4, md: 8 }}
       gap={8}
+      position="relative"
     >
       <Box
         as="form"
@@ -161,12 +202,25 @@ function CreateApartmentForm() {
         border="1px solid"
         borderColor={borderColor}
       >
+        <Flex align="center" justify="center" position="relative" mb={4}>
+          <Button
+            position="absolute"
+            left={0}
+            colorScheme="purple"
+            leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}
+            onClick={() => navigate(`/apartments/${id}`)}
+            size="md"
+            _hover={{ bg: 'purple.600' }}
+          >
+            Back
+          </Button>
+          <Heading>Edit</Heading>
+        </Flex>
         <VStack spacing={4} align="stretch">
           <FormControl id="Title" isRequired>
             <FormLabel>Title</FormLabel>
             <Input name="Title" value={form.Title} onChange={handleChange} />
           </FormControl>
-
           <FormControl id="Description" isRequired>
             <FormLabel>Description</FormLabel>
             <Textarea
@@ -175,9 +229,8 @@ function CreateApartmentForm() {
               onChange={handleChange}
             />
           </FormControl>
-
           <FormControl id="PriceForNight" isRequired>
-            <FormLabel>Price per Night (in USD)</FormLabel>
+            <FormLabel>Price per Night (USD)</FormLabel>
             <NumberInput
               name="PriceForNight"
               value={form.PriceForNight}
@@ -188,27 +241,30 @@ function CreateApartmentForm() {
               <NumberInputField />
             </NumberInput>
           </FormControl>
-
           <FormControl id="Country" isRequired>
             <FormLabel>Country</FormLabel>
-            <Input name="Country" value={form.Country} onChange={handleChange} />
+            <Input
+              name="Country"
+              value={form.Country}
+              onChange={handleChange}
+            />
           </FormControl>
-
           <FormControl id="State">
             <FormLabel>State</FormLabel>
             <Input name="State" value={form.State} onChange={handleChange} />
           </FormControl>
-
           <FormControl id="City" isRequired>
             <FormLabel>City</FormLabel>
             <Input name="City" value={form.City} onChange={handleChange} />
           </FormControl>
-
           <FormControl id="Street" isRequired>
             <FormLabel>Street</FormLabel>
-            <Input name="Street" value={form.Street} onChange={handleChange} />
+            <Input
+              name="Street"
+              value={form.Street}
+              onChange={handleChange}
+            />
           </FormControl>
-
           <FormControl id="PostalCode" isRequired>
             <FormLabel>Postal Code</FormLabel>
             <Input
@@ -217,18 +273,6 @@ function CreateApartmentForm() {
               onChange={handleChange}
             />
           </FormControl>
-
-          <FormControl id="Images">
-            <FormLabel>Images</FormLabel>
-            <Input
-              type="file"
-              name="Images"
-              multiple
-              accept="image/*"
-              onChange={handleChange}
-            />
-          </FormControl>
-
           <FormControl id="Telegram">
             <FormLabel>Telegram</FormLabel>
             <Input
@@ -238,7 +282,6 @@ function CreateApartmentForm() {
               placeholder="@..."
             />
           </FormControl>
-
           <FormControl id="Instagram">
             <FormLabel>Instagram</FormLabel>
             <Input
@@ -248,21 +291,29 @@ function CreateApartmentForm() {
               placeholder="@..."
             />
           </FormControl>
-
+          <FormControl id="Images">
+            <FormLabel>Upload Images</FormLabel>
+            <Input
+              type="file"
+              name="Images"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </FormControl>
           <Button
             colorScheme="purple"
             type="submit"
             size="lg"
             w="full"
             isLoading={isSubmitting}
-            loadingText="Creating"
+            loadingText="Updating"
           >
-            Create
+            Edit
           </Button>
           <Text>You cannot upload more than 20 images</Text>
         </VStack>
       </Box>
-
       <Box
         w={{ base: '100%', lg: '50%' }}
         bg={previewBg}
@@ -275,34 +326,28 @@ function CreateApartmentForm() {
         <Stack spacing={4}>
           <Heading size="lg">{form.Title || 'Apartment Title'}</Heading>
           <Text color="gray.600">
-            {form.City && form.Country
+            {form.Country && form.City
               ? `${form.Country}, ${form.City}`
               : 'Country, City'}
           </Text>
-          <Text>{form.Description || 'Apartment description will appear here.'}</Text>
+          <Text>
+            {form.Description || 'Apartment description will appear here.'}
+          </Text>
           <Text fontWeight="bold" fontSize="xl">
             {form.PriceForNight > 0
               ? `$${form.PriceForNight.toFixed(2)} / night`
               : 'Price per night'}
           </Text>
-
           <Box>
             <Text fontWeight="semibold" mb={1}>
               Address:
             </Text>
             <Text>
-              {[
-                form.Country,
-                form.State,
-                form.City,
-                form.Street,
-                form.PostalCode,
-              ]
+              {[form.Country, form.State, form.City, form.Street, form.PostalCode]
                 .filter((part) => part)
                 .join(', ')}
             </Text>
           </Box>
-
           <ImagesSection images={imagePreviews} onImageClick={() => {}} />
         </Stack>
       </Box>
@@ -310,4 +355,4 @@ function CreateApartmentForm() {
   );
 }
 
-export default CreateApartmentForm;
+export default UpdateApartmentForm;

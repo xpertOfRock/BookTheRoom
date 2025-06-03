@@ -1,6 +1,7 @@
 ﻿using Api.Contracts.Apartment;
 using Application.UseCases.Commands.Apartment;
 using Application.UseCases.Queries.Apartment;
+using Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -118,6 +119,7 @@ namespace Api.Controllers
                 apartment.PriceForNight,
                 apartment.Telegram ?? string.Empty,
                 apartment.Instagram ?? string.Empty,
+                Address.AsJson(apartment.Address),
                 apartment.Address.ToString(),
 
                 apartment.Comments != null && apartment.Comments.Any()
@@ -214,12 +216,14 @@ namespace Api.Controllers
                 return Unauthorized("User has to be authorized before processing this operation.");
             }
 
-            if (form.Images.Any() && form.Images.Count > 20)
+            if (form.Images is not null && form.Images.Any() && form.Images.Count > 20)
             {
                 return BadRequest("You cannot add more than 20 files.");
             }
 
-            var thisUserId = _contextAccessor.HttpContext!.User.GetUserId();
+            var userId = _contextAccessor.HttpContext!.User.GetUserId();
+
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
             var images = new List<string>();
 
@@ -232,17 +236,6 @@ namespace Api.Controllers
                     images.Add(resultForList.Url.ToString());
                 }
             }
-            //string Title,
-            //string Description,
-            //decimal PriceForNight,
-            //string Country,
-            //string State,
-            //string City,
-            //string Street,
-            //string PostalCode,
-            //List< IFormFile > Images,
-            //string? Telegram,
-            //string? Instagram
 
             var request = new UpdateApartmentRequest
             (
@@ -264,19 +257,26 @@ namespace Api.Controllers
                 form.Instagram
             );
 
-            var result = await _sender.Send(new UpdateApartmentCommand(id, thisUserId, request));
+            var result = await _sender.Send(new UpdateApartmentCommand(id, userId, request));
             return !result.IsSuccess ? BadRequest(result) : Ok(result);
         }
 
-        //[HttpDelete("{id}")]
-        //[Authorize(Roles = UserRole.Admin)]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    var result = await _sender.Send(new DeleteApartmentCommand(id));
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (!User.Identity!.IsAuthenticated)
+            {
+                return Unauthorized("User has to be authorized before processing this operation.");
+            }
 
-        //    if (!result.IsSuccess) return BadRequest(result);
+            var userId = _contextAccessor.HttpContext!.User.GetUserId();
 
-        //    return Ok(result);
-        //}
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await _sender.Send(new DeleteApartmentCommand(id, userId));
+
+            return !result.IsSuccess ? BadRequest(result) : Ok(result);
+        }
     }
 }

@@ -27,7 +27,7 @@ function CreateHotelForm() {
     postalCode: '',
     images: [],
   });
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
 
   const handleChange = (e) => {
@@ -90,8 +90,8 @@ function CreateHotelForm() {
           status: 'error',
           duration: 5000,
           isClosable: true,
-      });
-    }
+        });
+      }
     } catch (error) {
       toast({
         title: 'Error!',
@@ -105,6 +105,7 @@ function CreateHotelForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const formData = new FormData();
     Object.keys(form).forEach((key) => {
       if (key === 'images') {
@@ -117,6 +118,7 @@ function CreateHotelForm() {
     });
 
     await onCreate(formData);
+    setIsSubmitting(false);
   };
 
   return (
@@ -225,13 +227,20 @@ function CreateHotelForm() {
             />
           </FormControl>
 
-          <Button type="submit" colorScheme="purple" size="lg" width="full">
+          <Button
+            type="submit"
+            colorScheme="purple"
+            size="lg"
+            width="full"
+            isLoading={isSubmitting}
+            loadingText="Creating"
+          >
             Create Hotel
           </Button>
         </VStack>
       </form>
     </Box>
   );
-};
+}
 
 export default CreateHotelForm;

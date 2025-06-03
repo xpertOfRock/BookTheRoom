@@ -50,14 +50,14 @@ function HotelSortAndSearchFilter({ filter, setFilter }) {
         <label className="block text-sm font-medium text-gray-700 mb-2">Items per page:</label>
         <select
           name="itemsCount"
-          value={filter.itemsCount || 15}
+          value={filter.itemsCount || 6}
           onChange={handleChange}
           className="border border-gray-300 rounded p-2 w-full"
         >
+          <option value={6}>6</option>
+          <option value={9}>9</option>
+          <option value={12}>12</option>
           <option value={15}>15</option>
-          <option value={30}>30</option>
-          <option value={45}>45</option>
-          <option value={60}>60</option>
         </select>
       </div>
     </div>

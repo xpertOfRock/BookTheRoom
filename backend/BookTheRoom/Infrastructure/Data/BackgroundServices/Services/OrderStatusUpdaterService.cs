@@ -17,7 +17,6 @@ namespace Infrastructure.Data.BackgroundServices.Services
 
             foreach (var order in orders)
             {
-
                 if (order.Status != OrderStatus.Completed && order.CheckOut <= DateTime.UtcNow.Date)
                 {
                     await unitOfWork.Orders.Update(order.Id, new UpdateOrderRequest(OrderStatus.Completed));

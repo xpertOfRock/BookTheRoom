@@ -5,7 +5,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { fetchApartment } from "../../services/apartments";
+import { fetchApartment, deleteApartment } from "../../services/apartments";
 import { postComment } from "../../services/comments";
 import { fetchChatByApartmentId, postChat } from "../../services/chats";
 import { getCurrentUserId, isAuthorized } from "../../services/auth";
@@ -22,7 +22,15 @@ import {
   Stack,
   useColorModeValue,
   useToast,
-  Flex
+  Flex,
+  Divider,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  Spinner
 } from "@chakra-ui/react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -38,6 +46,10 @@ function ApartmentDetails() {
   const [authorized, setAuthorized] = useState(null);
   const currentUserId = getCurrentUserId();
 
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const cancelRef = useRef();
+
   const bg = useColorModeValue("white", "gray.700");
   const boxShadow = useColorModeValue("lg", "dark-lg");
   const textColor = useColorModeValue("gray.800", "gray.200");
@@ -46,6 +58,7 @@ function ApartmentDetails() {
   const ownerTextColor = useColorModeValue("purple.800", "purple.200");
 
   const toast = useToast();
+
   useEffect(() => {
     const result = isAuthorized();
     setAuthorized(result);
@@ -128,6 +141,51 @@ function ApartmentDetails() {
     }
   };
 
+  const handleEditButtonClick = () => {
+    navigate(`/apartments/${id}/update`);
+  };
+
+  const executeDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const status = await deleteApartment(id);
+      if (status === 200) {
+        toast({
+          title: "Deleted",
+          description: "Apartment has been deleted.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+        navigate("/apartments");
+      } else {
+        toast({
+          title: "Error",
+          description: `Unexpected status code: ${status}`,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setIsDeleting(false);
+      }
+    } catch (error) {
+      toast({
+        title: "Error!",
+        description: "An error occurred while deleting the apartment.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      console.error(error);
+      setIsDeleting(false);
+    }
+  };
+
+  const onDeleteClick = () => setIsDeleteOpen(true);
+
+  const onCloseDelete = () => {
+    if (!isDeleting) setIsDeleteOpen(false);
+  };
 
   const addComment = async ({ description, propertyId, propertyType, userScore }) => {
     try {
@@ -153,12 +211,21 @@ function ApartmentDetails() {
 
   const slides = apartment.images.map((src) => ({ src }));
   const isOwner = apartment.ownerId === currentUserId;
- 
 
   return (
     <Box maxW="7xl" mx="auto" px={{ base: 4, md: 8 }} py={8}>
       <Flex mb={8} align="center" position="relative" minH="48px">
-        <Button position="absolute" left={0} colorScheme="purple" leftIcon={<FontAwesomeIcon icon={faChevronLeft} />} onClick={() => navigate("/apartments")} size="md" _hover={{ bg: "purple.600" }}>Back</Button>
+        <Button
+          position="absolute"
+          left={0}
+          colorScheme="purple"
+          leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}
+          onClick={() => navigate("/apartments")}
+          size="md"
+          _hover={{ bg: "purple.600" }}
+        >
+          Back
+        </Button>
         <Box mx="auto">
           <Heading size="lg" color={textColor}>{apartment.title}</Heading>
         </Box>
@@ -251,8 +318,19 @@ function ApartmentDetails() {
             </Heading>
             <Stack spacing={1} fontSize="sm" color={textColor}>
               <Text>
-                <strong>Owner:</strong> {apartment.owner} {isOwner && (
-                  <Box as="span" ml={2} px={2} py={0.5} bg={ownerBg} color={ownerTextColor} rounded="md" fontWeight="bold" fontSize="xs">
+                <strong>Owner:</strong> {apartment.owner}{" "}
+                {isOwner && (
+                  <Box
+                    as="span"
+                    ml={2}
+                    px={2}
+                    py={0.5}
+                    bg={ownerBg}
+                    color={ownerTextColor}
+                    rounded="md"
+                    fontWeight="bold"
+                    fontSize="xs"
+                  >
                     You
                   </Box>
                 )}
@@ -264,24 +342,48 @@ function ApartmentDetails() {
             </Stack>
           </Box>
 
-          {(!isOwner && authorized) || authorized ? (
+          {(!isOwner && authorized) ? (
             <Button
               colorScheme="purple"
               alignSelf="stretch"
               size="md"
               onClick={startOrGetChat}
+              w="full"
             >
               Chat
             </Button>
           ) : null}
+
+          {isOwner && authorized && (
+            <Flex w="full" gap={4}>
+              <Button
+                colorScheme="purple"
+                size="md"
+                onClick={handleEditButtonClick}
+                flex="1"
+                w="full"
+              >
+                Edit
+              </Button>
+              <Button
+                colorScheme="purple"
+                size="md"
+                onClick={onDeleteClick}
+                flex="1"
+                w="full"
+                isDisabled={isDeleting}
+              >
+                Delete
+              </Button>
+            </Flex>
+          )}
         </VStack>
       </Grid>
 
       <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={8}>
         <Box>
           <ImagesSection images={apartment.images} onImageClick={handleImageClick} />
-          {isOwner ? <ChatList chats={apartment.chats || []} /> : null}
-          
+          {isOwner && authorized ? <ChatList chats={apartment.chats || []} /> : null}
         </Box>
         <Box>
           <CommentsSection
@@ -300,6 +402,41 @@ function ApartmentDetails() {
         slides={slides}
         index={photoIndex}
       />
+
+      <AlertDialog
+        isOpen={isDeleteOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCloseDelete}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Confirm Deletion
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure you want to delete this apartment?
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button
+                ref={cancelRef}
+                onClick={onCloseDelete}
+                isDisabled={isDeleting}
+              >
+                No
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={executeDelete}
+                ml={3}
+                isLoading={isDeleting}
+                loadingText="Deleting"
+              >
+                Yes
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 }

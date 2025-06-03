@@ -75,10 +75,22 @@ export const postApartment = async (formData) => {
 };
 
 
-export const putApartment = async (id, apartment) => {
-  try{
-    const response = await axios.put(`${API_URL}/${id}`, apartment);
+export const putApartment = async (id, formData) => {
+  try {
+      const token = getCurrentToken();
+
+      const response = await axios.put(`${API_URL}/${id}`, formData, {
+          headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+      });      
     return response.status;
+  } catch (error) {   
+    console.error('Error occured while creating apartment:', error.response ? error.response.data : error.message);
+  }
+  try{
+    
   }catch(e){
     console.error(e);
   }
@@ -86,28 +98,15 @@ export const putApartment = async (id, apartment) => {
 
 export const deleteApartment = async(id) => {
   try{
-    const response = await axios.delete(`${API_URL}/${id}`);
-    return response.status;
-  }catch(e){
-    console.error(e);
+      const token = getCurrentToken();
+
+      const response = await axios.delete(`${API_URL}/${id}`, {
+          headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });      
+      return response.status;
+    } catch (error) {   
+      console.error(error);
   }
 };
-
-// const joinChat = async (userName, chatId) => {
-    
-//     const { id: id } = useParams();
-//     const navigate = useNavigate();
-
-//     var connection = new HubConnectionBuilder()
-//         .withUrl(`${HUB_URL}`)
-//         .withAutomaticReconnect()
-//         .build();
-
-//     try{
-//         await connection.start();
-//         await connection.invoke("JoinChat", { userName, chatId });
-//         navigate(`/Apartments/${id}/Chats/${chatId}`);
-//     }catch(error){
-//         console.error(error);
-//     }
-// }

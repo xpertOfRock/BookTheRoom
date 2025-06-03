@@ -36,6 +36,11 @@
                 return new Fail("Impossible to delete a non-existent entity.");
             }
 
+            if (apartment.OwnerId != userId)
+            {
+                return new Fail("Mismatch between OwnerId property and passed value.");
+            }
+
             var key = $"apartment-{id}";
 
             await distributedCache.RemoveAsync(key, token);
@@ -48,11 +53,11 @@
                 }
             }
 
-            var rawsAffected = await context.Apartments
+            var RowsAffected = await context.Apartments
                 .Where(x => x.Id == id)
                 .ExecuteDeleteAsync(token);
 
-            if (rawsAffected == 0) throw new EntityNotFoundException<Apartment>();
+            if (RowsAffected == 0) throw new EntityNotFoundException<Apartment>();
 
             return new Success("Entity 'Apartment' was deleted successfully.");
         }
@@ -199,10 +204,10 @@
             );
         }
         public async Task<IResult> Update(int id, string userId, UpdateApartmentRequest request, CancellationToken token = default)
-        {           
-            var apartment = await GetById(id, token);
+        {
+            var apartment = await context.Apartments.FirstOrDefaultAsync(a => a.Id == id, token);
 
-            if(apartment is null)
+            if (apartment is null)
             {
                 throw new EntityNotFoundException<Apartment>();
             }
@@ -216,7 +221,9 @@
            
             await distributedCache.RemoveAsync(key, token);
 
-            if (request.Images is not null)
+            int affectedRows;
+
+            if (request.Images is not null && request.Images.Any() && request.Images.Count > 0)
             {
                 if (apartment.Images != null && apartment.Images.Any())
                 {
@@ -226,13 +233,15 @@
                     }
                 }
 
-                await context.Apartments
+                affectedRows = await context.Apartments
                         .Where(a => a.Id == id)
                         .ExecuteUpdateAsync(e => e
                         .SetProperty(a => a.Images, request.Images), token);
+
+                if(affectedRows == 0) return new Fail("Entity 'Apartment' was not found.");
             }
 
-            await context.Apartments
+            affectedRows = await context.Apartments
                 .Where(a => a.Id == id)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(a => a.Title, request.Title)
@@ -242,9 +251,11 @@
                 .SetProperty(a => a.Address.State, request.Address.State)
                 .SetProperty(a => a.Address.City, request.Address.City)
                 .SetProperty(a => a.Address.Street, request.Address.Street)
-                .SetProperty(a => a.Address.PostalCode, request.Address.PostalCode), token);
+                .SetProperty(a => a.Address.PostalCode, request.Address.PostalCode)
+                .SetProperty(a => a.Telegram, request.Telegram)
+                .SetProperty(a => a.Instagram, request.Instagram),token);
 
-            return new Success("Entity 'Apartment' was updated successfully.");
+            return affectedRows == 0 ? new Fail("Entity 'Apartment' was not found.") : new Success("Entity 'Apartment' was updated successfully.");
         }
 
         public async Task<IResult> UpdateUserDataInUserApartments(string userId, UpdateUserDataInUserApartmentsRequest request, CancellationToken token = default)

@@ -93,9 +93,14 @@ namespace Api.Controllers
         [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Post([FromForm] CreateHotelForm form)
         {
-            var images = new List<string>();
+            if (form.Images is not null && form.Images.Any() && form.Images.Count > 20)
+            {
+                return BadRequest("You cannot add more than 20 files.");
+            }
 
-            if (form.Images.Any())
+            var images = new List<string>();           
+
+            if (form.Images is not null && form.Images.Any())
             {
                 foreach (var file in form.Images)
                 {
@@ -135,21 +140,19 @@ namespace Api.Controllers
 
             return Ok(result);
         }
-        //[HttpPost("{id}/services")]
-        //[Authorize(Roles = UserRole.Admin)]
-        //public async Task<IActionResult> PostService(int hotelId, [FromBody] )
-        //{
-        //    return Ok();
-        //}
-
-        
 
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin)]
         [EnableRateLimiting("SlidingModify")]
         public async Task<IActionResult> Put(int id, [FromForm] UpdateHotelForm form)
         {
+            if (form.Images is not null && form.Images.Any() && form.Images.Count > 20)
+            {
+                return BadRequest("You cannot add more than 20 files.");
+            }
+
             var images = new List<string>();
+            
 
             if (form.Images is not null && form.Images.Any())
             {               

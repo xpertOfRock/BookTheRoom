@@ -1,5 +1,4 @@
 ﻿using Application.UseCases.Commands.Order;
-using Application.UseCases.Validators.Address;
 
 namespace Application.UseCases.Validators.Order
 {

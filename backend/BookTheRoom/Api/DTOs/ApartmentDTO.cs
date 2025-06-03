@@ -12,6 +12,7 @@
         decimal Price,
         string Telegram,
         string Instagram,
+        string JsonAddress,
         string Address,
         float? UserScore,
         DateTime CreatedAt,

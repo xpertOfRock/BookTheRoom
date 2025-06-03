@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Avatar,
@@ -27,6 +27,7 @@ const ProfileEditForm = ({ user, onCancel, onSave, formatDate }) => {
   });
   const [preview, setPreview] = useState(user.image || "");
   const [isHover, setIsHover] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -48,13 +49,15 @@ const ProfileEditForm = ({ user, onCancel, onSave, formatDate }) => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
   const openFileDialog = () => {
     document.getElementById("photo-upload").click();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    await onSave(formData);
+    setIsSubmitting(false);
   };
 
   return (
@@ -168,10 +171,10 @@ const ProfileEditForm = ({ user, onCancel, onSave, formatDate }) => {
         </Box>
       </Stack>
       <Stack direction="row" spacing={4} mt={6} justify="center">
-        <Button onClick={onCancel} colorScheme="purple" variant="outline">
+        <Button onClick={onCancel} colorScheme="purple" variant="outline" isDisabled={isSubmitting}>
           Cancel
         </Button>
-        <Button colorScheme="purple" type="submit">
+        <Button colorScheme="purple" type="submit" isLoading={isSubmitting} loadingText="Saving">
           Save
         </Button>
       </Stack>

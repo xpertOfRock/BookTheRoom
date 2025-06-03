@@ -39,11 +39,11 @@ namespace Infrastructure.Data.Repositories
                 }
             }
 
-            var affectedRaws = await context.Rooms
+            var affectedRows = await context.Rooms
                 .Where(x => x.HotelId == room.HotelId && x.Number == room.Number)
                 .ExecuteDeleteAsync(token);
 
-            if(affectedRaws == 0) throw new EntityNotFoundException<Room>();
+            if(affectedRows == 0) throw new EntityNotFoundException<Room>();
 
             return new Success("Entity 'Room' was deleted successfully.");
         }
@@ -155,7 +155,7 @@ namespace Infrastructure.Data.Repositories
                         token);
             }
 
-            var affectedRaws = await context.Rooms
+            var affectedRows = await context.Rooms
                 .Where(r => r.HotelId == hotelId && r.Number == number)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(r => r.Name, request.Name)
@@ -164,7 +164,7 @@ namespace Infrastructure.Data.Repositories
                 .SetProperty(r => r.Category, request.Category),
                 token);
 
-            if(affectedRaws == 0) throw new EntityNotFoundException<Room>();
+            if(affectedRows == 0) throw new EntityNotFoundException<Room>();
 
             return new Success("Entity 'Room' was updated successfully.");
         }

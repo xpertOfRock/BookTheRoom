@@ -23,6 +23,7 @@ import Profile from './pages/Profile/Profile';
 import CreateApartmentForm from './components/apartment/CreateApartmentForm';
 import Footer from './components/Footer';
 import Chat from './pages/Chat/Chat';
+import UpdateApartmentForm from './components/apartment/UpdateApartmentForm';
 
 function App() { 
   return (
@@ -47,7 +48,7 @@ function App() {
             <Route path="/apartments" element={<Apartments />} />
             <Route path="/apartments/:id" element={<ApartmentDetails />} />
             <Route path="/apartments/create" element={<CreateApartmentForm />} />
-
+            <Route path="/apartments/:id/update" element={<UpdateApartmentForm />}/>
             <Route path="/apartments/:id/chats/:chatId" element={<Chat />} />
 
             <Route path="/checkout" element={<Checkout />} />

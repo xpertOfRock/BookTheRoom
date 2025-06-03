@@ -37,11 +37,11 @@
                 }
             }
 
-            var rawsAffected = await context.Hotels
+            var RowsAffected = await context.Hotels
                 .Where(h => h.Id == id)
                 .ExecuteDeleteAsync(token);
 
-            if (rawsAffected == 0) throw new EntityNotFoundException<Hotel>();
+            if (RowsAffected == 0) throw new EntityNotFoundException<Hotel>();
 
             return new Success("Entity 'Hotel' was deleted successfully.");
         }
@@ -174,7 +174,9 @@
 
             await distributedCache.RemoveAsync(key, token);
 
-            if (request.Images is not null)
+            int affectedRows;
+
+            if (request.Images is not null && request.Images.Any() && request.Images.Count > 0)
             {
                 if (hotel.Images != null && hotel.Images.Any())
                 {
@@ -183,14 +185,15 @@
                         await photoService.DeletePhotoAsync(image);
                     }
                 }
-                await context.Hotels
+                affectedRows = await context.Hotels
                         .Where(h => h.Id == id)
                         .ExecuteUpdateAsync(e => e
                         .SetProperty(h => h.Images, request.Images),
                         token);
+                if(affectedRows == 0) return new Fail("Entity 'Apartment' was not found.");
             }
 
-            var affectedRaws = await context.Hotels
+            affectedRows = await context.Hotels
                 .Where(h => h.Id == id)
                 .ExecuteUpdateAsync(e => e
                 .SetProperty(h => h.Name, request.Name)
@@ -204,9 +207,7 @@
                 .SetProperty(h => h.HasPool, request.HasPool),
                 token);
 
-            if (affectedRaws == 0) throw new EntityNotFoundException<Hotel>();
-
-            return new Success("Entity 'Hotel' was updated successfully.");
+            return affectedRows == 0 ? new Fail("Entity 'Hotel' was not found.") : new Success("Entity 'Hotel' was updated successfully.");
         }
     }
 }
