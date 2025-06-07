@@ -19,6 +19,7 @@ import Login from './components/authorization/Login';
 import Register from './components/authorization/Register';
 import Checkout from './pages/Checkout/Checkout';
 import Success from './components/checkout/Success';
+import Fail from './components/checkout/Fail';
 import Profile from './pages/Profile/Profile';
 import CreateApartmentForm from './components/apartment/CreateApartmentForm';
 import Footer from './components/Footer';
@@ -53,6 +54,7 @@ function App() {
 
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/checkout/success" element={<Success />} />     
+            <Route path="/checkout/fail" element={<Fail/>} />
 
             <Route path="/profile" element={<Profile />} />
 

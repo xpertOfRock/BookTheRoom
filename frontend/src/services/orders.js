@@ -52,11 +52,12 @@ export const postOrder = async (hotelId, number, orderData) => {
             },
           }
         );
-        return response.data;
+
+        return response;
       } catch (error) {
-        console.error(
+        console.error(         
           "Error occured while creating new order: ",
-          error.response ? error.response.data : error.message
+          error.response ? error.response.data : error.message      
         );
       }
 }

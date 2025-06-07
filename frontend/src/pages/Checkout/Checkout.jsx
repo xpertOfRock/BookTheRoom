@@ -105,7 +105,7 @@ function Checkout() {
     if (!firstName || !lastName || !email || !phone) {
       toast({
         title: "Missing info",
-        description: "Заповніть усі обовʼязкові поля.",
+        description: "Some fields missing.",
         status: "warning",
         duration: 4000,
         isClosable: true,
@@ -115,7 +115,7 @@ function Checkout() {
     if (!dropInInstance) {
       toast({
         title: "Payment not ready",
-        description: "Спробуйте пізніше.",
+        description: "Fail. Try later.",
         status: "error",
         duration: 4000,
         isClosable: true,
@@ -140,10 +140,11 @@ function Checkout() {
         CreatedAt: new Date().toISOString(),
       };
 
-      const result = await postOrder(hotelId, roomNumber, createOrderRequest);
-      if (result.isSuccess) {
+      const response = await postOrder(hotelId, roomNumber, createOrderRequest);
+
+      if (response.status === 200) {
         toast({
-          title: "Success!",
+          title: "Success",
           description: "Your order was successfully created!",
           status: "success",
           duration: 7000,
@@ -151,15 +152,26 @@ function Checkout() {
         });
         navigate("/checkout/success", { state: createOrderRequest });
       }
+      if (response.status === 400) {
+        toast({
+          title: "Fail",
+          description: "An error occured while processing your order.",
+          status: "error",
+          duration: 7000,
+          isClosable: true,
+        });
+        navigate("/checkout/fail", { state: createOrderRequest });
+      }
     } catch (error) {
       console.error("Payment error:", error);
       toast({
         title: "Payment failed",
-        description: "Щось пішло не так :(",
+        description: "Something went wrong :(",
         status: "error",
         duration: 6000,
         isClosable: true,
       });
+      navigate("/checkout/fail", { state: {orderData} });
     } finally {
       setIsProcessing(false);
     }

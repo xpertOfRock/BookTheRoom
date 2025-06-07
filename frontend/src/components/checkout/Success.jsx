@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { FaCheckCircle } from 'react-icons/fa';
 
 function Success() {
   const navigate = useNavigate();
@@ -13,20 +14,34 @@ function Success() {
   },[]);
 
   return (
-    <div className="bg-[#EBF0F5] py-10 text-center min-h-screen flex items-center justify-center">
-      <div className="bg-white p-16 rounded shadow inline-block mx-auto">
-        <div className="w-[200px] h-[200px] bg-[#F8FAF5] rounded-full mx-auto flex items-center justify-center">
-          <span className="text-[#9ABC66] text-[100px] leading-[200px]">
-            ✓
-          </span>
-        </div>
-        <h1 className="text-[#88B04B] font-black text-[40px] mb-[10px] mt-4">
-          Success
-        </h1>
-        <p className="text-[#404F5E] text-[20px]">
-          We received your purchase request
-          <br />
-          The information has been sent to your email.
+    <div className="container mx-auto px-4 py-6">
+      <div
+        className="
+          w-full max-w-md
+          shadow-[0px_15px_25px_rgba(0,0,0,0.1)]
+          p-[45px]
+          mx-auto my-[40px]
+          text-center
+          border-b-[4px] border-b-[#28a745]
+          rounded-lg
+          bg-white
+        "
+      >
+        <FaCheckCircle className="mx-auto text-[55px] text-[#28a745]" />
+        <h2
+          className="
+            mt-[10px] mb-[12px]
+            text-[40px]
+            font-medium
+            leading-[1.2]
+            text-gray-900
+          "
+        >
+          Your payment was successful
+        </h2>
+        <p className="mb-0 text-[18px] font-medium text-[#495057]">
+          Thank you for your payment. We will<br />
+          be in contact with more details shortly.
         </p>
       </div>
     </div>
