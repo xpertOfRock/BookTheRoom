@@ -10,12 +10,12 @@ import {
   useColorModeValue,
   useToast,
   Divider,
-  Button,               // <-- импортируем Button
+  Button,
 } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";    // <-- импорт для иконки
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";   // <-- импорт иконки
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { fetchChatByApartmentId, fetchChatById } from "../../services/chats";
 import { fetchApartment } from "../../services/apartments";
 import {
