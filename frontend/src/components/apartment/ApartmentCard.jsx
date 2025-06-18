@@ -35,14 +35,14 @@ function ApartmentCard({ id, name, preview, address, userScore, createdAt, price
         <h5 className="text-lg font-semibold text-gray-800">{name}</h5>
         <p className="text-gray-500 mt-3 text-sm">Location: {address}</p>
         <p className="text-gray-500 mt-3 text-sm">Price: {price}$</p>
-        <div className="flex items-center justify-end mt-auto pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between mt-4">
           <button
             onClick={handleViewClick}
             className="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600"
           >
             View
           </button>
-          <small className="text-gray-400 ml-4">{formattedDate}</small>
+          <small className="text-gray-400">{formattedDate}</small>
         </div>
       </div>
     </div>
