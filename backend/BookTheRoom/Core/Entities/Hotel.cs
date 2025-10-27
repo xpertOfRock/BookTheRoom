@@ -1,4 +1,4 @@
-﻿using Core.Abstractions;
+﻿using Core.Interfaces;
 using Core.ValueObjects;
 
 namespace Core.Entities

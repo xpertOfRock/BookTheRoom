@@ -1,7 +1,4 @@
-﻿using Core.Contracts;
-using Core.Entities;
-
-namespace Core.Interfaces
+﻿namespace Application.Interfaces
 {
     public interface IRoomRepository
     {
@@ -10,6 +7,6 @@ namespace Core.Interfaces
         Task<Room?> GetById(int hotelId, int number, CancellationToken cancellationToken = default);
         Task<IResult> Add(Room room, CancellationToken token = default);
         Task<IResult> Update(int hotelId, int number, UpdateRoomRequest request, CancellationToken token = default);
-        Task<IResult> Delete(int hotelId, int number, CancellationToken token = default);       
+        Task<IResult> Delete(int hotelId, int number, CancellationToken token = default);
     }
 }

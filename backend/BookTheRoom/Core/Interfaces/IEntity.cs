@@ -1,5 +1,4 @@
-﻿
-namespace Core.Abstractions
+﻿namespace Core.Interfaces
 {
     public interface IEntity;
 }

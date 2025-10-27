@@ -2,6 +2,7 @@
 global using Application.UseCases.Abstractions;
 global using Core.Contracts;
 global using Core.Enums;
+global using Core.Entities;
 global using Core.Interfaces;
 global using Core.ValueObjects;
 global using Core.TasksResults;

@@ -1,7 +1,4 @@
-﻿using Core.Contracts;
-using Core.Entities;
-
-namespace Core.Interfaces
+﻿namespace Application.Interfaces
 {
     public interface IOrderRepository
     {
@@ -12,6 +9,5 @@ namespace Core.Interfaces
         //Task<Order> GetById(int id);
         Task<IResult> Add(Order order, CancellationToken token = default);
         Task Update(int id, UpdateOrderRequest request, CancellationToken token = default);
-
     }
 }

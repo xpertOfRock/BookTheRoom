@@ -1,9 +1,8 @@
 ﻿using Braintree.Exceptions;
-using Core.Abstractions;
+using Core.Interfaces;
 using FluentValidation;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Exceptions.ExceptionHandler
 {
@@ -23,19 +22,13 @@ namespace Api.Exceptions.ExceptionHandler
                 (
                     exception.Message,
                     exception.GetType().Name,
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest
+                    context.Response.StatusCode = StatusCodes.Status404NotFound
                 ),
                 ValidationException =>
                 (
                     exception.Message,
                     exception.GetType().Name,
                     context.Response.StatusCode = StatusCodes.Status400BadRequest
-                ),
-                NotFoundException =>
-                (
-                    exception.Message,
-                    exception.GetType().Name,
-                    context.Response.StatusCode = StatusCodes.Status404NotFound
                 ),
                 ArgumentNullException =>
                 (

@@ -70,7 +70,10 @@ namespace Api.Controllers
 
             if (request.Image is not null)
             {
-                if(user.Image is null) await _photoService.DeletePhotoAsync(user.Image);
+                if (!string.IsNullOrEmpty(user.Image)) 
+                { 
+                    await _photoService.DeletePhotoAsync(user.Image); 
+                }
 
                 using var stream = request.Image.OpenReadStream();
 
