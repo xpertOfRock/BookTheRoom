@@ -1,4 +1,5 @@
-﻿using System.Threading.RateLimiting;
+﻿using Org.BouncyCastle.Security;
+using System.Threading.RateLimiting;
 
 namespace Api.Extensions
 {
@@ -6,11 +7,14 @@ namespace Api.Extensions
     {
         internal static IServiceCollection AddRateLimiterServices(this IServiceCollection services)
         {
+            const string GetPolicyName = "SlidingGet";
+            const string ModifyPolicyName = "SlidingModify";
+
             services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
                 
-                options.AddPolicy("SlidingGet", httpContext =>
+                options.AddPolicy(GetPolicyName, httpContext =>
                     RateLimitPartition.GetSlidingWindowLimiter(
                         partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
                         factory: partition => new SlidingWindowRateLimiterOptions
@@ -22,7 +26,7 @@ namespace Api.Extensions
                     )
                 );
 
-                options.AddPolicy("SlidingModify", httpContext =>
+                options.AddPolicy(ModifyPolicyName, httpContext =>
                     RateLimitPartition.GetSlidingWindowLimiter(
                         partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
                         factory: partition => new SlidingWindowRateLimiterOptions
