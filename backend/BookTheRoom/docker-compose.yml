@@ -12,5 +12,22 @@ services:
       context: .
       dockerfile: Api/Dockerfile
 
+  frontend:
+    container_name: client
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    environment:
+      - HTTPS=true
+      - SSL_CRT_FILE=/certs/localhost.pem
+      - SSL_KEY_FILE=/certs/localhost-key.pem
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../frontend:/app
+      - ../../frontend/src/certs:/certs:ro
+    depends_on:
+      - api
+
 volumes:
   postgres_booktheroom:

@@ -1,8 +1,9 @@
-﻿using Application.ExternalServices;
+﻿using Infrastructure.ExternalServices;
 using Infrastructure.Data.BackgroundServices;
 using Infrastructure.Data.BackgroundServices.Services;
 using Infrastructure.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
+using Infrastructure.Services;
 
 namespace Infrastructure.DependencyInjection
 {
@@ -21,6 +22,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IOtpService, OtpService>();
 
             services.AddScoped<IOrderStatusUpdaterService, OrderStatusUpdaterService>();
             services.AddHostedService<OrderStatusUpdaterBackgroundService>();

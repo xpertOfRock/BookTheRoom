@@ -2,7 +2,7 @@
 using Braintree;
 using Microsoft.Extensions.Options;
 
-namespace Application.ExternalServices
+namespace Infrastructure.ExternalServices
 {
     public class PaymentService : IPaymentService
     {

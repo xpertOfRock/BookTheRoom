@@ -3,7 +3,7 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Options;
 
-namespace Application.ExternalServices
+namespace Infrastructure.ExternalServices
 {
     public class PhotoService : IPhotoService
     {
