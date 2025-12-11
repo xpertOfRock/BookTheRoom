@@ -1,7 +1,7 @@
-﻿using Application.ExternalServices;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Settings;
 using CloudinaryDotNet.Actions;
+using Infrastructure.ExternalServices;
 
 namespace Tests.ExternalServices
 {

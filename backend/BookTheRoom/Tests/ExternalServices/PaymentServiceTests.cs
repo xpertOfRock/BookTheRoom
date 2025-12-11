@@ -1,5 +1,5 @@
-﻿using Application.ExternalServices;
-using Application.Settings;
+﻿using Application.Settings;
+using Infrastructure.ExternalServices;
 
 namespace Tests.ExternalServices
 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -7,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitPostgres : Migration
+    public partial class Init_Reworked_11_12_25 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,8 +36,8 @@ namespace Infrastructure.Migrations
                     Role = table.Column<string>(type: "text", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
-                    BirthDate = table.Column<string>(type: "text", nullable: false),
-                    RegisteredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    RegisteredAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -69,8 +70,8 @@ namespace Infrastructure.Migrations
                     HasPool = table.Column<bool>(type: "boolean", nullable: false),
                     Images = table.Column<string>(type: "text", nullable: true),
                     Address_Country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Address_City = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Address_State = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Address_City = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Address_Street = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Address_PostalCode = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false)
                 },
@@ -106,14 +107,20 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OwnerId = table.Column<string>(type: "text", nullable: false),
+                    OwnerId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    OwnerName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
                     PriceForNight = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    Email = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Telegram = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Instagram = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Images = table.Column<string>(type: "text", nullable: false),
                     Address_Country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Address_City = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Address_State = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Address_City = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Address_Street = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Address_PostalCode = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     ApplicationUserId = table.Column<string>(type: "text", nullable: true)
@@ -214,6 +221,38 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OverallPrice = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    MinibarIncluded = table.Column<bool>(type: "boolean", nullable: false),
+                    MealsIncluded = table.Column<bool>(type: "boolean", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    RoomNumber = table.Column<int>(type: "integer", nullable: false),
+                    HotelId = table.Column<int>(type: "integer", nullable: false),
+                    CheckIn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CheckOut = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Rooms",
                 columns: table => new
                 {
@@ -224,7 +263,7 @@ namespace Infrastructure.Migrations
                     Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     IsFree = table.Column<bool>(type: "boolean", nullable: false),
                     Images = table.Column<string>(type: "text", nullable: true),
-                    Category = table.Column<string>(type: "text", nullable: false)
+                    Category = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -245,6 +284,7 @@ namespace Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     HotelId = table.Column<int>(type: "integer", nullable: false),
                     ServiceName = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false)
                 },
                 constraints: table =>
@@ -259,18 +299,44 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Chats",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ApartmentId = table.Column<int>(type: "integer", nullable: true),
+                    UsersId = table.Column<List<string>>(type: "text[]", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Chats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Chats_Apartments_ApartmentId",
+                        column: x => x.ApartmentId,
+                        principalTable: "Apartments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Chats_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    UserScore = table.Column<float>(type: "real", nullable: true),
                     HotelId = table.Column<int>(type: "integer", nullable: true),
                     ApartmentId = table.Column<int>(type: "integer", nullable: true),
-                    PropetyCategory = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     ApplicationUserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -296,47 +362,26 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Orders",
+                name: "ChatMessages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OverallPrice = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    MinibarIncluded = table.Column<bool>(type: "boolean", nullable: false),
-                    MealsIncluded = table.Column<bool>(type: "boolean", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChatId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    RoomNumber = table.Column<int>(type: "integer", nullable: false),
-                    HotelId = table.Column<int>(type: "integer", nullable: false),
-                    RoomId = table.Column<int>(type: "integer", nullable: false),
-                    IsPaid = table.Column<bool>(type: "boolean", nullable: false),
-                    CheckIn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CheckOut = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "text", nullable: true)
+                    UserName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Message = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    ConnectionId = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.PrimaryKey("PK_ChatMessages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Orders_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Orders_Hotels_HotelId",
-                        column: x => x.HotelId,
-                        principalTable: "Hotels",
+                        name: "FK_ChatMessages_Chats_ChatId",
+                        column: x => x.ChatId,
+                        principalTable: "Chats",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Rooms_HotelId_RoomNumber",
-                        columns: x => new { x.HotelId, x.RoomNumber },
-                        principalTable: "Rooms",
-                        principalColumns: new[] { "HotelId", "Number" },
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -382,6 +427,21 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_ChatId",
+                table: "ChatMessages",
+                column: "ChatId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chats_ApartmentId",
+                table: "Chats",
+                column: "ApartmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chats_ApplicationUserId",
+                table: "Chats",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comments_ApartmentId",
                 table: "Comments",
                 column: "ApartmentId");
@@ -405,11 +465,6 @@ namespace Infrastructure.Migrations
                 name: "IX_Orders_ApplicationUserId",
                 table: "Orders",
                 column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_HotelId_RoomNumber",
-                table: "Orders",
-                columns: new[] { "HotelId", "RoomNumber" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_UserId",
@@ -441,10 +496,16 @@ namespace Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ChatMessages");
+
+            migrationBuilder.DropTable(
                 name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Rooms");
 
             migrationBuilder.DropTable(
                 name: "Services");
@@ -453,16 +514,16 @@ namespace Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Apartments");
-
-            migrationBuilder.DropTable(
-                name: "Rooms");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Chats");
 
             migrationBuilder.DropTable(
                 name: "Hotels");
+
+            migrationBuilder.DropTable(
+                name: "Apartments");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

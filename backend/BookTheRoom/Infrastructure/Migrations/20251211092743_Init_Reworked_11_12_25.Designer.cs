@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250522134248_UpdateEntityApartment")]
-    partial class UpdateEntityApartment
+    [Migration("20251211092743_Init_Reworked_11_12_25")]
+    partial class Init_Reworked_11_12_25
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -98,6 +101,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("ApartmentId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("text");
+
                     b.Property<List<string>>("UsersId")
                         .IsRequired()
                         .HasColumnType("text[]");
@@ -106,16 +112,16 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ApartmentId");
 
+                    b.HasIndex("ApplicationUserId");
+
                     b.ToTable("Chats", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.ChatMessage", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ChatId")
                         .HasColumnType("uuid");
@@ -635,6 +641,10 @@ namespace Infrastructure.Migrations
                         .WithMany("Chats")
                         .HasForeignKey("ApartmentId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("Chats")
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("Core.Entities.ChatMessage", b =>
@@ -807,6 +817,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("Apartments");
+
+                    b.Navigation("Chats");
 
                     b.Navigation("Comments");
 
