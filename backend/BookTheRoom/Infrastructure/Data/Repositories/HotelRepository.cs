@@ -57,7 +57,6 @@
                             h.Address.State.ToLower().Contains(request.Search.ToLower()) ||
                             h.Address.City.ToLower().Contains(request.Search.ToLower())
                             )
-
                 .AsNoTracking();
 
             if(query.Select(h => h.Comments).Any() && query.Select(h => h.Comments) is not null && request.UserScore is not null)

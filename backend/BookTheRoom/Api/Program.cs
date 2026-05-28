@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
+using Prometheus;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -149,10 +150,14 @@ if (app.Environment.IsDevelopment())
 //    }
 //}
 
+app.UseRouting();
+
 app.UseHttpsRedirection();
 
-app.UseResponseCompression();
+app.UseHttpMetrics();
+app.MapMetrics();
 
+app.UseResponseCompression();
 app.UseRateLimiter();
 
 app.UseDefaultFiles();
