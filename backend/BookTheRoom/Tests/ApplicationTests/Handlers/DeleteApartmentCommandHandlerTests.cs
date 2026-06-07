@@ -15,7 +15,8 @@ namespace Tests.ApplicationTests.Handlers
         public DeleteApartmentCommandHandlerTests()
         {
             _unitOfWork.Setup(u => u.Apartments).Returns(_apartments.Object);
-            _unitOfWork.Setup(u => u.BeginTransactionAsync()).Returns(Task.CompletedTask);
+            _unitOfWork.Setup(u => u.BeginTransactionAsync(It.IsAny<System.Data.IsolationLevel>()))
+                       .Returns(Task.CompletedTask);
             _unitOfWork.Setup(u => u.CommitAsync()).Returns(Task.CompletedTask);
             _unitOfWork.Setup(u => u.RollbackAsync()).Returns(Task.CompletedTask);
             _unitOfWork.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))

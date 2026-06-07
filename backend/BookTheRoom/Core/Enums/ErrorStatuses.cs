@@ -5,6 +5,7 @@
         None,
         ValidationError,
         NotFoundError,
+        ConflictError,
         UnhandledError
     }
 }

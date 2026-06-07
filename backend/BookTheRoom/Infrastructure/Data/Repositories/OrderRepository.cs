@@ -6,6 +6,21 @@
     {
         public async Task<IResult> Add(Order order, CancellationToken token = default)
         {
+            // Atomic overlap check executed within the caller's Serializable transaction.
+            // Prevents double-booking the same room for overlapping date ranges.
+            bool hasConflict = await context.Orders.AnyAsync(
+                o => o.HotelId == order.HotelId &&
+                     o.RoomNumber == order.RoomNumber &&
+                     o.Status != OrderStatus.Completed &&
+                     o.CheckIn < order.CheckOut &&
+                     o.CheckOut > order.CheckIn,
+                token);
+
+            if (hasConflict)
+                return new Fail(
+                    "Room is already booked for the selected dates.",
+                    ErrorStatuses.ConflictError);
+
             await context.Orders.AddAsync(order, token);
             return new Success("Entity 'Order' was created successfully.");
         }

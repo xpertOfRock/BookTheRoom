@@ -8,7 +8,7 @@
         IOrderRepository Orders { get; }
         ICommentRepository Comments { get; }
         IChatRepository Chats { get; }
-        Task BeginTransactionAsync();
+        Task BeginTransactionAsync(System.Data.IsolationLevel isolationLevel = System.Data.IsolationLevel.ReadCommitted);
         Task CommitAsync();
         Task RollbackAsync();
         Task SaveChangesAsync(CancellationToken token = default);

@@ -43,9 +43,9 @@ namespace Infrastructure.Data.Repositories
         {
             await _context.SaveChangesAsync(token);
         }
-        public async Task BeginTransactionAsync()
+        public async Task BeginTransactionAsync(System.Data.IsolationLevel isolationLevel = System.Data.IsolationLevel.ReadCommitted)
         {
-            await _context.Database.BeginTransactionAsync();
+            await _context.Database.BeginTransactionAsync(isolationLevel);
         }
 
         public async Task CommitAsync()

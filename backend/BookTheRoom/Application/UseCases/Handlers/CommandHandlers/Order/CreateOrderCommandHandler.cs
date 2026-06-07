@@ -9,17 +9,19 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
         private const decimal COEF = 1.05m;
         public async Task<IResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
         {
-            await unitOfWork.BeginTransactionAsync();
-            
+            // Serializable isolation prevents two concurrent requests from booking
+            // the same room for the same dates (combined with the overlap check in OrderRepository.Add).
+            await unitOfWork.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+
             try
             {
                 var hotel = unitOfWork.Hotels.GetById(command.HotelId, cancellationToken);
 
-                var room =  unitOfWork.Rooms.GetById(command.HotelId, command.Number, cancellationToken);
+                var room = unitOfWork.Rooms.GetById(command.HotelId, command.Number, cancellationToken);
 
                 await Task.WhenAll(hotel, room);
 
-                if (room is null || hotel is null)
+                if (room.Result is null || hotel.Result is null)
                 {
                     await unitOfWork.RollbackAsync();
                     return new Fail("[Post Order] Hotel or Room is null", ErrorStatuses.NotFoundError);
@@ -55,7 +57,13 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
                     Status = OrderStatus.Awaiting
                 };
 
-                await unitOfWork.Orders.Add(order, cancellationToken);
+                var addResult = await unitOfWork.Orders.Add(order, cancellationToken);
+
+                if (!addResult.IsSuccess)
+                {
+                    await unitOfWork.RollbackAsync();
+                    return addResult;
+                }
 
                 await unitOfWork.SaveChangesAsync();
 
@@ -65,7 +73,7 @@ namespace Application.UseCases.Handlers.CommandHandlers.Order
                 {
                     await unitOfWork.RollbackAsync();
                     return paymentResult;
-                }               
+                }
 
                 await unitOfWork.CommitAsync();
 
